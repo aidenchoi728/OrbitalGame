@@ -139,7 +139,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            orbitalManager.DestroyCrossSection(0);
+            orbitalManager.DestroyCrossSection(false);
             orbitalManager.DestroyCSBoundary(false, 0);
             orbitalManager.DestroyCSRadialNode(false, 0);
             orbitalManager.DestroyCSAngularNode(false, 0);
@@ -166,7 +166,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            orbitalManager.DestroyCrossSection(1);
+            orbitalManager.DestroyCrossSection(false, 1);
             orbitalManager.DestroyCSBoundary(false, 1);
             orbitalManager.DestroyCSRadialNode(false, 1);
             orbitalManager.DestroyCSAngularNode(false, 1);
@@ -193,7 +193,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            orbitalManager.DestroyCrossSection(2);
+            orbitalManager.DestroyCrossSection(false, 2);
             orbitalManager.DestroyCSBoundary(false, 2);
             orbitalManager.DestroyCSRadialNode(false, 2);
             orbitalManager.DestroyCSAngularNode(false, 2);

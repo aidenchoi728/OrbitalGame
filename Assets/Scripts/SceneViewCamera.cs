@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class SceneViewCamera : MonoBehaviour
 {
-    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float moveSpeed = 10f;
     [SerializeField] private float lookSensitivity = 2f;
-    [SerializeField] private float scrollSpeed = 10f;
+    [SerializeField] private float scrollSpeed = 15f;
 
     [SerializeField] private float yaw = 0f;
     [SerializeField] private float pitch = 90f;

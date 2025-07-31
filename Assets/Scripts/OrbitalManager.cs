@@ -9,6 +9,12 @@ using Slider = UnityEngine.UI.Slider;
 
 public enum Plane { XY, YZ, XZ }
 
+public enum Functions {ORB, OV, TRAN, AN, RN, CS, CS90B, CSAN, CSRN, PS, PR}
+// ORB = Orbital, OV = Overlay, TRAN = Transition, AN = Angular Node, RN = Radial Node, CS = Cross-Section
+// CS90B = 90% Boundary for Cross-Section, CSAN = Angular Node for Cross-Section, CSRN = Radial Node for Cross-Section
+// PS = Psi Squared, PR = Psi Squared R Squared
+// CONT = Continue from previous, NULL = None
+
 public class OrbitalManager : MonoBehaviour
 {
     [SerializeField] private Slider transitionSlider;
@@ -360,10 +366,7 @@ public class OrbitalManager : MonoBehaviour
 
     public void DestroyAngularNode()
     {
-        for (int i = activeAngularNodes.Count - 1; i >= 0; i--)
-        {
-            Destroy(activeAngularNodes[i]);
-        }
+        for (int i = activeAngularNodes.Count - 1; i >= 0; i--) Destroy(activeAngularNodes[i]);
     }
     
     public void CrossSection(int n, int l, int ml, Plane plane)
@@ -442,9 +445,10 @@ public class OrbitalManager : MonoBehaviour
         quad.transform.localScale = new Vector3(2 * rCutoff, 2 * rCutoff, 1);
     }
 
-    public void DestroyCrossSection(int num)
+    public void DestroyCrossSection(bool isALl, int num = 0)
     {
-        Destroy(activeCrossSections[num]);
+        if (isALl) foreach (GameObject cs in activeCrossSections) Destroy(cs);
+        else Destroy(activeCrossSections[num]);
     }
     
     public void CrossSectionBoundary(int n, int l, int ml, Plane plane)
