@@ -30,19 +30,19 @@ public class ModuleManager : MonoBehaviour
 
     private void Awake()
     {
-        #if UNITY_EDITOR
+        /*#if UNITY_EDITOR
             dataLines = File.ReadAllLines(Path.Combine(Application.streamingAssetsPath, $"Level Data - {campaignNum}-M{moduleNum}.csv"));
             foreach (string line in dataLines)
             {
                 data.Add(SplitCsvLine(line));
             }
-        #else
+        #else*/
             dataLines = File.ReadAllLines(Path.Combine(Application.streamingAssetsPath, $"Level Data - {ModuleInfo.campaignNum}-M{ModuleInfo.moduleNum}.csv"));
             foreach (string line in dataLines)
             {
                 data.Add(SplitCsvLine(line));
             }
-        #endif
+        //#endif
         
         chartObject.SetActive(false);
     }
