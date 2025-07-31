@@ -261,6 +261,25 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void PsiToggle(bool isOn)
+    {
+        if (isOn)
+        {
+            if(n < 0 || n > 3 || l < 0 || l >= n || ml < -1 * l || ml > l) Debug.Log("No valid orbital");
+            else if(l != 0) Debug.Log("Not radially symmetric");
+            else
+            {
+                orbitalManager.Psi(n, l, ml);
+                chart.SetActive(true);
+            }
+        }
+        else
+        {
+            chart.SetActive(false);
+            orbitalManager.isChart = false;
+        }
+    }
+    
     public void PsiSquaredToggle(bool isOn)
     {
         if (isOn)

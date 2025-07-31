@@ -9,12 +9,6 @@ using Slider = UnityEngine.UI.Slider;
 
 public enum Plane { XY, YZ, XZ }
 
-public enum Functions {ORB, OV, TRAN, AN, RN, CS, CS90B, CSAN, CSRN, PS, PR}
-// ORB = Orbital, OV = Overlay, TRAN = Transition, AN = Angular Node, RN = Radial Node, CS = Cross-Section
-// CS90B = 90% Boundary for Cross-Section, CSAN = Angular Node for Cross-Section, CSRN = Radial Node for Cross-Section
-// PS = Psi Squared, PR = Psi Squared R Squared
-// CONT = Continue from previous, NULL = None
-
 public class OrbitalManager : MonoBehaviour
 {
     [SerializeField] private Slider transitionSlider;
@@ -671,6 +665,55 @@ public class OrbitalManager : MonoBehaviour
             Destroy(activeCSAngularNodes[i][j]);
         else for (int i = activeCSAngularNodes[num].Count - 1; i >= 0; i--)
             Destroy(activeCSAngularNodes[num][i]);
+    }
+    
+    public void Psi(int n, int l, int ml)
+    {
+        // Remove all existing series & data
+        chart.RemoveData();
+
+        // Add a new Line series
+        chart.AddSerie<Line>("Ψ vs r");
+
+        var xAxis = chart.EnsureChartComponent<XAxis>();
+        xAxis.type = Axis.AxisType.Category;
+        xAxis.boundaryGap = true;
+
+        var yAxis = chart.EnsureChartComponent<YAxis>();
+        yAxis.type = Axis.AxisType.Value;
+
+        float psiMax = 0f;
+        float psiMin = 0f;
+
+        (_, maxRadius) = ComputePsiCutoff(n, l, ml);
+        maxRadius *= chartMargin;
+
+        // Populate data
+        for (int i = 0; i <= sampleCount; i++)
+        {
+            float r = i * (maxRadius / sampleCount);
+            chart.AddXAxisData(r.ToString("F2"));
+            float psi = GetPsi(n, l, ml, r, 0f, 0f);
+            if(psi > psiMax) psiMax = psi;
+            if(psi < psiMin) psiMin = psi;
+            chart.AddData(0, psi);
+        }
+
+        // Configure the series styling
+        var serie = chart.series[0] as Serie;
+        serie.symbol.show = false;
+
+        xAxis.axisName.name = "Radius";
+        yAxis.axisName.name = "Ψ²";
+
+        yAxis.max = psiMax;
+        yAxis.min = psiMin;
+
+        serie.lineStyle.color = chartLineColor;
+        serie.clip = true;
+        
+        chart.RefreshChart();
+        isChart = true;
     }
     
     public void PsiSquared(int n, int l, int ml)
