@@ -40,7 +40,10 @@ public class OrbitalManager : MonoBehaviour
     [SerializeField] private GameObject crossSectionQuad; // assign your Plane prefab in Inspector
     
     [Header("Chart")]
-    [SerializeField] private LineChart chart; // Assign this in the Inspector
+    [SerializeField] private LineChart mainChart; // Assign this in the Inspector
+    [SerializeField] private LineChart psiChart;
+    [SerializeField] private LineChart psiSqChart;
+    [SerializeField] private LineChart psiSqRSqChart;
     [SerializeField] private Color chartLineColor = Color.white;
     [SerializeField] private int sampleCount = 100;
     [SerializeField] private float chartMargin = 1.3f;
@@ -57,6 +60,7 @@ public class OrbitalManager : MonoBehaviour
     [SerializeField] private int waveResolution = 100;   // Number of points in the line
     [SerializeField] private float waveSize = 20f;
     [SerializeField] private float waveLength = 1f;
+    [SerializeField] private float waveLength3D = 1f;
     
     private Vector2 lastMousePos;
     private bool wasInsideLastFrame;
@@ -705,14 +709,23 @@ public class OrbitalManager : MonoBehaviour
         else for (int i = activeCSAngularNodes[num].Count - 1; i >= 0; i--)
             Destroy(activeCSAngularNodes[num][i]);
     }
-    
-    public void Psi(int n, int l, int ml)
-    {
-        // Remove all existing series & data
-        chart.RemoveData();
 
-        // Add a new Line series
-        chart.AddSerie<Line>("R vs r");
+    public void Psi(int n, int l, int ml, bool isOverlap = false, bool isSeparate = false, int num = 0)
+    {
+        LineChart chart;
+
+        if (isSeparate) chart = psiChart;
+        else chart = mainChart;
+        
+        // Remove all existing series & data
+        if (isOverlap)
+            chart.AddSerie<Line>($"R vs r ({num})");
+        else
+        {
+            chart.RemoveData();
+            chart.AddSerie<Line>("R vs r");
+        }
+        
 
         var xAxis = chart.EnsureChartComponent<XAxis>();
         xAxis.type = Axis.AxisType.Category;
@@ -755,13 +768,21 @@ public class OrbitalManager : MonoBehaviour
         isChart = true;
     }
     
-    public void PsiSquared(int n, int l, int ml)
+    public void PsiSquared(int n, int l, int ml, bool isOverlap = false, bool isSeparate = false, int num = 0)
     {
-        // Remove all existing series & data
-        chart.RemoveData();
+        LineChart chart;
 
-        // Add a new Line series
-        chart.AddSerie<Line>("Ψ² vs r");
+        if (isSeparate) chart = psiChart;
+        else chart = mainChart;
+        
+        // Remove all existing series & data
+        if (isOverlap)
+            chart.AddSerie<Line>($"Ψ² vs r ({num})");
+        else
+        {
+            chart.RemoveData();
+            chart.AddSerie<Line>("Ψ² vs r");
+        }
 
         var xAxis = chart.EnsureChartComponent<XAxis>();
         xAxis.type = Axis.AxisType.Category;
@@ -801,11 +822,22 @@ public class OrbitalManager : MonoBehaviour
         isChart = true;
     }
     
-    public void PsiSquaredRSquared(int n, int l, int ml)
+    public void PsiSquaredRSquared(int n, int l, int ml, bool  isOverlap = false, bool isSeparate = false, int num = 0)
     {
-        chart.RemoveData();
-        chart.AddSerie<Line>("r²Ψ² vs r");
+        LineChart chart;
 
+        if (isSeparate) chart = psiChart;
+        else chart = mainChart;
+        
+        // Remove all existing series & data
+        if (isOverlap)
+            chart.AddSerie<Line>($"r²Ψ² vs r ({num})");
+        else
+        {
+            chart.RemoveData();
+            chart.AddSerie<Line>("r²Ψ² vs r");
+        }
+        
         var xAxis = chart.EnsureChartComponent<XAxis>();
         xAxis.type = Axis.AxisType.Category;
         xAxis.boundaryGap = true;
@@ -995,7 +1027,36 @@ public class OrbitalManager : MonoBehaviour
         mr.material = GetComponent<MeshRenderer>().materials[0];
     }
 
+    private void Wave3D()
+    {
+        // Clean up previous spheres
+        foreach (Transform child in transform)
+            DestroyImmediate(child.gameObject);
 
+        Vector3 center = transform.position;
+        float twoPi = Mathf.PI * 2f;
+        float waveStep = twoPi / waveLength3D;
+        int numWaves = Mathf.FloorToInt(length / waveStep);
+
+        // Get the shared material from this object's renderer
+        Material sharedMaterial = GetComponent<MeshRenderer>().materials[0];
+
+        for (int i = 0; i < numWaves; i++)
+        {
+            float dist = i * waveStep;
+
+            GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            sphere.transform.SetParent(transform);
+            sphere.transform.position = center;
+            sphere.transform.localScale = Vector3.one * (dist * 2f); // Diameter
+            sphere.name = $"Wave Sphere {i}";
+
+            // Use shared material
+            Renderer rend = sphere.GetComponent<Renderer>();
+            rend.material = sharedMaterial;
+        }
+    }
+    
 
     private float GetPsi(int n, int l, int ml, float x, float y, float z)
     {
