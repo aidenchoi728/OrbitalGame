@@ -6416,11 +6416,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7527841374337230754, guid: 97d307e8416d4403e9427268fedcb33d, type: 3}
       propertyPath: amplitude
-      value: 3
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7527841374337230754, guid: 97d307e8416d4403e9427268fedcb33d, type: 3}
+      propertyPath: mainChart
+      value: 
+      objectReference: {fileID: 97461051}
+    - target: {fileID: 7527841374337230754, guid: 97d307e8416d4403e9427268fedcb33d, type: 3}
+      propertyPath: wave3DRes
+      value: 48
       objectReference: {fileID: 0}
     - target: {fileID: 7527841374337230754, guid: 97d307e8416d4403e9427268fedcb33d, type: 3}
       propertyPath: waveLength
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7527841374337230754, guid: 97d307e8416d4403e9427268fedcb33d, type: 3}
+      propertyPath: waveLength3D
+      value: 0.35
       objectReference: {fileID: 0}
     - target: {fileID: 7527841374337230754, guid: 97d307e8416d4403e9427268fedcb33d, type: 3}
       propertyPath: waveResolution
