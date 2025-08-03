@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using Unity.VisualScripting;
+using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 using XCharts;
 using XCharts.Runtime;
@@ -46,6 +48,15 @@ public class OrbitalManager : MonoBehaviour
     [SerializeField] private bool isBillBoard = false;
     [SerializeField] private Plane rVisualizerPlane;
     [SerializeField] private RectTransform chartRectTransform;
+    public bool isChart = false;
+    
+    [Header("Wave")]
+    [SerializeField] private float length = 120f;     // Total length of the wave
+    [SerializeField] private float amplitude = 10f;   // Height of the wave
+    [SerializeField] private float period = 20f;      // Distance over which the wave repeats
+    [SerializeField] private int waveResolution = 100;   // Number of points in the line
+    [SerializeField] private float waveSize = 20f;
+    [SerializeField] private float waveLength = 1f;
     
     private Vector2 lastMousePos;
     private bool wasInsideLastFrame;
@@ -66,9 +77,37 @@ public class OrbitalManager : MonoBehaviour
     private float boxExtent;
     private float maxRadius = 0f;
 
-    public bool isChart = false;
+    public void DestroyAll()
+    {
+        // Remove the mesh from the MeshFilter
+        MeshFilter mf = GetComponent<MeshFilter>();
+        if (mf != null && mf.mesh != null)
+        {
+            // Destroy the mesh asset to free memory
+            Destroy(mf.mesh);
+            mf.mesh = null;
+        }
+        
+        for(int i = activeOverlaps.Count - 1; i >= 0; i--) Destroy(activeOverlaps[i]);
+        
+        for (int i = activeRadialNodes.Count - 1; i >= 0; i--) Destroy(activeRadialNodes[i]);
+        
+        for (int i = activeAngularNodes.Count - 1; i >= 0; i--) Destroy(activeAngularNodes[i]);
 
+        foreach (GameObject cs in activeCrossSections) Destroy(cs);
+        
+        for (int i = 0; i < 3; i++) for(int j = activeCSBoundaries[i].Count - 1; j >= 0; j--)
+            Destroy(activeCSBoundaries[i][j]);
+        
+        for(int i = 0; i < 3; i++) for (int j = activeCSRadialNodes[i].Count - 1; j >= 0; j--)
+            Destroy(activeCSRadialNodes[i][j]);
+        
+        for(int i = 0; i < 3; i++) for (int j = activeCSAngularNodes[i].Count - 1; j >= 0; j--)
+            Destroy(activeCSAngularNodes[i][j]);
 
+        isChart = false;
+    }
+    
     private void Update()
     {
         if(isChart) ChartRVisualizer();
@@ -673,7 +712,7 @@ public class OrbitalManager : MonoBehaviour
         chart.RemoveData();
 
         // Add a new Line series
-        chart.AddSerie<Line>("Ψ vs r");
+        chart.AddSerie<Line>("R vs r");
 
         var xAxis = chart.EnsureChartComponent<XAxis>();
         xAxis.type = Axis.AxisType.Category;
@@ -704,7 +743,7 @@ public class OrbitalManager : MonoBehaviour
         serie.symbol.show = false;
 
         xAxis.axisName.name = "Radius";
-        yAxis.axisName.name = "Ψ²";
+        yAxis.axisName.name = "R";
 
         yAxis.max = psiMax;
         yAxis.min = psiMin;
@@ -877,6 +916,86 @@ public class OrbitalManager : MonoBehaviour
             else wasInsideLastFrame = false;
         }
     }
+    
+    public void Wave1D()
+    {
+        LineRenderer lineRenderer = this.AddComponent<LineRenderer>();
+        
+        lineRenderer.material = new Material(Shader.Find("Unlit/Color"));
+        lineRenderer.material.color = lineColor;
+        lineRenderer.widthMultiplier = lineWidth;
+        
+        lineRenderer.positionCount = waveResolution;
+        float step = length / (waveResolution - 1);
+        float startX = -length / 2f;
+
+        for (int i = 0; i < waveResolution; i++)
+        {
+            float x = startX + i * step;
+            float z = Mathf.Sin((x / period) * 2 * Mathf.PI) * amplitude;
+            lineRenderer.SetPosition(i, new Vector3(x, 0, z));
+        }
+    }
+
+    public void Wave2D()
+    {
+        Mesh mesh = new Mesh();
+
+        int vertCount = waveResolution * waveResolution;
+        Vector3[] vertices = new Vector3[vertCount];
+        int[] triangles = new int[(waveResolution - 1) * (waveResolution - 1) * 6];
+        Vector2[] uvs = new Vector2[vertCount];
+
+        float halfSize = waveSize / 2f;
+        float step = waveSize / (waveResolution - 1);
+
+        // Generate vertices
+        for (int y = 0; y < waveResolution; y++)
+        {
+            for (int x = 0; x < waveResolution; x++)
+            {
+                int i = x + y * waveResolution;
+                float xPos = -halfSize + x * step;
+                float zPos = -halfSize + y * step;
+                float radius = Mathf.Sqrt(xPos * xPos + zPos * zPos);
+                float yPos = Mathf.Sin((radius / waveLength) * 2f * Mathf.PI) * amplitude;
+
+                vertices[i] = new Vector3(xPos, yPos, zPos);
+                uvs[i] = new Vector2((float)x / (waveResolution - 1), (float)y / (waveResolution - 1));
+            }
+        }
+
+        // Generate triangles
+        int t = 0;
+        for (int y = 0; y < waveResolution - 1; y++)
+        {
+            for (int x = 0; x < waveResolution - 1; x++)
+            {
+                int i = x + y * waveResolution;
+
+                triangles[t++] = i;
+                triangles[t++] = i + waveResolution;
+                triangles[t++] = i + 1;
+
+                triangles[t++] = i + 1;
+                triangles[t++] = i + waveResolution;
+                triangles[t++] = i + waveResolution + 1;
+            }
+        }
+
+        // Assign to mesh
+        mesh.vertices = vertices;
+        mesh.triangles = triangles;
+        mesh.uv = uvs;
+        mesh.RecalculateNormals();
+
+        GameObject wave = new GameObject();
+        wave.AddComponent<MeshFilter>().mesh = mesh;
+        MeshRenderer mr = wave.AddComponent<MeshRenderer>();
+        mr.material = GetComponent<MeshRenderer>().materials[0];
+    }
+
+
 
     private float GetPsi(int n, int l, int ml, float x, float y, float z)
     {
