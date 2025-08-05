@@ -6,23 +6,22 @@ using UnityEngine.SceneManagement;
 
 public class LevelButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
-    [SerializeField] private bool isModule = true;
-    [SerializeField] private int campaignNum = 1;
-    [SerializeField] private int moduleCheckpointNum = 1;
+    public bool isModule;
+    public int moduleCheckpointNum = 1;
+    
+    public TextMeshProUGUI num;
+    public TextMeshProUGUI name;
     
     private Image bg;
     private Image line;
     private Image icon;
-    private TextMeshProUGUI num;
-    private TextMeshProUGUI name;
+    
 
     private void Awake()
     {
         bg = GetComponent<Image>();
         line = transform.Find("Line").GetComponent<Image>();
         icon = transform.Find("Icon").GetComponent<Image>();
-        num = transform.Find("Num").GetComponent<TextMeshProUGUI>();
-        name = transform.Find("Name").GetComponent<TextMeshProUGUI>();
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -50,17 +49,6 @@ public class LevelButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         num.color = new Color(0.9412f, 0.3569f, 0.7412f, 1f);
         name.color = new Color(0.9412f, 0.3569f, 0.7412f, 1f);
         
-        if (isModule)
-        {
-            ModuleInfo.campaignNum =  campaignNum;
-            ModuleInfo.moduleNum = moduleCheckpointNum;
-            SceneManager.LoadScene("Module");
-        }
-        else
-        {
-            CheckpointInfo.campaignNum =  campaignNum;
-            CheckpointInfo.checkpointNum = moduleCheckpointNum;
-            SceneManager.LoadScene("Checkpoint");
-        }
+        
     }
 }

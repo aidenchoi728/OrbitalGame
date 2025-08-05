@@ -1,0 +1,12 @@
+Into the Hydrogen Atom,,,,,
+Num,Type,Module/Checkpoint Num,Name,Description,Alignment
+1,Module,1,Waves,"What are 3D waves? Find out about waves, in 1D, 2D, and 3D.",
+2,Module,2,The Orbital,Find out about how electrons exist as waves in the modern atomic model. See various orbitals in the hydrogen atom using the boundary representation.,"Playground | 3D Orbital Explorer, 2D Orbital Explorer, Compare Orbitals"
+3,Module,3,The Phases,"Find out about the two phases in an orbital. Along the way, learn about the wave function, Ψ.",
+4,Module,4,Radial Nodes,"What happens when Ψ is zero? Find out about nodes, specifically radial nodes. Along the way, learn about Ψ² and the principal quantum number.",
+5,Checkpoint,1,How Many Radial Nodes?,,
+6,Module,5,Angular Nodes,"Find out about the second type of nodes, angular nodes. Along the way, learn about the azimuthal quantum number and how it relates to the number of radial and angular nodes.",
+7,Checkpoint,2,How Many Angular Nodes?,,
+8,Checkpoint,3,Guess the Quantum Numbers,See if you can guess the quantum numbers of an orbital from just looking at it.,
+9,Checkpoint,4,Guess the Orbital,See if you can guess the name of an orbital from just looking at it.,
+10,Module,6,Light and Transition,"What are the absorption and emission spectra? Find out how orbitals transition from one to another and release or receive light in the process. Along the way, learn about orbital energies.",

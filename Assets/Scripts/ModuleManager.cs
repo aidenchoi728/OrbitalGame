@@ -371,7 +371,7 @@ public class ModuleManager : MonoBehaviour
         
     }
     
-    public static string[] SplitCsvLine(string line)
+    private static string[] SplitCsvLine(string line)
     {
         var values = new List<string>();
         bool inQuotes = false;

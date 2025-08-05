@@ -349,8 +349,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isModule: 1
-  campaignNum: 1
   moduleCheckpointNum: 1
+  num: {fileID: 7506375720567278894}
+  name: {fileID: 988012113070105353}
 --- !u!1 &8174113578006638513
 GameObject:
   m_ObjectHideFlags: 0
@@ -385,8 +386,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 25, y: 0}
-  m_SizeDelta: {x: 51, y: 51}
+  m_AnchoredPosition: {x: 29.125, y: 0}
+  m_SizeDelta: {x: 42.75, y: 51}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &1022372039042556515
 CanvasRenderer:
@@ -493,8 +494,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Checkpoint Name
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 85f9e65ae1e184834bd14f9c6df7abad, type: 2}
-  m_sharedMaterial: {fileID: -5342986040217193648, guid: 85f9e65ae1e184834bd14f9c6df7abad, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e2dd8c30265fb46878ce7ef5acc41f6b, type: 2}
+  m_sharedMaterial: {fileID: 8627572324960736609, guid: e2dd8c30265fb46878ce7ef5acc41f6b, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -524,7 +525,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 1024
   m_textAlignment: 65535
