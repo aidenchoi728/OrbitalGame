@@ -348,10 +348,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29bded44a21dc429ea9c1b4d53a64d00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isModule: 1
-  moduleCheckpointNum: 1
+  isModule: 0
   num: {fileID: 7506375720567278894}
   name: {fileID: 988012113070105353}
+  moduleCheckpointNum: 1
+  dataNum: 0
+  isPressed: 0
 --- !u!1 &8174113578006638513
 GameObject:
   m_ObjectHideFlags: 0

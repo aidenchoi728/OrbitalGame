@@ -138,9 +138,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isModule: 1
-  moduleCheckpointNum: 1
   num: {fileID: 4410327472417210748}
   name: {fileID: 6418497744178683198}
+  moduleCheckpointNum: 1
+  dataNum: 0
+  isPressed: 0
 --- !u!1 &6275177498358188238
 GameObject:
   m_ObjectHideFlags: 0
