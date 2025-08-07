@@ -64,6 +64,7 @@ public class OrbitalManager : MonoBehaviour
     
     private Vector2 lastMousePos;
     private bool wasInsideLastFrame;
+    private Camera mainCamera;
     
     private List<GameObject> activeOverlaps = new List<GameObject>();
     private List<GameObject> activeRadialNodes = new List<GameObject>();
@@ -80,6 +81,11 @@ public class OrbitalManager : MonoBehaviour
     private float thresholdNew;
     private float boxExtent;
     private float maxRadius = 0f;
+
+    private void Awake()
+    {
+        mainCamera = Camera.main;
+    }
 
     public void DestroyAll()
     {
@@ -919,7 +925,7 @@ public class OrbitalManager : MonoBehaviour
             }
             
             if (RectTransformUtility.ScreenPointToLocalPointInRectangle(chartRectTransform, 
-                    Input.mousePosition, null, out localMousePos) 
+                    Input.mousePosition, mainCamera, out localMousePos) 
                 && chartRectTransform.rect.Contains(localMousePos))
             {
                 wasInsideLastFrame = true;

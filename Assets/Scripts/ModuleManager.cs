@@ -77,8 +77,6 @@ public class ModuleManager : MonoBehaviour
     {
         curr++;
         if (curr >= data.Count) return;
-        
-        Debug.Log($"Flow {curr}");
 
         switch (data[curr][1])
         {
@@ -198,8 +196,6 @@ public class ModuleManager : MonoBehaviour
         curr++;
         if (curr >= data.Count) return;
         
-        Debug.Log($"Virtual Flow {curr}");
-        
         switch (data[curr][1])
         {
             case "Dialogue":
@@ -226,8 +222,6 @@ public class ModuleManager : MonoBehaviour
         if(vNext >= nextNum) return;
         curr++;
         if (curr >= data.Count) return;
-
-        Debug.Log($"Load Prev {curr}");
         
         switch (vData[curr][1])
         {
