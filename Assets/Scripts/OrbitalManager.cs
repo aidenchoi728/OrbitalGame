@@ -2,10 +2,9 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using TMPro;
 using Unity.VisualScripting;
-using UnityEngine.Rendering;
-using UnityEngine.UIElements;
-using XCharts;
+using UnityEngine.UI;
 using XCharts.Runtime;
 using Slider = UnityEngine.UI.Slider;
 
@@ -15,8 +14,14 @@ public class OrbitalManager : MonoBehaviour
 {
     [SerializeField] private Slider transitionSlider;
     
+    [Header("Materials (assign in Inspector)")]
+    [SerializeField] private Material phasePositiveMat;
+    [SerializeField] private Material phaseNegativeMat;
+    [SerializeField] private Material nodeMat;       // cones / nodePrefab
+    [SerializeField] private Material lineMat;       // LineRenderer
+    
     [Header("Orbital Mesh")] 
-    [SerializeField] private int gridSize = 36;
+    public int gridSize = 45;
     [SerializeField] private float boundaryMargin = 1.1f;
     
     
@@ -61,6 +66,11 @@ public class OrbitalManager : MonoBehaviour
     [SerializeField] private float waveSize = 20f;
     [SerializeField] private float waveLength = 1f;
     [SerializeField] private float waveLength3D = 1f;
+
+    [Header("Orbital Info")] 
+    [SerializeField] private GameObject orbitalInfoPanel;
+    [SerializeField] private GameObject orbitalInfoPrefab;
+    [SerializeField] RectTransform layoutRoot; // The object with VerticalLayoutGroup (or its parent)
     
     private Vector2 lastMousePos;
     private bool wasInsideLastFrame;
@@ -73,6 +83,9 @@ public class OrbitalManager : MonoBehaviour
     private List<GameObject>[] activeCSBoundaries = {new List<GameObject>(), new List<GameObject>(), new List<GameObject>()};
     private List<GameObject>[] activeCSRadialNodes = {new List<GameObject>(), new List<GameObject>(), new List<GameObject>()};
     private List<GameObject>[] activeCSAngularNodes = {new List<GameObject>(), new List<GameObject>(), new List<GameObject>()};
+    private List<GameObject> activeOrbitalInfo = new List<GameObject>();
+    private GameObject wave1DObject;
+    private GameObject wave2DObject; // store the reference
     private GameObject prevRVisualizer = null;
     
     private float[,,] orbitalPrev;
@@ -98,24 +111,77 @@ public class OrbitalManager : MonoBehaviour
             mf.mesh = null;
         }
         
-        for(int i = activeOverlaps.Count - 1; i >= 0; i--) Destroy(activeOverlaps[i]);
+        for(int i = activeOverlaps.Count - 1; i >= 0; i--)
+            if (activeOverlaps[i] != null)
+            {
+                Destroy(activeOverlaps[i]);
+                activeOverlaps.RemoveAt(i);
+            }
         
-        for (int i = activeRadialNodes.Count - 1; i >= 0; i--) Destroy(activeRadialNodes[i]);
+        for (int i = activeRadialNodes.Count - 1; i >= 0; i--)
+            if (activeRadialNodes[i] != null)
+            {
+                Destroy(activeRadialNodes[i]);
+                activeRadialNodes.RemoveAt(i);
+            }
         
-        for (int i = activeAngularNodes.Count - 1; i >= 0; i--) Destroy(activeAngularNodes[i]);
+        for (int i = activeAngularNodes.Count - 1; i >= 0; i--)
+            if (activeAngularNodes[i] != null)
+            {
+                Destroy(activeAngularNodes[i]);
+                activeAngularNodes.RemoveAt(i);
+            }
 
         foreach (GameObject cs in activeCrossSections) Destroy(cs);
         
         for (int i = 0; i < 3; i++) for(int j = activeCSBoundaries[i].Count - 1; j >= 0; j--)
-            Destroy(activeCSBoundaries[i][j]);
+            if (activeCSBoundaries[i][j] != null)
+            {
+                Destroy(activeCSBoundaries[i][j]);
+                activeCSBoundaries[i].RemoveAt(j);
+            }
         
         for(int i = 0; i < 3; i++) for (int j = activeCSRadialNodes[i].Count - 1; j >= 0; j--)
-            Destroy(activeCSRadialNodes[i][j]);
+            if (activeCSRadialNodes[i][j] != null)
+            {
+                Destroy(activeCSRadialNodes[i][j]);
+                activeCSRadialNodes[i].RemoveAt(j);
+            }
         
         for(int i = 0; i < 3; i++) for (int j = activeCSAngularNodes[i].Count - 1; j >= 0; j--)
-            Destroy(activeCSAngularNodes[i][j]);
+            if (activeCSAngularNodes[i][j] != null)
+            {
+                Destroy(activeCSAngularNodes[i][j]);
+                activeCSAngularNodes[i].RemoveAt(j);
+            }
 
+        for(int i = activeOrbitalInfo.Count - 1; i >= 0; i--)
+            if (activeOrbitalInfo[i] != null)
+            {
+                Destroy(activeOrbitalInfo[i]);
+                activeOrbitalInfo.RemoveAt(i);
+            }
+        
         isChart = false;
+        
+        // If it exists, destroy it
+        if (wave1DObject != null)
+        {
+            Destroy(wave1DObject);
+            wave1DObject = null;
+        }
+        
+        if (wave2DObject != null)
+        {
+            Destroy(wave2DObject);
+            wave2DObject = null; // clear reference
+        }
+        
+        // Remove all child objects (the spheres)
+        foreach (Transform child in transform)
+        {
+            Destroy(child.gameObject);
+        }
     }
     
     private void Update()
@@ -125,6 +191,11 @@ public class OrbitalManager : MonoBehaviour
     
     public void Orbital(int n, int l, int ml, bool isOverlap)
     {
+        GameObject orbitalInfo = Instantiate(orbitalInfoPrefab, orbitalInfoPanel.transform);
+        orbitalInfo.transform.SetSiblingIndex(orbitalInfoPanel.transform.childCount - 2);
+        activeOrbitalInfo.Add(orbitalInfo);
+        UpdateOrbitalInfo(n, l, ml, activeOrbitalInfo.Count - 1);
+        
         // 1. Compute threshold and cutoff radius (physical size of the orbital)
         (float threshold, float rCutoff) = ComputePsiCutoff(n, l, ml);
 
@@ -160,7 +231,9 @@ public class OrbitalManager : MonoBehaviour
             mf.mesh = null;
         }
         
-        for(int i = activeOverlaps.Count - 1; i >= 0; i--) Destroy(activeOverlaps[i]);
+        for(int i = activeOverlaps.Count - 1; i >= 0; i--) if(activeOverlaps[i] != null) Destroy(activeOverlaps[i]);
+        
+        for(int i = activeOrbitalInfo.Count - 1; i >= 0; i--) if(activeOrbitalInfo[i] != null) Destroy(activeOrbitalInfo[i]);
     }
 
     public void TransitionOrbital(int nPrev, int nNew, int lPrev, int lNew, int mlPrev, int mlNew)
@@ -274,11 +347,17 @@ public class OrbitalManager : MonoBehaviour
 
     public void DestroyRadialNode()
     {
-        for (int i = activeRadialNodes.Count - 1; i >= 0; i--) Destroy(activeRadialNodes[i]);
+        for (int i = activeRadialNodes.Count - 1; i >= 0; i--)
+            if (activeRadialNodes[i] != null)
+            {
+                Destroy(activeRadialNodes[i]);
+                activeRadialNodes.RemoveAt(i);
+            }
     }
 
     public void AngularNode(int n, int l, int ml)
     {
+        Debug.Log("Create");
         switch (l)
         {
             case 1:
@@ -374,7 +453,7 @@ public class OrbitalManager : MonoBehaviour
                             mesh.RecalculateBounds();
 
                             mf.mesh = mesh;
-                            mr.material = new Material(Shader.Find("Custom/DoubleSidedTransparentURP"));
+                            mr.material = nodeMat;
 
                             cone.transform.position = Vector3.zero;
                             cone.transform.rotation = Quaternion.identity;
@@ -402,18 +481,30 @@ public class OrbitalManager : MonoBehaviour
                 }
                 break;
         }
+        
 
         foreach (GameObject node in activeAngularNodes)
-            node.GetComponent<MeshRenderer>().material = new Material(Shader.Find("Custom/DoubleSidedTransparentURP"));
+            node.GetComponent<MeshRenderer>().material = nodeMat;
     }
 
     public void DestroyAngularNode()
     {
-        for (int i = activeAngularNodes.Count - 1; i >= 0; i--) Destroy(activeAngularNodes[i]);
+        for (int i = activeAngularNodes.Count - 1; i >= 0; i--)
+            if (activeAngularNodes[i] != null)
+            {
+                Destroy(activeAngularNodes[i]);
+                activeAngularNodes.RemoveAt(i);
+            }
+        Debug.Log("Destroy");
     }
     
     public void CrossSection(int n, int l, int ml, Plane plane)
     {
+        GameObject orbitalInfo = Instantiate(orbitalInfoPrefab, orbitalInfoPanel.transform);
+        orbitalInfo.transform.SetSiblingIndex(orbitalInfoPanel.transform.childCount - 2);
+        activeOrbitalInfo.Add(orbitalInfo);
+        UpdateOrbitalInfo(n, l, ml, activeOrbitalInfo.Count - 1);
+        
         GameObject quad = Instantiate(crossSectionQuad);
         
         switch (plane)
@@ -490,8 +581,10 @@ public class OrbitalManager : MonoBehaviour
 
     public void DestroyCrossSection(bool isALl, int num = 0)
     {
-        if (isALl) foreach (GameObject cs in activeCrossSections) Destroy(cs);
+        if (isALl) foreach (GameObject cs in activeCrossSections) if(cs != null) Destroy(cs);
         else Destroy(activeCrossSections[num]);
+        
+        for(int i = activeOrbitalInfo.Count - 1; i >= 0; i--) if(activeOrbitalInfo[i] != null) Destroy(activeOrbitalInfo[i]);
     }
     
     public void CrossSectionBoundary(int n, int l, int ml, Plane plane)
@@ -554,7 +647,7 @@ public class OrbitalManager : MonoBehaviour
 
             lr.startWidth = lineWidth;
             lr.endWidth = lineWidth;
-            lr.material = new Material(Shader.Find("Unlit/Color"));
+            lr.material = lineMat;
             lr.material.color = lineColor;
             lr.useWorldSpace = true;
             lr.loop = false;
@@ -566,10 +659,22 @@ public class OrbitalManager : MonoBehaviour
 
     public void DestroyCSBoundary(bool isAll, int num = 0)
     {
-        if (isAll) for (int i = 0; i < 3; i++) for(int j = activeCSBoundaries[i].Count - 1; j >= 0; j--)
-            Destroy(activeCSBoundaries[i][j]);
+        if (isAll)
+        {
+            for (int i = 0; i < 3; i++)
+            for (int j = activeCSBoundaries[i].Count - 1; j >= 0; j--)
+                if (activeCSBoundaries[i][j] != null)
+                {
+                    Destroy(activeCSBoundaries[i][j]);
+                    activeCSBoundaries[i].RemoveAt(j);
+                }
+        }
         else for(int i = activeCSBoundaries[num].Count - 1; i >= 0; i--)
-            Destroy(activeCSBoundaries[num][i]);
+            if (activeCSBoundaries[num][i] != null)
+            {
+                Destroy(activeCSBoundaries[num][i]);
+                activeCSBoundaries[num].RemoveAt(i);
+            }
     }
     
     public void CrossSectionRadialNode(int n, int l, int ml, Plane plane, float rMax = 10f, float dr = 0.01f)
@@ -626,10 +731,22 @@ public class OrbitalManager : MonoBehaviour
     
     public void DestroyCSRadialNode(bool isAll, int num = 0)
     {
-        if (isAll) for(int i = 0; i < 3; i++) for (int j = activeCSRadialNodes[i].Count - 1; j >= 0; j--)
-            Destroy(activeCSRadialNodes[i][j]);
+        if (isAll)
+        {
+            for (int i = 0; i < 3; i++)
+            for (int j = activeCSRadialNodes[i].Count - 1; j >= 0; j--)
+                if (activeCSRadialNodes[i][j] != null)
+                {
+                    Destroy(activeCSRadialNodes[i][j]);
+                    activeCSRadialNodes[i].RemoveAt(j);
+                }
+        }
         else for (int i = activeCSRadialNodes[num].Count - 1; i >= 0; i--)
-            Destroy(activeCSRadialNodes[num][i]);
+            if (activeCSRadialNodes[num][i] != null)
+            {
+                Destroy(activeCSRadialNodes[num][i]);
+                activeCSRadialNodes[num].RemoveAt(i);
+            }
     }
     
     public void CrossSectionAngularNode(int n, int l, int ml, Plane plane)
@@ -700,7 +817,7 @@ public class OrbitalManager : MonoBehaviour
             lr.SetPosition(0, -dir * lineLength);
             lr.SetPosition(1, dir * lineLength);
             lr.startWidth = lr.endWidth = lineWidth;
-            lr.material = new Material(Shader.Find("Unlit/Color"));
+            lr.material = lineMat;
             lr.startColor = lr.endColor = lineColor;
             lr.useWorldSpace = true;
             
@@ -710,9 +827,14 @@ public class OrbitalManager : MonoBehaviour
     
     public void DestroyCSAngularNode(bool isAll, int num = 0)
     {
-        if (isAll) for(int i = 0; i < 3; i++) for (int j = activeCSAngularNodes[i].Count - 1; j >= 0; j--)
-            Destroy(activeCSAngularNodes[i][j]);
-        else for (int i = activeCSAngularNodes[num].Count - 1; i >= 0; i--)
+        if (isAll)
+        {
+            for (int i = 0; i < 3; i++)
+            for (int j = activeCSAngularNodes[i].Count - 1; j >= 0; j--)
+                if (activeCSAngularNodes[i] != null)
+                    Destroy(activeCSAngularNodes[i][j]);
+        }
+        else for (int i = activeCSAngularNodes[num].Count - 1; i >= 0; i--) if(activeCSAngularNodes[num][i] != null)
             Destroy(activeCSAngularNodes[num][i]);
     }
 
@@ -957,9 +1079,10 @@ public class OrbitalManager : MonoBehaviour
     
     public void Wave1D()
     {
-        LineRenderer lineRenderer = this.AddComponent<LineRenderer>();
+        GameObject go = new GameObject("Wave");
+        LineRenderer lineRenderer = go.AddComponent<LineRenderer>();
         
-        lineRenderer.material = new Material(Shader.Find("Unlit/Color"));
+        lineRenderer.material = lineMat;
         lineRenderer.material.color = lineColor;
         lineRenderer.widthMultiplier = lineWidth;
         
@@ -973,7 +1096,20 @@ public class OrbitalManager : MonoBehaviour
             float z = Mathf.Sin((x / period) * 2 * Mathf.PI) * amplitude;
             lineRenderer.SetPosition(i, new Vector3(x, 0, z));
         }
+
+        wave1DObject = go;
     }
+    
+    public void DestroyWave1D()
+    {
+        // If it exists, destroy it
+        if (wave1DObject != null)
+        {
+            Destroy(wave1DObject);
+            wave1DObject = null;
+        }
+    }
+    
 
     public void Wave2D()
     {
@@ -1027,13 +1163,24 @@ public class OrbitalManager : MonoBehaviour
         mesh.uv = uvs;
         mesh.RecalculateNormals();
 
-        GameObject wave = new GameObject();
-        wave.AddComponent<MeshFilter>().mesh = mesh;
-        MeshRenderer mr = wave.AddComponent<MeshRenderer>();
-        mr.material = GetComponent<MeshRenderer>().materials[0];
+        // Create object and store reference
+        wave2DObject = new GameObject("Wave2D");
+        wave2DObject.AddComponent<MeshFilter>().mesh = mesh;
+        MeshRenderer mr = wave2DObject.AddComponent<MeshRenderer>();
+        mr.material = phaseNegativeMat;
     }
 
-    private void Wave3D()
+    public void DestroyWave2D()
+    {
+        if (wave2DObject != null)
+        {
+            Destroy(wave2DObject);
+            wave2DObject = null; // clear reference
+        }
+    }
+
+
+    public void Wave3D()
     {
         // Clean up previous spheres
         foreach (Transform child in transform)
@@ -1045,7 +1192,7 @@ public class OrbitalManager : MonoBehaviour
         int numWaves = Mathf.FloorToInt(length / waveStep);
 
         // Get the shared material from this object's renderer
-        Material sharedMaterial = GetComponent<MeshRenderer>().materials[0];
+        Material sharedMaterial = phaseNegativeMat;
 
         for (int i = 0; i < numWaves; i++)
         {
@@ -1063,27 +1210,121 @@ public class OrbitalManager : MonoBehaviour
         }
     }
     
+    public void DestroyWave3D()
+    {
+        // Remove all child objects (the spheres)
+        foreach (Transform child in transform)
+        {
+            Destroy(child.gameObject);
+        }
+    }
+
+
+    private void UpdateOrbitalInfo(int n, int l, int ml, int num)
+    {
+        char lName = new char();
+        string mlName = new string("");
+        
+        switch (l)
+        {
+            case 0:
+                lName = 's';
+                mlName = "";
+                break;
+            case 1:
+                lName = 'p';
+                switch (ml)
+                {
+                    case -1:
+                        mlName = "y";
+                        break;
+                    case 0:
+                        mlName = "z";
+                        break;
+                    case 1:
+                        mlName = "x";
+                        break;
+                }
+                break;
+            case 2:
+                lName = 'd';
+                switch (ml)
+                {
+                    case -2:
+                        mlName = "xy";
+                        break;
+                    case -1:
+                        mlName = "yz";
+                        break;
+                    case 0:
+                        mlName = "z<sup>2</sup>";
+                        break;
+                    case 1:
+                        mlName = "xz";
+                        break;
+                    case 2:
+                        mlName = "x<sup>2</sup>-y<sup>2</sup>";
+                        break;
+                }
+                break;
+        }
+
+        activeOrbitalInfo[num].transform.GetChild(0).GetComponent<TextMeshProUGUI>().text =
+            $"{n}{lName}<sub>{mlName}</sub>";
+        activeOrbitalInfo[num].transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = $"n = {n}";
+        activeOrbitalInfo[num].transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = $"l = {l}";
+        activeOrbitalInfo[num].transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = $"m<sub>l</sub> = {ml}";
+        
+        RefreshLayoutNow();
+        
+    }
+    
 
     private float GetPsi(int n, int l, int ml, float x, float y, float z)
     {
-        float Y = 0f, rnl = 0f;
         float r = Mathf.Sqrt(x * x + y * y + z * z);
+
+        // Avoid division by zero / NaN at the origin.
+        // For hydrogenic orbitals: Y_lm(0) is only finite for l=0; for l>0 it should go to 0.
+        if (r < 1e-5f)
+        {
+            // Angular part: only s (l=0) survives at r=0
+            float Y0 = 0.282095f; // Y_00
+            float rnl0 = n switch
+            {
+                1 when l == 0 => (float)(2f * Math.Exp(-0f)),
+                2 when l == 0 => (float)(0.353553f * (2 - 0f) * Math.Exp(-0f / 2)),
+                3 when l == 0 => (float)(0.0142556f * (27 - 0f + 0f) * Math.Exp(-0f / 3)),
+                _ => 0f
+            };
+            return l == 0 ? Y0 * rnl0 : 0f;
+        }
+
+        // Use safe inverses
+        float invR = 1f / r;
+        float invR2 = invR * invR;
+
+        float Y = 0f, rnl = 0f;
+
+        // --- Angular (real harmonics) ---
         switch (l)
         {
             case 0: Y = 0.282095f; break;
             case 1:
-                if (ml == -1) Y = 0.488603f * y / r;
-                else if (ml == 0) Y = 0.488603f * z / r;
-                else if (ml == 1) Y = 0.488603f * x / r;
+                if (ml == -1) Y = 0.488603f * y * invR;
+                else if (ml == 0) Y = 0.488603f * z * invR;
+                else if (ml == 1) Y = 0.488603f * x * invR;
                 break;
             case 2:
-                if (ml == -2) Y = 0.546274f * x * y / (r * r);
-                else if (ml == -1) Y = 1.092548f * y * z / (r * r);
-                else if (ml == 0) Y = 0.315392f * (2 * z * z - x * x - y * y) / (r * r);
-                else if (ml == 1) Y = 1.092548f * x * z / (r * r);
-                else if (ml == 2) Y = 0.546274f * (x * x - y * y) / (r * r);
+                if (ml == -2) Y = 0.546274f * x * y * invR2;
+                else if (ml == -1) Y = 1.092548f * y * z * invR2;
+                else if (ml == 0)  Y = 0.315392f * (2 * z * z - x * x - y * y) * invR2;
+                else if (ml == 1) Y = 1.092548f * x * z * invR2;
+                else if (ml == 2) Y = 0.546274f * (x * x - y * y) * invR2;
                 break;
         }
+
+        // --- Radial (your approximations) ---
         switch (l)
         {
             case 0:
@@ -1099,8 +1340,10 @@ public class OrbitalManager : MonoBehaviour
                 rnl = (float)(0.00901601f * r * r * Math.Exp(-r / 3));
                 break;
         }
+
         return Y * rnl;
     }
+
 
     (float threshold, float rCutoff) ComputePsiCutoff(int n, int l, int ml,
         float rMax = 20f, float dx = 0.5f, float targetFraction = 0.9f)
@@ -1174,7 +1417,7 @@ public class OrbitalManager : MonoBehaviour
             GameObject go = new GameObject("Orbital Overlap");
             MeshFilter mf = go.AddComponent<MeshFilter>();
             MeshRenderer mr = go.AddComponent<MeshRenderer>();
-            mr.materials = GetComponent<MeshRenderer>().materials;
+            mr.materials = new Material[] { phasePositiveMat, phaseNegativeMat };
             mf.mesh = mesh;
             activeOverlaps.Add(go);
         }
@@ -1436,7 +1679,7 @@ public class OrbitalManager : MonoBehaviour
         lr.SetPositions(points);
         lr.startWidth = lineWidth;
         lr.endWidth = lineWidth;
-        lr.material = new Material(Shader.Find("Unlit/LineShader"));
+        lr.material = lineMat;
         lr.material.color = lineColor;
         lr.useWorldSpace = false;
         lr.loop = true;
@@ -1519,4 +1762,18 @@ public class OrbitalManager : MonoBehaviour
             _ => Vector2.zero
         };
     }
+
+    public bool IsChart
+    {
+        get { return isChart; }
+        set { isChart = value; }
+    }
+
+    public void RefreshLayoutNow()
+    {
+        Canvas.ForceUpdateCanvases();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(layoutRoot);
+        Canvas.ForceUpdateCanvases();
+    }
+
 }

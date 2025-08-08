@@ -419,8 +419,8 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1684623506}
-        m_TargetAssemblyTypeName: CampaignManager, Assembly-CSharp
+      - m_Target: {fileID: 1340740608}
+        m_TargetAssemblyTypeName: ScrollbarScript, Assembly-CSharp
         m_MethodName: ScrollEffect
         m_Mode: 0
         m_Arguments:
@@ -6379,11 +6379,11 @@ RectTransform:
   - {fileID: 1691268622}
   m_Father: {fileID: 1340740606}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_SizeDelta: {x: 764, y: 0}
+  m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &1234074007
 GameObject:
   m_ObjectHideFlags: 0
@@ -6645,6 +6645,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1340740606}
   - component: {fileID: 1340740607}
+  - component: {fileID: 1340740608}
   m_Layer: 5
   m_Name: Scroll Effect
   m_TagString: Untagged
@@ -6686,6 +6687,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Padding: {x: 0, y: 0, z: 0, w: 0}
   m_Softness: {x: 0, y: 0}
+--- !u!114 &1340740608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1340740605}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f8c1a7c2b3e54c9a9ce718a863410eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollRect: {fileID: 1162065610}
+  pushRect: {fileID: 0}
+  push: 0
+  topMargin: 203
+  bottomMargin: 149
+  scroll: {fileID: 19802366}
+  scrollSpeed: 2
+  scrollMin: 0.005
+  onlyOnPanel: 0
 --- !u!1 &1353307699
 GameObject:
   m_ObjectHideFlags: 0
@@ -7217,17 +7239,14 @@ MonoBehaviour:
   levelPanel: {fileID: 1691268621}
   modulePrefab: {fileID: 5911587116988864394, guid: b36185fb6490043649b2c1c38c3ec500, type: 3}
   checkpointPrefab: {fileID: 4899302711042487463, guid: 260fe983f204e4d8db4a52e74c2d8dd6, type: 3}
+  scrollbar: {fileID: 1340740608}
+  scrollRect: {fileID: 1162065610}
   infoPanel: {fileID: 1353307699}
   infoArrow: {fileID: 1818711706}
   infoNum: {fileID: 1234074009}
   infoTitle: {fileID: 2032322788}
   infoDesc: {fileID: 1681211970}
   infoAlign: {fileID: 1865764824}
-  scrollRect: {fileID: 1162065610}
-  scrollMargin: 149
-  scroll: {fileID: 19802366}
-  scrollSpeed: 2
-  scrollMin: 0.005
   currentLevelButton: {fileID: 0}
 --- !u!4 &1684623507
 Transform:
@@ -7254,6 +7273,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1691268622}
   - component: {fileID: 1691268623}
+  - component: {fileID: 1691268625}
+  - component: {fileID: 1691268627}
   m_Layer: 5
   m_Name: Level Panel
   m_TagString: Untagged
@@ -7275,11 +7296,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1162065610}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 9.5, y: 0}
   m_SizeDelta: {x: -19, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &1691268623
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7288,6 +7309,46 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1691268621}
   m_CullTransparentMesh: 1
+--- !u!114 &1691268625
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1691268621}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 1
+  m_Spacing: 8
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 1
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
+--- !u!114 &1691268627
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1691268621}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 0
+  m_VerticalFit: 2
 --- !u!1 &1818711706
 GameObject:
   m_ObjectHideFlags: 0

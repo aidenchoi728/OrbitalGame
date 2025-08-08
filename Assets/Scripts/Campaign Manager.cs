@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
@@ -16,6 +15,8 @@ public class CampaignManager : MonoBehaviour
     [SerializeField] private GameObject levelPanel;
     [SerializeField] private GameObject modulePrefab;
     [SerializeField] private GameObject checkpointPrefab;
+    [SerializeField] private ScrollbarScript scrollbar;
+    [SerializeField] private RectTransform scrollRect;
     
     [Header("Information")]
     [SerializeField] private GameObject infoPanel;
@@ -25,22 +26,10 @@ public class CampaignManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI infoDesc;
     [SerializeField] private TextMeshProUGUI infoAlign;
 
-    [Header("Scroll Effect")] 
-    [SerializeField] private RectTransform scrollRect;
-    [SerializeField] private float scrollMargin;
-    [SerializeField] private GameObject scroll;
-    [SerializeField] private float scrollSpeed = 0.1f; // Tweak this to make scrolling faster/slower
-    [SerializeField] private float scrollMin = 1f;
-    
     private string[] dataLines;
     private List<string[]> data;
     private int currentCampaign;
 
-    private Scrollbar scrollbar;
-    private float prevScreenHeight;
-    private float scrollHeight;
-    private float prevScroll;
-    
     public LevelButton currentLevelButton;
     private bool moduleCheckpoint;
     private int levelMCNum;
@@ -49,7 +38,6 @@ public class CampaignManager : MonoBehaviour
     {
         currentCampaign = 1;
         ReadData();
-        scrollbar = scroll.GetComponent<Scrollbar>();
     }
 
     private void Start()
@@ -58,32 +46,10 @@ public class CampaignManager : MonoBehaviour
         infoArrow.SetActive(false);
         GenerateLevels();
         
-        prevScreenHeight = Screen.height;
-        scrollHeight = 203 + scrollMargin + 104 * (data.Count - 2);
-        if(prevScreenHeight >= scrollHeight) scroll.SetActive(false);
-        else
-        {
-            
-            scroll.SetActive(true);
-            scrollbar.size = prevScreenHeight / scrollHeight;
-        }
     }
 
     private void Update()
     {
-        if (Math.Abs(prevScreenHeight - Screen.height) < 1f)
-        {
-            prevScreenHeight = Screen.height;
-            if(prevScreenHeight >= scrollHeight) scroll.SetActive(false);
-            else
-            {
-                scrollHeight = 203 + scrollMargin + 104 * (data.Count - 2);
-                scroll.SetActive(true);
-                scrollbar.size = prevScreenHeight / scrollHeight;
-            }
-            
-        }
-        
         if (Input.GetMouseButtonDown(0)) // Left-click
         {
             if (!IsPointerOnNonInteractiveUI())
@@ -99,21 +65,6 @@ public class CampaignManager : MonoBehaviour
             }
         }
         
-        float currScroll = Input.GetAxis("Mouse ScrollWheel");
-        
-        if (Math.Abs(currScroll) >= scrollMin)
-        {
-            float newVal = scrollbar.value - currScroll * scrollSpeed;
-            if(newVal > 1) newVal = 1;
-            if(newVal < 0) newVal = 0;
-            
-            scrollbar.value = newVal;
-        }
-    }
-
-    public void ScrollEffect(float val)
-    {
-        scrollRect.anchoredPosition = new Vector2(0, val * (scrollHeight - prevScreenHeight));
     }
 
     public void LevelButton(bool isModule, int moduleCheckpointNum, int dataNum, float y)
@@ -168,7 +119,6 @@ public class CampaignManager : MonoBehaviour
                 module.name.text = data[i][3];
                 module.dataNum = i;
                 int.TryParse(data[i][2], out module.moduleCheckpointNum);
-                go.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -104 * (i - 2));
             }
             else
             {
@@ -178,9 +128,11 @@ public class CampaignManager : MonoBehaviour
                 checkpoint.name.text = data[i][3];
                 checkpoint.dataNum = i;
                 int.TryParse(data[i][2], out checkpoint.moduleCheckpointNum);
-                go.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -104 * (i - 2));
             }
         }
+
+        scrollRect.sizeDelta = new Vector2(scrollRect.sizeDelta.x, 103 * (data.Count - 2) - 8);
+        
     }
     
     private void ReadData()

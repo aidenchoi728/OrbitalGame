@@ -25,6 +25,10 @@ public class SettingsUI : MonoBehaviour
     [SerializeField] private Slider bgmSlider;
     [SerializeField] private Slider sfxSlider;
 
+    private GameObject axes;
+    private GameObject nucleus;
+    private OrbitalManager orbitalManager;
+    
     public void Awake()
     {
         axesToggle.isOn = Settings.Axes;
@@ -32,22 +36,58 @@ public class SettingsUI : MonoBehaviour
         resolutionButton.ChangeSelected(Settings.Resolution);
         bgmSlider.value = Settings.Bgm;
         sfxSlider.value = Settings.Sfx;
+        
+        axes = GameObject.Find("Axes");
+        nucleus = GameObject.Find("Nucleus Billboard");
+        GameObject om = GameObject.Find("Orbital Manager");
+        if(om != null) orbitalManager = om.GetComponent<OrbitalManager>();
+        
+        if(axes != null) axes.SetActive(Settings.Axes);
+        if(nucleus != null) nucleus.SetActive(Settings.Nucleus);
+        if(orbitalManager != null)
+            switch (Settings.Resolution)
+            {
+                case 0:
+                    orbitalManager.gridSize = 36;
+                    break;
+                case 1:
+                    orbitalManager.gridSize = 45;
+                    break;
+                case 2:
+                    orbitalManager.gridSize = 51;
+                    break;
+            }
     }
     
     
     public void Axes(bool val)
     {
         Settings.Axes = val;
+        if(axes != null) axes.SetActive(val);
     }
 
     public void Nucleus(bool val)
     {
         Settings.Nucleus = val;
+        if(nucleus != null) nucleus.SetActive(val);
     }
 
     public void Resolution(int val)
     {
         Settings.Resolution = val;
+        if(orbitalManager != null)
+            switch (val)
+            {
+                case 0:
+                    orbitalManager.gridSize = 36;
+                    break;
+                case 1:
+                    orbitalManager.gridSize = 45;
+                    break;
+                case 2:
+                    orbitalManager.gridSize = 51;
+                    break;
+            }
     }
 
     public void Bgm(float val)

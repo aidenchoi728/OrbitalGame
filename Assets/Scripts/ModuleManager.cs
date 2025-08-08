@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
-using Unity.VisualScripting;
+using UnityEngine.EventSystems;
 using UnityEngine;
 
 public static class ModuleInfo
@@ -16,12 +16,12 @@ public class ModuleManager : MonoBehaviour
     [SerializeField] private OrbitalManager orbitalManager;
     [SerializeField] private TextMeshProUGUI dialogueText;
     [SerializeField] private GameObject chartObject;
-    
-    #if UNITY_EDITOR
-        [Header("Editor Only")]
-        [SerializeField] private int campaignNum = 0;
-        [SerializeField] private int moduleNum = 0;
-    #endif
+    [SerializeField] private GameObject previousButton;
+    [SerializeField] private GameObject nextButton;
+
+    [Header("Settings")] 
+    [SerializeField] private GameObject axes;
+    [SerializeField] private GameObject nucleus;
 
     private int curr = 0;
     private bool isWait = false;
@@ -37,21 +37,14 @@ public class ModuleManager : MonoBehaviour
     
     private void Awake()
     {
-        #if UNITY_EDITOR
-            dataLines = File.ReadAllLines(Path.Combine(Application.streamingAssetsPath, $"Level Data - {campaignNum}-M{moduleNum}.csv"));
-            foreach (string line in dataLines)
-            {
-                data.Add(SplitCsvLine(line));
-            }
-        #else
-            dataLines = File.ReadAllLines(Path.Combine(Application.streamingAssetsPath, $"Level Data - {ModuleInfo.campaignNum}-M{ModuleInfo.moduleNum}.csv"));
-            foreach (string line in dataLines)
-            {
-                data.Add(SplitCsvLine(line));
-            }
-        #endif
+        dataLines = File.ReadAllLines(Path.Combine(Application.streamingAssetsPath, $"Level Data - {ModuleInfo.campaignNum}-M{ModuleInfo.moduleNum}.csv"));
+        foreach (string line in dataLines)
+        {
+            data.Add(SplitCsvLine(line));
+        }
         
         chartObject.SetActive(false);
+        previousButton.SetActive(false);
     }
 
     private void Start()
@@ -71,12 +64,19 @@ public class ModuleManager : MonoBehaviour
                 Flow();
             }
         }
+        
+        if(Input.GetKeyDown(KeyCode.LeftArrow) && previousButton.activeSelf == true) Previous();
+        if(Input.GetKeyDown(KeyCode.RightArrow) && nextButton.activeSelf == true) Next();
     }
 
     private void Flow()
     {
         curr++;
-        if (curr >= data.Count) return;
+        if (curr >= data.Count)
+        {
+            nextButton.SetActive(false);
+            return;
+        }
 
         switch (data[curr][1])
         {
@@ -113,6 +113,10 @@ public class ModuleManager : MonoBehaviour
                     case "CSRN":
                         orbitalManager.DestroyCSRadialNode(true);
                         break;
+                    case "PSI":
+                        orbitalManager.isChart = false;
+                        chartObject.SetActive(false);
+                        break;
                     case "PS":
                         orbitalManager.isChart = false;
                         chartObject.SetActive(false);
@@ -120,6 +124,15 @@ public class ModuleManager : MonoBehaviour
                     case "PR":
                         orbitalManager.isChart = false;
                         chartObject.SetActive(false);
+                        break;
+                    case "W1D":
+                        orbitalManager.DestroyWave1D();
+                        break;
+                    case "W2D":
+                        orbitalManager.DestroyWave2D();
+                        break;
+                    case "W3D":
+                        orbitalManager.DestroyWave3D();
                         break;
                 }
                 break;
@@ -164,6 +177,10 @@ public class ModuleManager : MonoBehaviour
                         Enum.TryParse(data[curr][10], out Plane planeRN);
                         orbitalManager.CrossSectionRadialNode(n, l, ml, planeRN);
                         break;
+                    case "PSI":
+                        chartObject.SetActive(true);
+                        orbitalManager.Psi(n, l, ml);
+                        break;
                     case "PS":
                         chartObject.SetActive(true);
                         orbitalManager.PsiSquared(n, l, ml);
@@ -171,6 +188,15 @@ public class ModuleManager : MonoBehaviour
                     case "PR":
                         chartObject.SetActive(true);
                         orbitalManager.PsiSquaredRSquared(n, l, ml);
+                        break;
+                    case "W1D":
+                        orbitalManager.Wave1D();
+                        break;
+                    case "W2D":
+                        orbitalManager.Wave2D();
+                        break;
+                    case "W3D":
+                        orbitalManager.Wave3D();
                         break;
                 }
                 break;
@@ -221,7 +247,11 @@ public class ModuleManager : MonoBehaviour
     {
         if(vNext >= nextNum) return;
         curr++;
-        if (curr >= data.Count) return;
+        if (curr >= data.Count)
+        {
+            nextButton.SetActive(false);
+            return;
+        }
         
         switch (vData[curr][1])
         {
@@ -258,6 +288,10 @@ public class ModuleManager : MonoBehaviour
                     case "CSRN":
                         orbitalManager.DestroyCSRadialNode(true);
                         break;
+                    case "PSI":
+                        orbitalManager.isChart = false;
+                        chartObject.SetActive(false);
+                        break;
                     case "PS":
                         orbitalManager.isChart = false;
                         chartObject.SetActive(false);
@@ -265,6 +299,15 @@ public class ModuleManager : MonoBehaviour
                     case "PR":
                         orbitalManager.isChart = false;
                         chartObject.SetActive(false);
+                        break;
+                    case "W1D":
+                        orbitalManager.DestroyWave1D();
+                        break;
+                    case "W2D":
+                        orbitalManager.DestroyWave2D();
+                        break;
+                    case "W3D":
+                        orbitalManager.DestroyWave3D();
                         break;
                 }
                 break;
@@ -309,6 +352,10 @@ public class ModuleManager : MonoBehaviour
                         Enum.TryParse(vData[curr][10], out Plane planeRN);
                         orbitalManager.CrossSectionRadialNode(n, l, ml, planeRN);
                         break;
+                    case "PSI":
+                        chartObject.SetActive(true);
+                        orbitalManager.Psi(n, l, ml);
+                        break;
                     case "PS":
                         chartObject.SetActive(true);
                         orbitalManager.PsiSquared(n, l, ml);
@@ -316,6 +363,15 @@ public class ModuleManager : MonoBehaviour
                     case "PR":
                         chartObject.SetActive(true);
                         orbitalManager.PsiSquaredRSquared(n, l, ml);
+                        break;
+                    case "W1D":
+                        orbitalManager.Wave1D();
+                        break;
+                    case "W2D":
+                        orbitalManager.Wave2D();
+                        break;
+                    case "W3D":
+                        orbitalManager.Wave3D();
                         break;
                 }
                 break;
@@ -342,10 +398,15 @@ public class ModuleManager : MonoBehaviour
         else Flow();
         
         nextNum++;
+        previousButton.SetActive(true);
+        EventSystem.current.SetSelectedGameObject(null);
+
     }
 
     public void Previous()
     {
+        nextButton.SetActive(true);
+        
         orbitalManager.DestroyAll();
         chartObject.SetActive(false);
         isWait = false;
@@ -354,7 +415,16 @@ public class ModuleManager : MonoBehaviour
         
         curr = 0;
         vNext = 0;
-        vData = data;
+        
+        vData = new List<string[]>();
+        foreach (var line in data)
+        {
+            var newLine = new string[line.Length];
+            Array.Copy(line, newLine, line.Length);
+            vData.Add(newLine);
+        }
+
+        
         VirtualFlow();
 
         nextNum++;
@@ -363,6 +433,9 @@ public class ModuleManager : MonoBehaviour
         vNext = 0;
         LoadPrev();
         
+        if(nextNum == 1) previousButton.SetActive(false);
+        EventSystem.current.SetSelectedGameObject(null);
+
     }
     
     private static string[] SplitCsvLine(string line)
