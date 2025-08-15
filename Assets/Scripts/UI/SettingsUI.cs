@@ -29,7 +29,7 @@ public class SettingsUI : MonoBehaviour
     private GameObject nucleus;
     private OrbitalManager orbitalManager;
     
-    public void Awake()
+    public void Start()
     {
         axesToggle.isOn = Settings.Axes;
         nucleusToggle.isOn = Settings.Nucleus;

@@ -1,11 +1,24 @@
+using System;
+using TMPro;
 using UnityEngine;
 
 public class ExplorerManager3D : MonoBehaviour, ExplorerManager
 {
     [SerializeField] private OrbitalManager orbitalManager;
     
-    private int n, l, ml;
+    [Header("Texts")]
+    [SerializeField] private TextMeshProUGUI radialNodeText;
+    [SerializeField] private TextMeshProUGUI angularNodeText;
     
+    private int n, l, ml;
+    private bool radialNode;
+    private bool angularNode;
+
+    private void Start()
+    {
+        ChangeOrbital(1, 0, 0);
+    }
+
     public void ChangeOrbital(int n, int l, int ml)
     {
         this.n = n;
@@ -14,5 +27,39 @@ public class ExplorerManager3D : MonoBehaviour, ExplorerManager
         
         orbitalManager.DestroyOrbital();
         orbitalManager.Orbital(n, l, ml, false);
+
+        if (radialNode)
+        {
+            orbitalManager.DestroyRadialNode();
+            orbitalManager.RadialNode(n, l, ml);
+        }
+
+        if (angularNode)
+        {
+            orbitalManager.DestroyAngularNode();
+            orbitalManager.AngularNode(n, l, ml);
+        }
+
+        if (l > 1) angularNodeText.text = $"Angular Nodes [{l}]";
+        else angularNodeText.text = $"Angular Node [{l}]";
+        
+        if(n - l - 1 > 1) radialNodeText.text = $"Radial Nodes [{n - l - 1}]";
+        else radialNodeText.text = $"Radial Node [{n - l - 1}]";
+    }
+
+    public void RadialNode(bool val)
+    {
+        radialNode = val;
+        
+        if (val) orbitalManager.RadialNode(n, l, ml);
+        else orbitalManager.DestroyRadialNode();
+    }
+
+    public void AngularNode(bool val)
+    {
+        angularNode = val;
+        
+        if (val) orbitalManager.AngularNode(n, l, ml);
+        else orbitalManager.DestroyAngularNode();
     }
 }

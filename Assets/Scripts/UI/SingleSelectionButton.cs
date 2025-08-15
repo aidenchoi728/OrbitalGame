@@ -24,7 +24,7 @@ public class SingleSelectionButton : MonoBehaviour
     private void Awake()
     {
         buttonImages = GetComponentsInChildren<Image>();
-        if(!isSprite) buttonTexts = GetComponentsInChildren<TextMeshProUGUI>();
+        buttonTexts = GetComponentsInChildren<TextMeshProUGUI>();
     }
 
     public void ChangeSelected(int num)

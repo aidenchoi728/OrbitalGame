@@ -54,6 +54,8 @@ public class ChangeOrbital : MonoBehaviour
         bottomImage.color = outlineColorChange;
         outlineButton.enabled = false;
         
+        Destroy(GameObject.FindWithTag("Orbital"));
+        
         RefreshLayoutNow(rightPanelRect);
         
         outlineButtonScript.IsOpen = true;
@@ -179,7 +181,6 @@ public class ChangeOrbital : MonoBehaviour
         outlineButton.enabled = true;
         
         gameObject.SetActive(false);
-        RefreshLayoutNow(rightPanelRect);
         
         outlineButtonScript.IsOpen = false;
 
@@ -203,6 +204,8 @@ public class ChangeOrbital : MonoBehaviour
         }
         
         explorerManager.ChangeOrbital(n, l, ml);
+        
+        RefreshLayoutNow(rightPanelRect);
     }
     
     public void RefreshLayoutNow(RectTransform layoutRoot)
