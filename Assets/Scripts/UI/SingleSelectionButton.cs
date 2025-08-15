@@ -37,23 +37,25 @@ public class SingleSelectionButton : MonoBehaviour
                 else buttonImages[i].sprite = buttonSpritesNormal[i];
             }
         }
-        else
-        {
-            for (int i = 0; i < buttonImages.Length; i++)
-            {
-                if (i == num)
-                {
-                    buttonImages[i].color = buttonColorSelected;
-                    buttonTexts[i].color = textColorSelected;
-                }
-                else
-                {
-                    buttonImages[i].color = buttonColorNormal;
-                    buttonTexts[i].color = textColorNormal;
-                }
-            }
-        }
         
         onClick?.Invoke(num);
+    }
+
+    public void UpdateSelected(int num)
+    {
+        if (isSprite) return;
+        for (int i = 0; i < buttonImages.Length; i++)
+        {
+            if (i == num)
+            {
+                buttonImages[i].color = buttonColorSelected;
+                buttonTexts[i].color = textColorSelected;
+            }
+            else
+            {
+                buttonImages[i].color = buttonColorNormal;
+                buttonTexts[i].color = textColorNormal;
+            }
+        }
     }
 }

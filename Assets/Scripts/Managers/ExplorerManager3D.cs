@@ -1,16 +1,18 @@
 using UnityEngine;
 
-public class ExplorerManager3D : MonoBehaviour
+public class ExplorerManager3D : MonoBehaviour, ExplorerManager
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField] private OrbitalManager orbitalManager;
+    
+    private int n, l, ml;
+    
+    public void ChangeOrbital(int n, int l, int ml)
     {
+        this.n = n;
+        this.l = l;
+        this.ml = ml;
         
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        orbitalManager.DestroyOrbital();
+        orbitalManager.Orbital(n, l, ml, false);
     }
 }
