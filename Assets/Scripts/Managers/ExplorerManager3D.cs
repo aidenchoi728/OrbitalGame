@@ -14,6 +14,11 @@ public class ExplorerManager3D : MonoBehaviour, ExplorerManager
     private bool radialNode;
     private bool angularNode;
 
+    private void Awake()
+    {
+        orbitalManager.IsBillBoard = true;
+    }
+
     private void Start()
     {
         ChangeOrbital(1, 0, 0);
@@ -45,6 +50,10 @@ public class ExplorerManager3D : MonoBehaviour, ExplorerManager
         
         if(n - l - 1 > 1) radialNodeText.text = $"Radial Nodes [{n - l - 1}]";
         else radialNodeText.text = $"Radial Node [{n - l - 1}]";
+        
+        orbitalManager.Psi(n, l, ml, false, true);
+        orbitalManager.PsiSquared(n, l, ml, false, true);
+        orbitalManager.PsiSquaredRSquared(n, l, ml, false, true);
     }
 
     public void RadialNode(bool val)

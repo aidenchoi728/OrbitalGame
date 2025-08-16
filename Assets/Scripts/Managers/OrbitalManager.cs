@@ -53,9 +53,11 @@ public class OrbitalManager : MonoBehaviour
     [SerializeField] private int sampleCount = 100;
     [SerializeField] private float chartMargin = 1.3f;
     [SerializeField] private float cutYMargin = 0.8f;
+    [SerializeField] private float cutXMargin = 0.9f;
     [SerializeField] private bool isBillBoard = false;
     [SerializeField] private Plane rVisualizerPlane;
-    [SerializeField] private RectTransform chartRectTransform;
+    [SerializeField] private RectTransform[] chartRectTransforms;
+    [SerializeField] private RectTransform[] tooltips;
     public bool isChart = false;
     
     [Header("Wave")]
@@ -900,7 +902,7 @@ public class OrbitalManager : MonoBehaviour
     {
         LineChart chart;
 
-        if (isSeparate) chart = psiChart;
+        if (isSeparate) chart = psiSqChart;
         else chart = mainChart;
         
         // Remove all existing series & data
@@ -942,6 +944,9 @@ public class OrbitalManager : MonoBehaviour
         yAxis.axisName.name = "Ψ²";
 
         yAxis.max = psiMax * cutYMargin;
+        float cutXMax = GetPsi(n, l, ml, maxRadius * (1 - cutXMargin), 0f, 0f);
+        cutXMax *= cutXMax;
+        if(cutXMax > yAxis.max) yAxis.max = cutXMax;
 
         serie.lineStyle.color = chartLineColor;
         serie.clip = true;
@@ -954,7 +959,7 @@ public class OrbitalManager : MonoBehaviour
     {
         LineChart chart;
 
-        if (isSeparate) chart = psiChart;
+        if (isSeparate) chart = psiSqRSqChart;
         else chart = mainChart;
         
         // Remove all existing series & data
@@ -1039,43 +1044,52 @@ public class OrbitalManager : MonoBehaviour
         if (lastMousePos != (Vector2)Input.mousePosition)
         {
             Vector2 localMousePos;
-            
+
             if (wasInsideLastFrame)
             {
                 Destroy(prevRVisualizer);
                 lastMousePos = (Vector2)Input.mousePosition;
             }
-            
-            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(chartRectTransform, 
-                    Input.mousePosition, mainCamera, out localMousePos) 
-                && chartRectTransform.rect.Contains(localMousePos))
+
+            foreach (RectTransform chartRectTransform in chartRectTransforms)
             {
-                wasInsideLastFrame = true;
-                lastMousePos = Input.mousePosition;
-                // Convert local X position to 0-1 normalized coordinate in chart
-                float chartWidth = chartRectTransform.rect.width;
-                float normalizedX = Mathf.InverseLerp(-chartWidth / 2, chartWidth / 2, localMousePos.x);
-
-                // Clamp to chart bounds
-                normalizedX = Mathf.Clamp01(normalizedX);
-
-                // Calculate radius 'r' based on normalized mouse X
-                float r = normalizedX * maxRadius;
-
-                // Optional: only draw if mouse is inside chart (can add hover check too)
-                if(!isBillBoard) prevRVisualizer = DrawCircle(r, rVisualizerPlane, $"R Visualizer");
-                else
+                if (RectTransformUtility.ScreenPointToLocalPointInRectangle(chartRectTransform, 
+                        Input.mousePosition, mainCamera, out localMousePos) 
+                    && chartRectTransform.rect.Contains(localMousePos))
                 {
-                    prevRVisualizer = new GameObject("R Visualizer");
-                    GameObject ring = DrawCircle(r, Plane.XY, "R Visualizer Circle");
-                    ring.transform.parent = prevRVisualizer.transform;  // <-- make it a child!
+                    wasInsideLastFrame = true;
+                    lastMousePos = Input.mousePosition;
 
-                    prevRVisualizer.AddComponent<SimpleBillboard>();
+                    float chartWidth = chartRectTransform.rect.width;
+                    float normalizedX = Mathf.InverseLerp(-chartWidth / 2, chartWidth / 2, localMousePos.x);
+                    normalizedX = Mathf.Clamp01(normalizedX);
+                    float r = normalizedX * maxRadius;
+
+                    if(!isBillBoard) prevRVisualizer = DrawCircle(r, rVisualizerPlane, $"R Visualizer");
+                    else
+                    {
+                        prevRVisualizer = new GameObject("R Visualizer");
+                        GameObject ring = DrawCircle(r, Plane.XY, "R Visualizer Circle");
+                        ring.transform.parent = prevRVisualizer.transform;
+                        prevRVisualizer.AddComponent<SimpleBillboard>();
+                    }
+
+                    // === Move Tooltip to mouse X ===
+                    foreach (RectTransform tooltip in tooltips)
+                    {
+                        tooltip.gameObject.SetActive(true);
+                        tooltip.anchoredPosition = new Vector2(localMousePos.x + 134, 0f);
+                    }
+
+                    return;
                 }
             }
-            else wasInsideLastFrame = false;
+            
+            wasInsideLastFrame = false;
+            foreach (RectTransform tooltip in tooltips) tooltip.gameObject.SetActive(false);
         }
     }
+
     
     public void Wave1D()
     {
@@ -1763,17 +1777,14 @@ public class OrbitalManager : MonoBehaviour
         };
     }
 
-    public bool IsChart
-    {
-        get { return isChart; }
-        set { isChart = value; }
-    }
-
     public void RefreshLayoutNow()
     {
         Canvas.ForceUpdateCanvases();
         LayoutRebuilder.ForceRebuildLayoutImmediate(layoutRoot);
         Canvas.ForceUpdateCanvases();
     }
+    
+    public bool IsChart { get => isChart; set => isChart = value; }
 
+    public bool IsBillBoard { get => isBillBoard; set => isBillBoard = value; }
 }

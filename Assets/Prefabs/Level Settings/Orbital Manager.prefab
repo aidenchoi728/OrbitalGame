@@ -47,6 +47,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   transitionSlider: {fileID: 0}
+  phasePositiveMat: {fileID: 0}
+  phaseNegativeMat: {fileID: 0}
+  nodeMat: {fileID: 0}
+  lineMat: {fileID: 0}
   gridSize: 36
   boundaryMargin: 1.1
   nodeMaterial: {fileID: 2100000, guid: 06db393eb25b5482f8b2f0c4ea7aa5f6, type: 2}
@@ -62,15 +66,28 @@ MonoBehaviour:
   gamma: 0.8
   crossSectionMargin: 2
   crossSectionQuad: {fileID: 243162821620411627, guid: 25d76433e90074ab5992267829687568, type: 3}
-  chart: {fileID: 0}
+  mainChart: {fileID: 0}
+  psiChart: {fileID: 0}
+  psiSqChart: {fileID: 0}
+  psiSqRSqChart: {fileID: 0}
   chartLineColor: {r: 0.22745098, g: 0.7372549, b: 0.95686275, a: 1}
   sampleCount: 100
   chartMargin: 1.3
-  cutYMargin: 0.015
+  cutYMargin: 0.05
   isBillBoard: 0
   rVisualizerPlane: 2
   chartRectTransform: {fileID: 0}
   isChart: 0
+  length: 120
+  amplitude: 10
+  period: 20
+  waveResolution: 100
+  waveSize: 20
+  waveLength: 1
+  waveLength3D: 1
+  orbitalInfoPanel: {fileID: 0}
+  orbitalInfoPrefab: {fileID: 0}
+  layoutRoot: {fileID: 0}
 --- !u!33 &2353876588643848080
 MeshFilter:
   m_ObjectHideFlags: 0

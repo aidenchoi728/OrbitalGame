@@ -11,7 +11,7 @@ public class OpenChangeUIButton : MonoBehaviour, IPointerEnterHandler, IPointerE
     [SerializeField] private Color normalTextColor;
     [SerializeField] private Color highlightTextColor;
 
-    private bool isOpen;
+    private bool isOpen = false;
 
     public bool IsOpen { get => isOpen; set => isOpen = value; }
 
@@ -25,7 +25,6 @@ public class OpenChangeUIButton : MonoBehaviour, IPointerEnterHandler, IPointerE
             TextMeshProUGUI[] infoText = orbitalInfo.GetComponentsInChildren<TextMeshProUGUI>();
             orbitalInfo.GetComponent<Image>().color = highlightColor;
             foreach (TextMeshProUGUI text in infoText) text.color = highlightTextColor;
-            
         }
     }
 

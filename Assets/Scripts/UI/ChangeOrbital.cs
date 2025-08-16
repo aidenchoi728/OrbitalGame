@@ -50,15 +50,18 @@ public class ChangeOrbital : MonoBehaviour
     
     public void OpenChangeOrbital()
     {
+        GameObject orbitalInfo = GameObject.FindWithTag("Orbital");
+        orbitalInfo.SetActive(false);
+        Destroy(orbitalInfo);
+        gameObject.SetActive(true);
+        
+        outlineButtonScript.IsOpen = true;
+        
         topImage.color = outlineColorChange;
         bottomImage.color = outlineColorChange;
         outlineButton.enabled = false;
         
-        Destroy(GameObject.FindWithTag("Orbital"));
-        
         RefreshLayoutNow(rightPanelRect);
-        
-        outlineButtonScript.IsOpen = true;
     }
 
     public void SetNum(int n, int l, int ml)

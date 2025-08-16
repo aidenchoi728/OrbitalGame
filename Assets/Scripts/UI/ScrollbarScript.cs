@@ -16,7 +16,6 @@ public class ScrollbarScript : MonoBehaviour
     [SerializeField] private GameObject scroll;
     [SerializeField] private float scrollSpeed = 2f; // Tweak this to make scrolling faster/slower
     [SerializeField] private float scrollMin = 0.005f;
-    [SerializeField] private bool onlyOnPanel = true;
 
     private float prevRectHeight = 0f;
     
@@ -29,6 +28,7 @@ public class ScrollbarScript : MonoBehaviour
     private void Awake()
     {
         scrollbar = scroll.GetComponent<Scrollbar>();
+        RefreshLayoutNow();
     }
 
     // Update is called once per frame
@@ -54,8 +54,6 @@ public class ScrollbarScript : MonoBehaviour
             
             scrollHeight = topMargin + bottomMargin + prevRectHeight;
             
-            Debug.Log(scrollHeight);
-            
             if (prevScreenHeight >= scrollHeight)
             {
                 scroll.SetActive(false);
@@ -72,7 +70,7 @@ public class ScrollbarScript : MonoBehaviour
         
         float currScroll = Input.GetAxis("Mouse ScrollWheel");
         
-        if (Math.Abs(currScroll) >= scrollMin && scroll.activeInHierarchy && (!onlyOnPanel || IsPointerOnNonInteractiveUI()))
+        if (Math.Abs(currScroll) >= scrollMin && scroll.activeInHierarchy && IsPointerOnScrollRegion())
         {
             float newVal = scrollbar.value - currScroll * scrollSpeed;
             if(newVal > 1) newVal = 1;
@@ -87,7 +85,7 @@ public class ScrollbarScript : MonoBehaviour
         scrollRect.anchoredPosition = new Vector2(-push, val * (scrollHeight - prevScreenHeight));
     }
     
-    bool IsPointerOnNonInteractiveUI()
+    bool IsPointerOnScrollRegion()
     {
         PointerEventData pointerData = new PointerEventData(EventSystem.current)
         {
@@ -97,21 +95,15 @@ public class ScrollbarScript : MonoBehaviour
         List<RaycastResult> results = new List<RaycastResult>();
         EventSystem.current.RaycastAll(pointerData, results);
 
-        foreach (RaycastResult result in results)
-        {
-            var go = result.gameObject;
-
-            if (go.GetComponent<Button>() != null) return true;
-            if (go.GetComponent<Toggle>() != null) return true;
-            if (go.GetComponent<Slider>() != null) return true;
-            if (go.GetComponent<Scrollbar>() != null) return true;
-            if (go.GetComponent<InputField>() != null) return true;
-            if (go.GetComponent<Dropdown>() != null) return true;
-            if (go.GetComponent<ScrollRect>() != null) return true;
-            if (go.GetComponent<TMP_InputField>() != null) return true; // if you're using TextMeshPro
-            if (go.GetComponent<Image>() != null) return true;
-        }
+        foreach (RaycastResult result in results) if (result.gameObject == scrollRect.gameObject) return true;
 
         return false;
+    }
+    
+    public void RefreshLayoutNow()
+    {
+        Canvas.ForceUpdateCanvases();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect);
+        Canvas.ForceUpdateCanvases();
     }
 }
