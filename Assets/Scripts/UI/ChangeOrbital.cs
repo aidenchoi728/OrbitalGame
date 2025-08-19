@@ -39,7 +39,7 @@ public class ChangeOrbital : MonoBehaviour
 
     private void Awake()
     {
-        explorerManager = GameObject.FindWithTag("ExplorerManager").GetComponent<ExplorerManager>();
+        explorerManager = GameObject.FindWithTag("GameManager").GetComponent<ExplorerManager>();
         
         topImage.color = outlineColorNormal;
         bottomImage.color = outlineColorNormal;

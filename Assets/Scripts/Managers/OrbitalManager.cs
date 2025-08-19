@@ -14,66 +14,67 @@ public class OrbitalManager : MonoBehaviour
 {
     [SerializeField] private Slider transitionSlider;
     
-    [Header("Materials (assign in Inspector)")]
-    [SerializeField] private Material phasePositiveMat;
-    [SerializeField] private Material phaseNegativeMat;
-    [SerializeField] private Material nodeMat;       // cones / nodePrefab
-    [SerializeField] private Material lineMat;       // LineRenderer
-    
-    [Header("Orbital Mesh")] 
-    public int gridSize = 45;
-    [SerializeField] private float boundaryMargin = 1.1f;
-    
-    
-    [Header("Angular Node")]
-    [SerializeField] private Material nodeMaterial;
-    [SerializeField] private GameObject nodePrefab;
-    
-    [Header("Line")]
-    [SerializeField] private float lineWidth = 0.1f;
-    [SerializeField] private Color lineColor = Color.white;
-    [SerializeField] private int resolution = 100;
-    [SerializeField] private int circleSegments = 128;
-    
-    [Header("Cross Section")]
-    [SerializeField] private Color psiPositiveColor = Color.cyan;
-    [SerializeField] private Color psiNegativeColor = Color.magenta;
-    [SerializeField] private int crossSectionResolution = 256;
-    [SerializeField, Range(0f, 5f)] private float intensity = 1.0f;
-    [SerializeField] private float gamma = 0.5f; // Lower = brighter
-    [SerializeField] private float crossSectionMargin = 1.3f;
-    [SerializeField] private GameObject crossSectionQuad; // assign your Plane prefab in Inspector
-    
     [Header("Chart")]
     [SerializeField] private LineChart mainChart; // Assign this in the Inspector
     [SerializeField] private LineChart psiChart;
     [SerializeField] private LineChart psiSqChart;
     [SerializeField] private LineChart psiSqRSqChart;
-    [SerializeField] private Color chartLineColor = Color.white;
-    [SerializeField] private int sampleCount = 100;
-    [SerializeField] private float chartMargin = 1.3f;
-    [SerializeField] private float cutYMargin = 0.8f;
-    [SerializeField] private float cutXMargin = 0.9f;
-    [SerializeField] private bool isBillBoard = false;
-    [SerializeField] private Plane rVisualizerPlane;
     [SerializeField] private RectTransform[] chartRectTransforms;
     [SerializeField] private RectTransform[] tooltips;
-    public bool isChart = false;
-    
-    [Header("Wave")]
-    [SerializeField] private float length = 120f;     // Total length of the wave
-    [SerializeField] private float amplitude = 10f;   // Height of the wave
-    [SerializeField] private float period = 20f;      // Distance over which the wave repeats
-    [SerializeField] private int waveResolution = 100;   // Number of points in the line
-    [SerializeField] private float waveSize = 20f;
-    [SerializeField] private float waveLength = 1f;
-    [SerializeField] private float waveLength3D = 1f;
 
     [Header("Orbital Info")] 
     [SerializeField] private GameObject orbitalInfoPanel;
-    [SerializeField] private GameObject orbitalInfoPrefab;
     [SerializeField] RectTransform layoutRoot; // The object with VerticalLayoutGroup (or its parent)
+    //------------------//
     
+    //Materials
+    private Material phasePositiveMat;
+    private Material phaseNegativeMat;
+    private Material lineMat;       // LineRenderer
+    
+    //Orbital Mesh 
+    private int gridSize;
+    private float boundaryMargin;
+    
+    //Angular Node
+    private GameObject nodePrefab;
+    private Material nodeMat;
+    
+    //Line
+    private float lineWidth;
+    private Color lineColor;
+    private int resolution;
+    private int circleSegments;
+    
+    //Cross-Section
+    private Color psiPositiveColor;
+    private Color psiNegativeColor;
+    private int crossSectionResolution;
+    private float intensity;
+    private float gamma; // Lower = brighter
+    private float crossSectionMargin;
+    private GameObject crossSectionQuadPrefab;
+    
+    //Chart
+    private Color chartLineColor;
+    private int sampleCount;
+    private float chartMargin;
+    private float cutYMargin;
+    private float cutXMargin;
+    
+    //Wave
+    private float length;     // Total length of the wave
+    private float amplitude;   // Height of the wave
+    private float period;      // Distance over which the wave repeats
+    private int waveResolution;   // Number of points in the line
+    private float waveSize;
+    private float waveLength;
+    private float waveLength3D;
+
+    //Orbital Info 
+    private  GameObject orbitalInfoPrefab;
+    
+    //------------------//
     private Vector2 lastMousePos;
     private bool wasInsideLastFrame;
     private Camera mainCamera;
@@ -96,10 +97,67 @@ public class OrbitalManager : MonoBehaviour
     private float thresholdNew;
     private float boxExtent;
     private float maxRadius = 0f;
+    private bool isBillBoard = false;
+    public bool isChart = false;
+    private Plane rVisualizerPlane;
 
     private void Awake()
     {
         mainCamera = Camera.main;
+        
+        Init();
+    }
+
+    private void Init()
+    {
+        OrbitalSettings.Init();
+        
+        //Materials
+        phasePositiveMat = OrbitalSettings.PhasePositiveMat;
+        phaseNegativeMat = OrbitalSettings.PhaseNegativeMat;
+        
+        //Orbital Mesh 
+        gridSize = OrbitalSettings.GridSize;
+        boundaryMargin = OrbitalSettings.BoundaryMargin;
+        
+        //Angular Node
+        nodePrefab = OrbitalSettings.NodePrefab;
+        nodeMat = OrbitalSettings.NodeMat;
+        
+        //Line
+        lineMat = OrbitalSettings.LineMat;
+        lineWidth = OrbitalSettings.LineWidth;
+        lineColor = OrbitalSettings.LineColor;
+        resolution = OrbitalSettings.Resolution;
+        circleSegments = OrbitalSettings.CircleSegments;
+        
+        //Cross-Section
+        psiPositiveColor = OrbitalSettings.PsiPositiveColor;
+        psiNegativeColor = OrbitalSettings.PsiNegativeColor;
+        crossSectionResolution = OrbitalSettings.CrossSectionResolution;
+        intensity = OrbitalSettings.Intensity;
+        gamma = OrbitalSettings.Gamma;
+        crossSectionMargin = OrbitalSettings.CrossSectionMargin;
+        crossSectionQuadPrefab = OrbitalSettings.CrossSectionQuadPrefab;
+        
+        //Chart
+        chartLineColor = OrbitalSettings.ChartLineColor;
+        sampleCount = OrbitalSettings.SampleCount;
+        chartMargin = OrbitalSettings.ChartMargin;
+        cutYMargin = OrbitalSettings.CutYMargin;
+        cutXMargin = OrbitalSettings.CutXMargin;
+        
+        //Wave
+        length = OrbitalSettings.Length;
+        amplitude = OrbitalSettings.Amplitude;
+        period = OrbitalSettings.Period;
+        waveResolution = OrbitalSettings.WaveResolution;
+        waveSize = OrbitalSettings.WaveSize;
+        waveLength = OrbitalSettings.WaveLength;
+        waveLength3D = OrbitalSettings.WaveLength3D;
+
+        //Orbital Info 
+        orbitalInfoPrefab = OrbitalSettings.OrbitalInfoPrefab;
     }
 
     public void DestroyAll()
@@ -189,6 +247,14 @@ public class OrbitalManager : MonoBehaviour
     private void Update()
     {
         if(isChart) ChartRVisualizer();
+    }
+
+    public void CreateOrbitalInfo(int n, int l, int ml)
+    {
+        GameObject orbitalInfo = Instantiate(orbitalInfoPrefab, orbitalInfoPanel.transform);
+        orbitalInfo.transform.SetSiblingIndex(orbitalInfoPanel.transform.childCount - 2);
+        activeOrbitalInfo.Add(orbitalInfo);
+        UpdateOrbitalInfo(n, l, ml, activeOrbitalInfo.Count - 1);
     }
     
     public void Orbital(int n, int l, int ml, bool isOverlap)
@@ -359,7 +425,6 @@ public class OrbitalManager : MonoBehaviour
 
     public void AngularNode(int n, int l, int ml)
     {
-        Debug.Log("Create");
         switch (l)
         {
             case 1:
@@ -497,17 +562,18 @@ public class OrbitalManager : MonoBehaviour
                 Destroy(activeAngularNodes[i]);
                 activeAngularNodes.RemoveAt(i);
             }
-        Debug.Log("Destroy");
     }
     
     public void CrossSection(int n, int l, int ml, Plane plane)
     {
+        rVisualizerPlane = plane;
+        
         GameObject orbitalInfo = Instantiate(orbitalInfoPrefab, orbitalInfoPanel.transform);
         orbitalInfo.transform.SetSiblingIndex(orbitalInfoPanel.transform.childCount - 2);
         activeOrbitalInfo.Add(orbitalInfo);
         UpdateOrbitalInfo(n, l, ml, activeOrbitalInfo.Count - 1);
         
-        GameObject quad = Instantiate(crossSectionQuad);
+        GameObject quad = Instantiate(crossSectionQuadPrefab);
         
         switch (plane)
         {
@@ -1048,7 +1114,7 @@ public class OrbitalManager : MonoBehaviour
             if (wasInsideLastFrame)
             {
                 Destroy(prevRVisualizer);
-                lastMousePos = (Vector2)Input.mousePosition;
+                lastMousePos = Input.mousePosition;
             }
 
             foreach (RectTransform chartRectTransform in chartRectTransforms)
@@ -1078,6 +1144,8 @@ public class OrbitalManager : MonoBehaviour
                     foreach (RectTransform tooltip in tooltips)
                     {
                         tooltip.gameObject.SetActive(true);
+                        if (!tooltip.gameObject.activeInHierarchy) return;
+                        if (!tooltip.gameObject.activeInHierarchy) return;
                         tooltip.anchoredPosition = new Vector2(localMousePos.x + 134, 0f);
                     }
 
@@ -1787,4 +1855,6 @@ public class OrbitalManager : MonoBehaviour
     public bool IsChart { get => isChart; set => isChart = value; }
 
     public bool IsBillBoard { get => isBillBoard; set => isBillBoard = value; }
+    
+    public int GridSize { get => gridSize; set => gridSize = value; }
 }

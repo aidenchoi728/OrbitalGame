@@ -11,7 +11,7 @@ public static class ModuleInfo
     public static int moduleNum = 0;
 }
 
-public class ModuleManager : MonoBehaviour
+public class ModuleManager : MonoBehaviour, GameManager
 {
     [SerializeField] private OrbitalManager orbitalManager;
     [SerializeField] private TextMeshProUGUI dialogueText;
@@ -473,5 +473,10 @@ public class ModuleManager : MonoBehaviour
                 Debug.Log(vData[i][1]);
                 vData[i][1] = ".";
             }
+    }
+    
+    public void RefreshResolution() //TODO
+    {
+        
     }
 }

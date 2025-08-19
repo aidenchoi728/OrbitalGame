@@ -1,21 +1,7 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-
-public static class Settings
-{
-    private static bool axes = true;
-    private static bool nucleus = true;
-    private static int resolution = 1; // 0: low, 1: mid, 2: high
-    private static float bgm = 0.5f;
-    private static float sfx = 0.5f;
-    
-    public static bool Axes { get => axes; set => axes = value; }
-    public static bool Nucleus { get => nucleus; set => nucleus = value; }
-    public static int Resolution { get => resolution; set => resolution = value; }
-    public static float Bgm { get => bgm; set => bgm = value; }
-    public static float Sfx { get => sfx; set => sfx = value; }
-}
 
 public class SettingsUI : MonoBehaviour
 {
@@ -28,38 +14,42 @@ public class SettingsUI : MonoBehaviour
     private GameObject axes;
     private GameObject nucleus;
     private OrbitalManager orbitalManager;
+    private GameManager gameManager;
     
-    public void Start()
+    public void Awake()
     {
-        axesToggle.isOn = Settings.Axes;
-        nucleusToggle.isOn = Settings.Nucleus;
-        resolutionButton.ChangeSelected(Settings.Resolution);
-        bgmSlider.value = Settings.Bgm;
-        sfxSlider.value = Settings.Sfx;
-        
         axes = GameObject.Find("Axes");
         nucleus = GameObject.Find("Nucleus Billboard");
         GameObject om = GameObject.Find("Orbital Manager");
         if(om != null) orbitalManager = om.GetComponent<OrbitalManager>();
+        GameObject gm = GameObject.FindWithTag("GameManager");
+        if(gm != null) gameManager = gm.GetComponent<GameManager>();
+    }
+
+    private void Start()
+    {
+        axesToggle.isOn = Settings.Axes;
+        nucleusToggle.isOn = Settings.Nucleus;
+        switch (OrbitalSettings.GridSize)
+        {
+            case 36: 
+                resolutionButton.ChangeSelected(0);
+                break;
+            case 45: 
+                resolutionButton.ChangeSelected(1);
+                break;
+            case 51:
+                resolutionButton.ChangeSelected(2);
+                break;
+        }
+        bgmSlider.value = Settings.Bgm;
+        sfxSlider.value = Settings.Sfx;
         
         if(axes != null) axes.SetActive(Settings.Axes);
         if(nucleus != null) nucleus.SetActive(Settings.Nucleus);
-        if(orbitalManager != null)
-            switch (Settings.Resolution)
-            {
-                case 0:
-                    orbitalManager.gridSize = 36;
-                    break;
-                case 1:
-                    orbitalManager.gridSize = 45;
-                    break;
-                case 2:
-                    orbitalManager.gridSize = 51;
-                    break;
-            }
     }
-    
-    
+
+
     public void Axes(bool val)
     {
         Settings.Axes = val;
@@ -74,20 +64,20 @@ public class SettingsUI : MonoBehaviour
 
     public void Resolution(int val)
     {
-        Settings.Resolution = val;
-        if(orbitalManager != null)
-            switch (val)
-            {
-                case 0:
-                    orbitalManager.gridSize = 36;
-                    break;
-                case 1:
-                    orbitalManager.gridSize = 45;
-                    break;
-                case 2:
-                    orbitalManager.gridSize = 51;
-                    break;
-            }
+        switch (val)
+        {
+            case 0: 
+                OrbitalSettings.GridSize = 36;
+                break;
+            case 1: 
+                OrbitalSettings.GridSize = 45;
+                break;
+            case 2:
+                OrbitalSettings.GridSize = 51;
+                break;
+        }
+        orbitalManager.GridSize = OrbitalSettings.GridSize;
+        gameManager.RefreshResolution();
     }
 
     public void Bgm(float val)

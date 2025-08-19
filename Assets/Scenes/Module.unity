@@ -416,6 +416,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5efa7b476625449589d9b4b7b255d898, type: 3}
+--- !u!1 &518805021 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 422738012962616914, guid: 5efa7b476625449589d9b4b7b255d898, type: 3}
+  m_PrefabInstance: {fileID: 518805020}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &573110789
 GameObject:
   m_ObjectHideFlags: 0
@@ -1401,11 +1406,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6619564189933797960, guid: 7a513b4e03e2648d9b1fcbae65fb6105, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 23
+      value: 22.725618
       objectReference: {fileID: 0}
     - target: {fileID: 6619564189933797960, guid: 7a513b4e03e2648d9b1fcbae65fb6105, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 20
+      value: 19.973991
       objectReference: {fileID: 0}
     - target: {fileID: 6619564189933797960, guid: 7a513b4e03e2648d9b1fcbae65fb6105, type: 3}
       propertyPath: m_LocalScale.x
@@ -1589,11 +1594,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8401891333507328399, guid: 7a513b4e03e2648d9b1fcbae65fb6105, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 23
+      value: 22.725618
       objectReference: {fileID: 0}
     - target: {fileID: 8401891333507328399, guid: 7a513b4e03e2648d9b1fcbae65fb6105, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 20
+      value: 19.973991
       objectReference: {fileID: 0}
     - target: {fileID: 8401891333507328399, guid: 7a513b4e03e2648d9b1fcbae65fb6105, type: 3}
       propertyPath: m_LocalScale.x
@@ -2109,6 +2114,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7282e87104c91496a90e48bddb00b237, type: 3}
+--- !u!1 &798892553 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8664729563230944439, guid: 7282e87104c91496a90e48bddb00b237, type: 3}
+  m_PrefabInstance: {fileID: 798892552}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &915128501
 GameObject:
   m_ObjectHideFlags: 0
@@ -3715,7 +3725,7 @@ GameObject:
   - component: {fileID: 1804440018}
   m_Layer: 0
   m_Name: Module Manager
-  m_TagString: Untagged
+  m_TagString: GameManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3749,11 +3759,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   orbitalManager: {fileID: 58184305}
   dialogueText: {fileID: 1574321106}
-  chartObject: {fileID: 0}
+  chartObject: {fileID: 700562316}
   previousButton: {fileID: 1883762942}
   nextButton: {fileID: 733500664}
-  axes: {fileID: 0}
-  nucleus: {fileID: 0}
+  axes: {fileID: 798892553}
+  nucleus: {fileID: 518805021}
 --- !u!1 &1844947565
 GameObject:
   m_ObjectHideFlags: 0
