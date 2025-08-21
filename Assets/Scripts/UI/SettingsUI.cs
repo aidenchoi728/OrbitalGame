@@ -76,8 +76,9 @@ public class SettingsUI : MonoBehaviour
                 OrbitalSettings.GridSize = 51;
                 break;
         }
-        orbitalManager.GridSize = OrbitalSettings.GridSize;
-        gameManager.RefreshResolution();
+        
+        if(orbitalManager != null) orbitalManager.GridSize = OrbitalSettings.GridSize;
+        if(gameManager != null) gameManager.RefreshResolution();
     }
 
     public void Bgm(float val)

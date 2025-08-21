@@ -35,6 +35,8 @@ public class ModuleManager : MonoBehaviour, GameManager
     private int nextNum = 1;
     private int vNext = 0;
     
+    private List<int[]> currOrbitals = new List<int[]>();
+    
     private void Awake()
     {
         dataLines = File.ReadAllLines(Path.Combine(Application.streamingAssetsPath, $"Level Data - {ModuleInfo.campaignNum}-M{ModuleInfo.moduleNum}.csv"));
@@ -88,9 +90,11 @@ public class ModuleManager : MonoBehaviour, GameManager
                 {
                     case "ORB":
                         orbitalManager.DestroyOrbital();
+                        currOrbitals = new List<int[]>();
                         break;
                     case "OV":
                         orbitalManager.DestroyOrbital();
+                        currOrbitals = new List<int[]>();
                         break;
                     case "TRAN":
                         orbitalManager.DestroyOrbital();
@@ -114,15 +118,15 @@ public class ModuleManager : MonoBehaviour, GameManager
                         orbitalManager.DestroyCSRadialNode(true);
                         break;
                     case "PSI":
-                        orbitalManager.isChart = false;
+                        orbitalManager.IsChart = false;
                         chartObject.SetActive(false);
                         break;
                     case "PS":
-                        orbitalManager.isChart = false;
+                        orbitalManager.IsChart = false;
                         chartObject.SetActive(false);
                         break;
                     case "PR":
-                        orbitalManager.isChart = false;
+                        orbitalManager.IsChart = false;
                         chartObject.SetActive(false);
                         break;
                     case "W1D":
@@ -145,9 +149,13 @@ public class ModuleManager : MonoBehaviour, GameManager
                 {
                     case "ORB":
                         orbitalManager.Orbital(n, l, ml, false);
+                        int[] orbital = { n, l, ml };
+                        currOrbitals.Add(orbital);
                         break;
                     case "OV":
                         orbitalManager.Orbital(n, l, ml, true);
+                        int[] overlap = { n, l, ml };
+                        currOrbitals.Add(overlap);
                         break;
                     case "TRAN":
                         int.TryParse(data[curr][7], out int n2);
@@ -263,9 +271,11 @@ public class ModuleManager : MonoBehaviour, GameManager
                 {
                     case "ORB":
                         orbitalManager.DestroyOrbital();
+                        currOrbitals = new List<int[]>();
                         break;
                     case "OV":
                         orbitalManager.DestroyOrbital();
+                        currOrbitals = new List<int[]>();
                         break;
                     case "TRAN":
                         orbitalManager.DestroyOrbital();
@@ -289,15 +299,15 @@ public class ModuleManager : MonoBehaviour, GameManager
                         orbitalManager.DestroyCSRadialNode(true);
                         break;
                     case "PSI":
-                        orbitalManager.isChart = false;
+                        orbitalManager.IsChart = false;
                         chartObject.SetActive(false);
                         break;
                     case "PS":
-                        orbitalManager.isChart = false;
+                        orbitalManager.IsChart = false;
                         chartObject.SetActive(false);
                         break;
                     case "PR":
-                        orbitalManager.isChart = false;
+                        orbitalManager.IsChart = false;
                         chartObject.SetActive(false);
                         break;
                     case "W1D":
@@ -320,9 +330,13 @@ public class ModuleManager : MonoBehaviour, GameManager
                 {
                     case "ORB":
                         orbitalManager.Orbital(n, l, ml, false);
+                        int[] orbital = { n, l, ml };
+                        currOrbitals.Add(orbital);
                         break;
                     case "OV":
                         orbitalManager.Orbital(n, l, ml, true);
+                        int[] overlap = { n, l, ml };
+                        currOrbitals.Add(overlap);
                         break;
                     case "TRAN":
                         int.TryParse(vData[curr][7], out int n2);
@@ -477,6 +491,15 @@ public class ModuleManager : MonoBehaviour, GameManager
     
     public void RefreshResolution() //TODO
     {
-        
+        if (currOrbitals.Count == 1)
+        {
+            orbitalManager.DestroyOrbital();
+            orbitalManager.Orbital(currOrbitals[0][0], currOrbitals[0][1], currOrbitals[0][2], false);
+        }
+        else if (currOrbitals.Count > 1)
+        {
+            orbitalManager.DestroyOrbital();
+            foreach(int[] currOrbital in currOrbitals) orbitalManager.Orbital(currOrbital[0], currOrbital[1], currOrbital[2], true);
+        }
     }
 }

@@ -98,7 +98,7 @@ public class OrbitalManager : MonoBehaviour
     private float boxExtent;
     private float maxRadius = 0f;
     private bool isBillBoard = false;
-    public bool isChart = false;
+    private bool isChart = false;
     private Plane rVisualizerPlane;
 
     private void Awake()
@@ -921,7 +921,8 @@ public class OrbitalManager : MonoBehaviour
             chart.RemoveData();
             chart.AddSerie<Line>("R vs r");
         }
-        
+
+        chart.GetChartComponent<Title>().text = "R (Ψ Real) vs Radius";
 
         var xAxis = chart.EnsureChartComponent<XAxis>();
         xAxis.type = Axis.AxisType.Category;
@@ -979,6 +980,8 @@ public class OrbitalManager : MonoBehaviour
             chart.RemoveData();
             chart.AddSerie<Line>("Ψ² vs r");
         }
+        
+        chart.GetChartComponent<Title>().text = "Ψ² vs Radius";
 
         var xAxis = chart.EnsureChartComponent<XAxis>();
         xAxis.type = Axis.AxisType.Category;
@@ -1036,6 +1039,8 @@ public class OrbitalManager : MonoBehaviour
             chart.RemoveData();
             chart.AddSerie<Line>("r²Ψ² vs r");
         }
+        
+        chart.GetChartComponent<Title>().text = "Ψ²r² vs Radius";
         
         var xAxis = chart.EnsureChartComponent<XAxis>();
         xAxis.type = Axis.AxisType.Category;

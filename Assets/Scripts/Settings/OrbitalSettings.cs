@@ -36,7 +36,7 @@ public static class OrbitalSettings
     private static int sampleCount = 100;
     private static float chartMargin = 1.3f;
     private static float cutYMargin = 0.008f;
-    private static float cutXMargin = 0.9f;
+    private static float cutXMargin = 0.95f;
     
     //Wave
     private static float length = 120f;     // Total length of the wave
