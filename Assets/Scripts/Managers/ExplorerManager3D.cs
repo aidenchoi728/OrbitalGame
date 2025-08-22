@@ -32,7 +32,7 @@ public class ExplorerManager3D : MonoBehaviour, ExplorerManager
     {
         if (this.n == n && this.l == l && this.ml == ml)
         {
-            orbitalManager.CreateOrbitalInfo(n, l, ml);
+            orbitalManager.UpdateOrbitalInfo(n, l, ml);
             return;
         }
         

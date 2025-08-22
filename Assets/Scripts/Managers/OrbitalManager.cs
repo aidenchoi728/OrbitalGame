@@ -24,8 +24,9 @@ public class OrbitalManager : MonoBehaviour
 
     [Header("Orbital Info")] 
     [SerializeField] private GameObject orbitalInfoPanel;
-    [SerializeField] private RectTransform orbitalInfoPanelRect;
-    [SerializeField] private RectTransform rightRect; // The object with VerticalLayoutGroup (or its parent)
+    [SerializeField] private GameObject dividerPrefab;
+    [SerializeField] private RectTransform[] refreshRects;
+    [SerializeField] private GameObject overlapInfoPrefab;
     //------------------//
     
     //Materials
@@ -104,6 +105,13 @@ public class OrbitalManager : MonoBehaviour
     private bool isChart = false;
     private bool isExplorer2D = false;
     private Plane rVisualizerPlane;
+    
+    private List<float> psiMin = new List<float>();
+    private List<float> psiMax = new List<float>();
+    private List<float> psiCutX = new List<float>();
+    private List<float> psi2Max = new List<float>();
+    private List<float> psi2CutX = new List<float>();
+    private List<float> psi2r2Max = new List<float>();
 
     private void Awake()
     {
@@ -163,7 +171,8 @@ public class OrbitalManager : MonoBehaviour
         waveLength3D = OrbitalSettings.WaveLength3D;
 
         //Orbital Info 
-        orbitalInfoPrefab = OrbitalSettings.OrbitalInfoPrefab;
+        if (overlapInfoPrefab != null) orbitalInfoPrefab = overlapInfoPrefab;
+        else orbitalInfoPrefab = OrbitalSettings.OrbitalInfoPrefab;
     }
 
     public void DestroyAll()
@@ -254,21 +263,10 @@ public class OrbitalManager : MonoBehaviour
     {
         if(isChart) ChartRVisualizer();
     }
-
-    public void CreateOrbitalInfo(int n, int l, int ml)
-    {
-        GameObject orbitalInfo = Instantiate(orbitalInfoPrefab, orbitalInfoPanel.transform);
-        orbitalInfo.transform.SetSiblingIndex(orbitalInfoPanel.transform.childCount - 2);
-        activeOrbitalInfo.Add(orbitalInfo);
-        UpdateOrbitalInfo(n, l, ml, activeOrbitalInfo.Count - 1);
-    }
     
-    public void Orbital(int n, int l, int ml, bool isOverlap)
+    public void Orbital(int n, int l, int ml, bool isOverlap, int index = -1)
     {
-        GameObject orbitalInfo = Instantiate(orbitalInfoPrefab, orbitalInfoPanel.transform);
-        orbitalInfo.transform.SetSiblingIndex(orbitalInfoPanel.transform.childCount - 2);
-        activeOrbitalInfo.Add(orbitalInfo);
-        UpdateOrbitalInfo(n, l, ml, activeOrbitalInfo.Count - 1);
+        UpdateOrbitalInfo(n, l, ml, isOverlap, index);
         
         // 1. Compute threshold and cutoff radius (physical size of the orbital)
         (float threshold, float rCutoff) = ComputePsiCutoff(n, l, ml);
@@ -284,13 +282,19 @@ public class OrbitalManager : MonoBehaviour
         for (int z = 0; z < gridSize; z++) 
             orbitalMap[x, y, z] = GetPsi(n, l, ml, x * step - rCutoff, y * step - rCutoff, z * step - rCutoff);
 
-        CreateAndApplyMesh(orbitalMap, threshold, isOverlap);
+        CreateAndApplyMesh(orbitalMap, threshold, isOverlap, index);
 
         // 4. Make the mesh's physical size independent of gridSize:
         //    The mesh vertices span 0..gridSize-1, so we normalize the scale.
         // This ensures physical size is always 2*rCutoff*scale
-        
-        if(isOverlap) activeOverlaps[activeOverlaps.Count - 1].transform.localScale = Vector3.one * (2f * rCutoff / gridSize);
+
+        if (isOverlap)
+        {
+            if(index == -1) 
+                activeOverlaps[activeOverlaps.Count - 1].transform.localScale = Vector3.one * (2f * rCutoff / gridSize);
+            else
+                activeOverlaps[index].transform.localScale = Vector3.one * (2f * rCutoff / gridSize);
+        }
         else transform.localScale = Vector3.one * (2f * rCutoff / gridSize);
     }
     
@@ -308,6 +312,21 @@ public class OrbitalManager : MonoBehaviour
         for(int i = activeOverlaps.Count - 1; i >= 0; i--) if(activeOverlaps[i] != null) Destroy(activeOverlaps[i]);
         
         for(int i = activeOrbitalInfo.Count - 1; i >= 0; i--) if(activeOrbitalInfo[i] != null) Destroy(activeOrbitalInfo[i]);
+    }
+
+    public void DestroyOverlap(int index)
+    {
+        if (activeOverlaps.Count > index && activeOverlaps[index] != null)
+        {
+            Destroy(activeOverlaps[index]);
+            activeOverlaps.RemoveAt(index);
+        }
+
+        if (activeOrbitalInfo.Count > index && activeOrbitalInfo[index] != null)
+        {
+            Destroy(activeOrbitalInfo[index]);
+            activeOrbitalInfo.RemoveAt(index);
+        }
     }
 
     public void TransitionOrbital(int nPrev, int nNew, int lPrev, int lNew, int mlPrev, int mlNew)
@@ -574,13 +593,7 @@ public class OrbitalManager : MonoBehaviour
     {
         rVisualizerPlane = plane;
         
-        if (isExplorer2D && !explorerManager2D.ChangeOpen)
-        {
-            GameObject orbitalInfo = Instantiate(orbitalInfoPrefab, orbitalInfoPanel.transform);
-            orbitalInfo.transform.SetSiblingIndex(orbitalInfoPanel.transform.childCount - 2);
-            activeOrbitalInfo.Add(orbitalInfo);
-            UpdateOrbitalInfo(n, l, ml, activeOrbitalInfo.Count - 1);
-        }
+        if (isExplorer2D && !explorerManager2D.ChangeOpen) UpdateOrbitalInfo(n, l, ml);
         
         GameObject quad = Instantiate(crossSectionQuadPrefab);
         
@@ -892,20 +905,50 @@ public class OrbitalManager : MonoBehaviour
             if (activeCSAngularNodes[i] != null) Destroy(activeCSAngularNodes[i][j]);
     }
 
-    public void Psi(int n, int l, int ml, bool isOverlap = false, bool isSeparate = false, int num = 0)
+    public void Psi(int n, int l, int ml, bool isOverlap = false, bool isSeparate = false, int num = -1)
     {
         LineChart chart;
+        int index = 0;
 
         if (isSeparate) chart = psiChart;
         else chart = mainChart;
         
         // Remove all existing series & data
         if (isOverlap)
-            chart.AddSerie<Line>($"R vs r ({num})");
+        {
+            if (num == -1 || chart.series.Count == index)
+            {
+                index = chart.series.Count;
+                chart.AddSerie<Line>("R vs r");
+                
+                psiMax.Add(0f);
+                psiMin.Add(0f);
+                psiCutX.Add(0f);
+            }
+            else
+            {
+                Serie s = chart.series[num];
+                s.ClearData();
+                index = num;
+
+                psiMax[index] = 0f;
+                psiMin[index] = 0f;
+                psiCutX[index] = 0f;
+            }
+
+            if (l != 0) return;
+        }
         else
         {
             chart.RemoveData();
             chart.AddSerie<Line>("R vs r");
+
+            psiMax = new List<float>();
+            psiMax.Add(0f);
+            psiMin = new List<float>();
+            psiMin.Add(0f);
+            psiCutX = new List<float>();
+            psiCutX.Add(0f);
         }
 
         chart.GetChartComponent<Title>().text = "R (Ψ Real) vs Radius";
@@ -917,11 +960,10 @@ public class OrbitalManager : MonoBehaviour
         var yAxis = chart.EnsureChartComponent<YAxis>();
         yAxis.type = Axis.AxisType.Value;
 
-        float psiMax = 0f;
-        float psiMin = 0f;
-
         (_, maxRadius) = ComputePsiCutoff(n, l, ml);
         maxRadius *= chartMargin;
+
+        float max = 0f, min = 0f;
 
         // Populate data
         for (int i = 0; i <= sampleCount; i++)
@@ -929,20 +971,35 @@ public class OrbitalManager : MonoBehaviour
             float r = i * (maxRadius / sampleCount);
             chart.AddXAxisData(r.ToString("F2"));
             float psi = GetPsi(n, l, ml, r, 0f, 0f);
-            if(psi > psiMax) psiMax = psi;
-            if(psi < psiMin) psiMin = psi;
-            chart.AddData(0, psi);
+            if(psi > max) max = psi;
+            if(psi < min) min = psi;
+            chart.AddData(index, psi);
         }
 
         // Configure the series styling
-        var serie = chart.series[0] as Serie;
+        Serie serie = chart.series[index];
         serie.symbol.show = false;
 
         xAxis.axisName.name = "Radius";
         yAxis.axisName.name = "R";
 
-        yAxis.max = psiMax;
-        yAxis.min = psiMin;
+        psiMax[index] = max;
+        psiMin[index] = min;
+
+        if (isOverlap)
+        {
+            foreach(float p in psiMax) if (p > max) max = p;
+            foreach(float p in psiMin) if (p < min) min = p;
+        }
+
+        float cutXMax = GetPsi(n, l, ml, maxRadius * (1 - cutXMargin), 0f, 0f);
+        psiCutX[index] = cutXMax;
+        if(isOverlap) foreach (float p in psiCutX) if (p > cutXMax) cutXMax = p;
+        cutXMax /= cutYMargin;
+        if(cutXMax > max) max = cutXMax;
+        
+        yAxis.max = max * cutYMargin;
+        yAxis.min = min;
 
         serie.lineStyle.color = chartLineColor;
         serie.clip = true;
@@ -951,20 +1008,46 @@ public class OrbitalManager : MonoBehaviour
         isChart = true;
     }
     
-    public void PsiSquared(int n, int l, int ml, bool isOverlap = false, bool isSeparate = false, int num = 0)
+    public void PsiSquared(int n, int l, int ml, bool isOverlap = false, bool isSeparate = false, int num = -1)
     {
         LineChart chart;
+        int index = 0;
 
         if (isSeparate) chart = psiSqChart;
         else chart = mainChart;
         
         // Remove all existing series & data
         if (isOverlap)
-            chart.AddSerie<Line>($"Ψ² vs r ({num})");
+        {
+            if (num == -1 || chart.series.Count == index)
+            {
+                index = chart.series.Count;
+                chart.AddSerie<Line>($"Ψ² vs r");
+                
+                psi2Max.Add(0f);
+                psi2CutX.Add(0f);
+            }
+            else
+            {
+                Serie s = chart.series[num];
+                s.ClearData();
+                index = num;
+                
+                psi2Max[index] = 0f;
+                psi2CutX[index] = 0f;
+            }
+
+            if (l != 0) return;
+        }
         else
         {
             chart.RemoveData();
             chart.AddSerie<Line>("Ψ² vs r");
+            
+            psi2Max = new List<float>();
+            psi2Max.Add(0f);
+            psi2CutX = new List<float>();
+            psi2CutX.Add(0f);
         }
         
         chart.GetChartComponent<Title>().text = "Ψ² vs Radius";
@@ -976,7 +1059,7 @@ public class OrbitalManager : MonoBehaviour
         var yAxis = chart.EnsureChartComponent<YAxis>();
         yAxis.type = Axis.AxisType.Value;
 
-        float psiMax = 0f;
+        float max = 0f;
 
         (_, maxRadius) = ComputePsiCutoff(n, l, ml);
         maxRadius *= chartMargin;
@@ -986,22 +1069,29 @@ public class OrbitalManager : MonoBehaviour
         {
             float r = i * (maxRadius / sampleCount);
             chart.AddXAxisData(r.ToString("F2"));
-            float psi = GetPsi(n, l, ml, r, 0f, 0f);
-            if(Math.Abs(psi) > psiMax) psiMax = Math.Abs(psi);
-            chart.AddData(0, psi * psi);
+            float psi2 = GetPsi(n, l, ml, r, 0f, 0f);
+            psi2 *= psi2;
+            if(psi2 > max) max = psi2;
+            chart.AddData(index, psi2);
         }
 
         // Configure the series styling
-        var serie = chart.series[0] as Serie;
+        Serie serie = chart.series[index];
         serie.symbol.show = false;
 
         xAxis.axisName.name = "Radius";
         yAxis.axisName.name = "Ψ²";
 
-        yAxis.max = psiMax * cutYMargin;
+        psi2Max[index] = max;
+        if(isOverlap) foreach(float p in psi2Max) if (p > max) max = p;
+        
         float cutXMax = GetPsi(n, l, ml, maxRadius * (1 - cutXMargin), 0f, 0f);
         cutXMax *= cutXMax;
-        if(cutXMax > yAxis.max) yAxis.max = cutXMax;
+        psi2CutX[index] = cutXMax;
+        if(isOverlap) foreach(float p in psi2CutX) if (p > cutXMax) cutXMax = p;
+        cutXMax /= cutYMargin;
+        if(cutXMax > max) max = cutXMax;
+        yAxis.max = max * cutYMargin;
 
         serie.lineStyle.color = chartLineColor;
         serie.clip = true;
@@ -1010,20 +1100,40 @@ public class OrbitalManager : MonoBehaviour
         isChart = true;
     }
     
-    public void PsiSquaredRSquared(int n, int l, int ml, bool  isOverlap = false, bool isSeparate = false, int num = 0)
+    public void PsiSquaredRSquared(int n, int l, int ml, bool  isOverlap = false, bool isSeparate = false, int num = -1)
     {
         LineChart chart;
+        int index = 0;
 
         if (isSeparate) chart = psiSqRSqChart;
         else chart = mainChart;
         
         // Remove all existing series & data
         if (isOverlap)
-            chart.AddSerie<Line>($"r²Ψ² vs r ({num})");
+        {
+            if (num == -1 || chart.series.Count == index)
+            {
+                index = chart.series.Count;
+                chart.AddSerie<Line>($"r²Ψ² vs r");
+                
+                psi2r2Max.Add(0f);
+            }
+            else
+            {
+                Serie s = chart.series[num];
+                s.ClearData();
+                index = num;
+                
+                psi2r2Max[index] = 0f;
+            }
+        }
         else
         {
             chart.RemoveData();
             chart.AddSerie<Line>("r²Ψ² vs r");
+            
+            psi2r2Max = new List<float>();
+            psi2r2Max.Add(0f);
         }
         
         chart.GetChartComponent<Title>().text = "Ψ²r² vs Radius";
@@ -1035,7 +1145,7 @@ public class OrbitalManager : MonoBehaviour
         var yAxis = chart.EnsureChartComponent<YAxis>();
         yAxis.type = Axis.AxisType.Value;
 
-        float maxValue = 0f;
+        float max = 0f;
 
         int thetaSteps = 36; // 10° steps
         int phiSteps = 72;   // 5° steps
@@ -1075,11 +1185,11 @@ public class OrbitalManager : MonoBehaviour
             if (float.IsNaN(result) || float.IsInfinity(result))
                 result = 0f; // or skip this point entirely
             chart.AddXAxisData(r.ToString("F2"));
-            chart.AddData(0, result);
-            if (result > maxValue) maxValue = result;
+            chart.AddData(index, result);
+            if (result > max) max = result;
         }
 
-        var serie = chart.series[0] as Serie;
+        Serie serie = chart.series[index];
         serie.symbol.show = false;
         serie.lineStyle.color = chartLineColor;
         serie.clip = true;
@@ -1087,13 +1197,29 @@ public class OrbitalManager : MonoBehaviour
         xAxis.axisName.name = "Radius";
         yAxis.axisName.name = "Ψ²r²";
 
-        yAxis.max = maxValue;
+        psi2r2Max[index] = max;
+        if(isOverlap) foreach(float p in psi2r2Max) if (p > max) max = p;
+        yAxis.max = max;
 
         serie.lineStyle.color = chartLineColor;
         serie.clip = true;
         
         chart.RefreshChart();
         isChart = true;
+    }
+
+    public void DestroyGraphs(int index)
+    {
+        psiChart.RemoveSerie(index);
+        psiSqChart.RemoveSerie(index);
+        psiSqRSqChart.RemoveSerie(index);
+        
+        psiMin.RemoveAt(index);
+        psiMax.RemoveAt(index);
+        psiCutX.RemoveAt(index);
+        psi2Max.RemoveAt(index);
+        psi2CutX.RemoveAt(index);
+        psi2r2Max.RemoveAt(index);
     }
     
     private void ChartRVisualizer()
@@ -1293,8 +1419,29 @@ public class OrbitalManager : MonoBehaviour
     }
 
 
-    private void UpdateOrbitalInfo(int n, int l, int ml, int num)
+    public void UpdateOrbitalInfo(int n, int l, int ml, bool isOverlap = false, int index = -1)
     {
+        GameObject orbitalInfo;
+
+        if (isOverlap && index != -1 && activeOrbitalInfo.Count > index) orbitalInfo = activeOrbitalInfo[index * 2 + 1];
+        else if (isOverlap)
+        {
+            if (index == -1)
+            {
+                GameObject divider = Instantiate(dividerPrefab, orbitalInfoPanel.transform);
+                divider.transform.SetSiblingIndex(orbitalInfoPanel.transform.childCount - 2);
+            }
+            orbitalInfo = Instantiate(orbitalInfoPrefab, orbitalInfoPanel.transform);
+            orbitalInfo.transform.SetSiblingIndex(orbitalInfoPanel.transform.childCount - 2);
+            activeOrbitalInfo.Add(orbitalInfo);
+        }
+        else
+        {
+            orbitalInfo = Instantiate(orbitalInfoPrefab, orbitalInfoPanel.transform);
+            orbitalInfo.transform.SetSiblingIndex(orbitalInfoPanel.transform.childCount - 2);
+            activeOrbitalInfo.Add(orbitalInfo);
+        }
+        
         char lName = new char();
         string mlName = new string("");
         
@@ -1342,14 +1489,12 @@ public class OrbitalManager : MonoBehaviour
                 break;
         }
 
-        activeOrbitalInfo[num].transform.GetChild(0).GetComponent<TextMeshProUGUI>().text =
-            $"{n}{lName}<sub>{mlName}</sub>";
-        activeOrbitalInfo[num].transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = $"n = {n}";
-        activeOrbitalInfo[num].transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = $"l = {l}";
-        activeOrbitalInfo[num].transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = $"m<sub>l</sub> = {ml}";
+        orbitalInfo.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = $"{n}{lName}<sub>{mlName}</sub>";
+        orbitalInfo.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = $"n = {n}";
+        orbitalInfo.transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = $"l = {l}";
+        orbitalInfo.transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = $"m<sub>l</sub> = {ml}";
         
-        RefreshLayoutNow(orbitalInfoPanelRect);
-        RefreshLayoutNow(rightRect);
+        foreach (RectTransform refreshRect in refreshRects) RefreshLayoutNow(refreshRect);
     }
     
 
@@ -1459,7 +1604,7 @@ public class OrbitalManager : MonoBehaviour
         return (sorted.Last().psiSq, sorted.Last().r);
     }
     
-    private void CreateAndApplyMesh(float[,,] targetData, float targetThreshold, bool isOverlap)
+    private void CreateAndApplyMesh(float[,,] targetData, float targetThreshold, bool isOverlap, int index = -1)
     {
         Mesh mesh0 = CreateMeshForPhase(0, targetData, targetThreshold);
         Mesh mesh1 = CreateMeshForPhase(1, targetData, targetThreshold);
@@ -1492,7 +1637,8 @@ public class OrbitalManager : MonoBehaviour
             MeshRenderer mr = go.AddComponent<MeshRenderer>();
             mr.materials = new Material[] { phasePositiveMat, phaseNegativeMat };
             mf.mesh = mesh;
-            activeOverlaps.Add(go);
+            if(index == -1) activeOverlaps.Add(go);
+            else activeOverlaps.Insert(index, go);
         }
         else GetComponent<MeshFilter>().mesh = mesh;
     }
@@ -1848,4 +1994,13 @@ public class OrbitalManager : MonoBehaviour
     public bool IsBillBoard { get => isBillBoard; set => isBillBoard = value; }
     
     public int GridSize { get => gridSize; set => gridSize = value; }
+
+    public void ActiveOrbitalInfo(int index, GameObject go)
+    {
+        if (index == activeOrbitalInfo.Count)
+        {
+            activeOrbitalInfo.Add(go);
+        }
+        else activeOrbitalInfo[index] = go;
+    }
 }

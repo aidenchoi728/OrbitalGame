@@ -35,7 +35,7 @@ public static class OrbitalSettings
     private static Color chartLineColor = new (0.227451f, 0.7372549f, 0.9568627f, 1f);
     private static int sampleCount = 100;
     private static float chartMargin = 1.3f;
-    private static float cutYMargin = 0.008f;
+    private static float cutYMargin = 0.05f;
     private static float cutXMargin = 0.95f;
     
     //Wave
