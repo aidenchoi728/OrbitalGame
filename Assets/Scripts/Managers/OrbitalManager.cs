@@ -24,7 +24,8 @@ public class OrbitalManager : MonoBehaviour
 
     [Header("Orbital Info")] 
     [SerializeField] private GameObject orbitalInfoPanel;
-    [SerializeField] RectTransform layoutRoot; // The object with VerticalLayoutGroup (or its parent)
+    [SerializeField] private RectTransform orbitalInfoPanelRect;
+    [SerializeField] private RectTransform rightRect; // The object with VerticalLayoutGroup (or its parent)
     //------------------//
     
     //Materials
@@ -91,6 +92,8 @@ public class OrbitalManager : MonoBehaviour
     private GameObject wave2DObject; // store the reference
     private GameObject prevRVisualizer = null;
     
+    private ExplorerManager2D explorerManager2D;
+    
     private float[,,] orbitalPrev;
     private float[,,] orbitalNew;
     private float thresholdPrev;
@@ -99,11 +102,14 @@ public class OrbitalManager : MonoBehaviour
     private float maxRadius = 0f;
     private bool isBillBoard = false;
     private bool isChart = false;
+    private bool isExplorer2D = false;
     private Plane rVisualizerPlane;
 
     private void Awake()
     {
         mainCamera = Camera.main;
+        explorerManager2D = FindFirstObjectByType<ExplorerManager2D>();
+        if(explorerManager2D != null) isExplorer2D = true;
         
         Init();
     }
@@ -568,10 +574,13 @@ public class OrbitalManager : MonoBehaviour
     {
         rVisualizerPlane = plane;
         
-        GameObject orbitalInfo = Instantiate(orbitalInfoPrefab, orbitalInfoPanel.transform);
-        orbitalInfo.transform.SetSiblingIndex(orbitalInfoPanel.transform.childCount - 2);
-        activeOrbitalInfo.Add(orbitalInfo);
-        UpdateOrbitalInfo(n, l, ml, activeOrbitalInfo.Count - 1);
+        if (isExplorer2D && !explorerManager2D.ChangeOpen)
+        {
+            GameObject orbitalInfo = Instantiate(orbitalInfoPrefab, orbitalInfoPanel.transform);
+            orbitalInfo.transform.SetSiblingIndex(orbitalInfoPanel.transform.childCount - 2);
+            activeOrbitalInfo.Add(orbitalInfo);
+            UpdateOrbitalInfo(n, l, ml, activeOrbitalInfo.Count - 1);
+        }
         
         GameObject quad = Instantiate(crossSectionQuadPrefab);
         
@@ -647,12 +656,16 @@ public class OrbitalManager : MonoBehaviour
         quad.transform.localScale = new Vector3(2 * rCutoff, 2 * rCutoff, 1);
     }
 
-    public void DestroyCrossSection(bool isALl, int num = 0)
+    public void DestroyCrossSection()
     {
-        if (isALl) foreach (GameObject cs in activeCrossSections) if(cs != null) Destroy(cs);
-        else Destroy(activeCrossSections[num]);
+        foreach (GameObject cs in activeCrossSections) if(cs != null) Destroy(cs);
+        foreach (GameObject activeOrbital in activeOrbitalInfo)
+            if (activeOrbital != null)
+            {
+                activeOrbital.SetActive(false);
+                Destroy(activeOrbital);
+            }
         
-        for(int i = activeOrbitalInfo.Count - 1; i >= 0; i--) if(activeOrbitalInfo[i] != null) Destroy(activeOrbitalInfo[i]);
     }
     
     public void CrossSectionBoundary(int n, int l, int ml, Plane plane)
@@ -725,23 +738,13 @@ public class OrbitalManager : MonoBehaviour
         }
     }
 
-    public void DestroyCSBoundary(bool isAll, int num = 0)
+    public void DestroyCSBoundary()
     {
-        if (isAll)
-        {
-            for (int i = 0; i < 3; i++)
-            for (int j = activeCSBoundaries[i].Count - 1; j >= 0; j--)
-                if (activeCSBoundaries[i][j] != null)
-                {
-                    Destroy(activeCSBoundaries[i][j]);
-                    activeCSBoundaries[i].RemoveAt(j);
-                }
-        }
-        else for(int i = activeCSBoundaries[num].Count - 1; i >= 0; i--)
-            if (activeCSBoundaries[num][i] != null)
+        for (int i = 0; i < 3; i++) for (int j = activeCSBoundaries[i].Count - 1; j >= 0; j--) 
+            if (activeCSBoundaries[i][j] != null)
             {
-                Destroy(activeCSBoundaries[num][i]);
-                activeCSBoundaries[num].RemoveAt(i);
+                Destroy(activeCSBoundaries[i][j]);
+                activeCSBoundaries[i].RemoveAt(j);
             }
     }
     
@@ -797,23 +800,13 @@ public class OrbitalManager : MonoBehaviour
         }
     }
     
-    public void DestroyCSRadialNode(bool isAll, int num = 0)
+    public void DestroyCSRadialNode()
     {
-        if (isAll)
-        {
-            for (int i = 0; i < 3; i++)
-            for (int j = activeCSRadialNodes[i].Count - 1; j >= 0; j--)
-                if (activeCSRadialNodes[i][j] != null)
-                {
-                    Destroy(activeCSRadialNodes[i][j]);
-                    activeCSRadialNodes[i].RemoveAt(j);
-                }
-        }
-        else for (int i = activeCSRadialNodes[num].Count - 1; i >= 0; i--)
-            if (activeCSRadialNodes[num][i] != null)
+        for (int i = 0; i < 3; i++) for (int j = activeCSRadialNodes[i].Count - 1; j >= 0; j--)
+            if (activeCSRadialNodes[i][j] != null)
             {
-                Destroy(activeCSRadialNodes[num][i]);
-                activeCSRadialNodes[num].RemoveAt(i);
+                Destroy(activeCSRadialNodes[i][j]);
+                activeCSRadialNodes[i].RemoveAt(j);
             }
     }
     
@@ -893,17 +886,10 @@ public class OrbitalManager : MonoBehaviour
         }
     }
     
-    public void DestroyCSAngularNode(bool isAll, int num = 0)
+    public void DestroyCSAngularNode()
     {
-        if (isAll)
-        {
-            for (int i = 0; i < 3; i++)
-            for (int j = activeCSAngularNodes[i].Count - 1; j >= 0; j--)
-                if (activeCSAngularNodes[i] != null)
-                    Destroy(activeCSAngularNodes[i][j]);
-        }
-        else for (int i = activeCSAngularNodes[num].Count - 1; i >= 0; i--) if(activeCSAngularNodes[num][i] != null)
-            Destroy(activeCSAngularNodes[num][i]);
+        for (int i = 0; i < 3; i++) for (int j = activeCSAngularNodes[i].Count - 1; j >= 0; j--)
+            if (activeCSAngularNodes[i] != null) Destroy(activeCSAngularNodes[i][j]);
     }
 
     public void Psi(int n, int l, int ml, bool isOverlap = false, bool isSeparate = false, int num = 0)
@@ -1362,8 +1348,8 @@ public class OrbitalManager : MonoBehaviour
         activeOrbitalInfo[num].transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = $"l = {l}";
         activeOrbitalInfo[num].transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = $"m<sub>l</sub> = {ml}";
         
-        RefreshLayoutNow();
-        
+        RefreshLayoutNow(orbitalInfoPanelRect);
+        RefreshLayoutNow(rightRect);
     }
     
 
@@ -1850,7 +1836,7 @@ public class OrbitalManager : MonoBehaviour
         };
     }
 
-    public void RefreshLayoutNow()
+    public void RefreshLayoutNow(RectTransform layoutRoot)
     {
         Canvas.ForceUpdateCanvases();
         LayoutRebuilder.ForceRebuildLayoutImmediate(layoutRoot);

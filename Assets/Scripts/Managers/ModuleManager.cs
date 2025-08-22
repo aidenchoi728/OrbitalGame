@@ -106,16 +106,16 @@ public class ModuleManager : MonoBehaviour, GameManager
                         orbitalManager.DestroyRadialNode();
                         break;
                     case "CS":
-                        orbitalManager.DestroyCrossSection(true);
+                        orbitalManager.DestroyCrossSection();
                         break;
                     case "CS90B":
-                        orbitalManager.DestroyCSBoundary(true);
+                        orbitalManager.DestroyCSBoundary();
                         break;
                     case "CSAN":
-                        orbitalManager.DestroyCSAngularNode(true);
+                        orbitalManager.DestroyCSAngularNode();
                         break;
                     case "CSRN":
-                        orbitalManager.DestroyCSRadialNode(true);
+                        orbitalManager.DestroyCSRadialNode();
                         break;
                     case "PSI":
                         orbitalManager.IsChart = false;
@@ -287,16 +287,16 @@ public class ModuleManager : MonoBehaviour, GameManager
                         orbitalManager.DestroyRadialNode();
                         break;
                     case "CS":
-                        orbitalManager.DestroyCrossSection(true);
+                        orbitalManager.DestroyCrossSection();
                         break;
                     case "CS90B":
-                        orbitalManager.DestroyCSBoundary(true);
+                        orbitalManager.DestroyCSBoundary();
                         break;
                     case "CSAN":
-                        orbitalManager.DestroyCSAngularNode(true);
+                        orbitalManager.DestroyCSAngularNode();
                         break;
                     case "CSRN":
-                        orbitalManager.DestroyCSRadialNode(true);
+                        orbitalManager.DestroyCSRadialNode();
                         break;
                     case "PSI":
                         orbitalManager.IsChart = false;

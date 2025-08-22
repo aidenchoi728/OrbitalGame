@@ -24,7 +24,8 @@ public class ExplorerManager2D : MonoBehaviour, ExplorerManager
     private int n, l, ml;
     private bool radialNode;
     private bool angularNode;
-    private bool changeOpen;
+    private bool boundary;
+    private bool changeOpen = false;
     private Plane plane = Plane.XZ;
 
     private void Awake()
@@ -50,19 +51,25 @@ public class ExplorerManager2D : MonoBehaviour, ExplorerManager
         this.l = l;
         this.ml = ml;
         
-        orbitalManager.DestroyCrossSection(true);
+        orbitalManager.DestroyCrossSection();
         orbitalManager.CrossSection(n, l, ml, plane);
 
         if (radialNode)
         {
-            orbitalManager.DestroyCSRadialNode(true);
+            orbitalManager.DestroyCSRadialNode();
             orbitalManager.CrossSectionRadialNode(n, l, ml, plane);
         }
 
         if (angularNode)
         {
-            orbitalManager.DestroyCSAngularNode(true);
+            orbitalManager.DestroyCSAngularNode();
             orbitalManager.CrossSectionAngularNode(n, l, ml, plane);
+        }
+        
+        if (boundary)
+        {
+            orbitalManager.DestroyCSBoundary();
+            orbitalManager.CrossSectionBoundary(n, l, ml, plane);
         }
 
         if (l > 1) angularNodeText.text = $"Angular Nodes [{l}]";
@@ -88,7 +95,7 @@ public class ExplorerManager2D : MonoBehaviour, ExplorerManager
     }
 
     public void ChangePlane(int planeNum)
-    { 
+    {
         switch (planeNum)
         {
             case 0:
@@ -104,28 +111,28 @@ public class ExplorerManager2D : MonoBehaviour, ExplorerManager
                 plane = Plane.YZ;
                 break;
         }
-
+        
+        orbitalManager.DestroyCrossSection();
+        orbitalManager.CrossSection(n, l, ml, plane);
         planeSelect.UpdateSelected(planeNum);
         
-        if (!changeOpen)
-        {
-            orbitalManager.DestroyCrossSection(true);
-            orbitalManager.CrossSection(n, l, ml, plane);
-
-            if (radialNode)
-            {
-                orbitalManager.DestroyCSRadialNode(true);
-                orbitalManager.CrossSectionRadialNode(n, l, ml, plane);
-            }
-
-            if (angularNode)
-            {
-                orbitalManager.DestroyCSAngularNode(true);
-                orbitalManager.CrossSectionAngularNode(n, l, ml, plane);
-            }
+        if (radialNode)
+        { 
+            orbitalManager.DestroyCSRadialNode(); 
+            orbitalManager.CrossSectionRadialNode(n, l, ml, plane);
         }
-        
-        RefreshLayoutNow(rightPanelRect);
+
+        if (angularNode)
+        {
+            orbitalManager.DestroyCSAngularNode();
+            orbitalManager.CrossSectionAngularNode(n, l, ml, plane);
+        }
+
+        if (boundary)
+        {
+            orbitalManager.DestroyCSBoundary();
+            orbitalManager.CrossSectionBoundary(n, l, ml, plane);
+        }
     }
 
     public void RadialNode(bool val)
@@ -133,7 +140,7 @@ public class ExplorerManager2D : MonoBehaviour, ExplorerManager
         radialNode = val;
         
         if (val) orbitalManager.CrossSectionRadialNode(n, l, ml, plane);
-        else orbitalManager.DestroyCSRadialNode(true);
+        else orbitalManager.DestroyCSRadialNode();
     }
 
     public void AngularNode(bool val)
@@ -141,17 +148,18 @@ public class ExplorerManager2D : MonoBehaviour, ExplorerManager
         angularNode = val;
         
         if (val) orbitalManager.CrossSectionAngularNode(n, l, ml, plane);
-        else orbitalManager.DestroyCSAngularNode(true);
+        else orbitalManager.DestroyCSAngularNode();
+    }
+    
+    public void Boundary(bool val)
+    {
+        boundary = val;
+        
+        if (val) orbitalManager.CrossSectionBoundary(n, l, ml, plane);
+        else orbitalManager.DestroyCSBoundary();
     }
 
     public void RefreshResolution() {}
-    
-    public void RefreshLayoutNow(RectTransform layoutRoot)
-    {
-        Canvas.ForceUpdateCanvases();
-        LayoutRebuilder.ForceRebuildLayoutImmediate(layoutRoot);
-        Canvas.ForceUpdateCanvases();
-    }
 
     public bool ChangeOpen
     {
