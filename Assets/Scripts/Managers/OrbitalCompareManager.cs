@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -39,8 +40,12 @@ public class OrbitalCompareManager : MonoBehaviour
     private void Awake()
     {
         orbitalManager.IsBillBoard = true;
-        foreach(RectTransform refreshRect in refreshRects) RefreshLayoutNow(refreshRect);
         foreach (LineChart chart in charts) chart.RemoveAllSerie();
+    }
+
+    private void Start()
+    {
+        foreach(RectTransform refreshRect in refreshRects) RefreshLayoutNow(refreshRect);
     }
 
     public void NewOrbital(int n, int l, int ml)
@@ -51,10 +56,9 @@ public class OrbitalCompareManager : MonoBehaviour
 
     public void ChangeOrbital(int n, int l, int ml, int index = -1)
     {
-        if (index == -1 || index == quantumNumbers.Count)
+        if (index == quantumNumbers.Count)
         {
             quantumNumbers.Add(new QuantumNumber());
-            index = quantumNumbers.Count - 1;
         } 
         else if (quantumNumbers[index].N == n && quantumNumbers[index].L == l && quantumNumbers[index].Ml == ml)
         {
@@ -62,11 +66,12 @@ public class OrbitalCompareManager : MonoBehaviour
             return;
         }
         
+        Destroy(orbitalManager.GetOrbitalInfo(index));
+        
         quantumNumbers[index].N = n;
         quantumNumbers[index].L = l;
         quantumNumbers[index].Ml = ml;
         
-        orbitalManager.DestroyOverlap(index);
         orbitalManager.Orbital(n, l, ml, true, index);
 
         if (l == 0)

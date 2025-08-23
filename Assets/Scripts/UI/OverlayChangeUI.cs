@@ -9,6 +9,8 @@ public class OverlayChangeUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     [SerializeField] private Color highlightTextColor;
     [SerializeField] private TextMeshProUGUI[] texts;
     [SerializeField] private GameObject changeOverlayPrefab;
+    [SerializeField] private GameObject dividerPrefab;
+    [SerializeField] private bool isAdd = false;
     
     private OrbitalManager orbitalManager;
     private OrbitalCompareManager compareManager;
@@ -47,14 +49,25 @@ public class OverlayChangeUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public void OnPointerClick(PointerEventData eventData)
     {
         GameObject go = Instantiate(changeOverlayPrefab, transform.parent);
-        int index = transform.GetSiblingIndex();
-        go.transform.SetSiblingIndex(index + 1);
-        orbitalManager.ActiveOrbitalInfo((index - 1) / 2, go);
-        ChangeOverlay changeOverlay = go.GetComponent<ChangeOverlay>();
-        changeOverlay.SetNum(n, l, ml);
+
+        if (isAdd)
+        {
+            int loc = transform.parent.childCount;
+            go.transform.SetSiblingIndex(loc - 2);
+            Instantiate(dividerPrefab, transform.parent).transform.SetSiblingIndex(loc - 1);
+            orbitalManager.ActiveOrbitalInfo(loc / 2 - 1, go);
+        }
+        else
+        {
+            int index = transform.GetSiblingIndex();
+            go.transform.SetSiblingIndex(index + 1);
+            orbitalManager.ActiveOrbitalInfo((index - 1) / 2, go);
+            
+            gameObject.SetActive(false);
+            Destroy(gameObject);
+        }
         
-        gameObject.SetActive(false);
-        Destroy(gameObject);
+        go.GetComponent<ChangeOverlay>().SetNum(n, l, ml);
         
         RefreshLayoutNow(orbitalCenterRect);
         RefreshLayoutNow(orbitalInfoRect);
