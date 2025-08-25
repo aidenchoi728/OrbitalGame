@@ -109,11 +109,11 @@ public class OrbitalManager : MonoBehaviour
     private Plane rVisualizerPlane;
     
     private List<float> radiusMax = new List<float>();
+    private List<float> psiCutX = new List<float>();
     private List<float> psiMin = new List<float>();
     private List<float> psiMax = new List<float>();
-    private List<float> psiCutX = new List<float>();
-    private List<float> psi2Max = new List<float>();
     private List<float> psi2CutX = new List<float>();
+    private List<float> psi2Max = new List<float>();
     private List<float> psi2r2Max = new List<float>();
     private List<float[]> psiData = new List<float[]>();
     private List<float[]> psi2Data = new List<float[]>();
@@ -362,7 +362,7 @@ public class OrbitalManager : MonoBehaviour
         for(int i = activeOrbitalInfo.Count - 1; i >= 0; i--) if(activeOrbitalInfo[i] != null) Destroy(activeOrbitalInfo[i]);
     }
 
-    public void DestroyOverlap(int index)
+    public void DestroyOverlay(int index)
     {
         if (activeOverlaps.Count > index && activeOverlaps[index] != null)
         {
@@ -375,6 +375,10 @@ public class OrbitalManager : MonoBehaviour
             Destroy(activeOrbitalInfo[index]);
             activeOrbitalInfo.RemoveAt(index);
         }
+        
+        psiChart.RemoveSerie(index);
+        psiSqChart.RemoveSerie(index);
+        psiSqRSqChart.RemoveSerie(index);
         
         radiusMax.RemoveAt(index);
         psiMin.RemoveAt(index);
@@ -966,20 +970,18 @@ public class OrbitalManager : MonoBehaviour
 
     public void Psi(int n, int l, int ml, bool isOverlap = false, bool isSeparate = false, int index = 0)
     {
+        if (radiusMax.Count == index) radiusMax.Add(0f);
+        if (psiMax.Count == index) psiMax.Add(0f);
+        if (psiMin.Count == index) psiMin.Add(0f);
+        if (psiCutX.Count == index) psiCutX.Add(0f);
+        if (psiData.Count == index) psiData.Add(new float[sampleCount + 1]);
+        
         LineChart chart;
 
         if (isSeparate) chart = psiChart;
         else chart = mainChart;
         
         chart.RemoveAllSerie();
-
-        if (radiusMax.Count == index) radiusMax.Add(0f);
-        if (psiMax.Count == index) psiMax.Add(0f);
-        if (psiMin.Count == index) psiMin.Add(0f);
-        if (psiCutX.Count == index) psiCutX.Add(0f);
-        if (psiData.Count == index) psiData.Add(new float[sampleCount + 1]);
-
-        if (l != 0) return;
         
         chart.GetChartComponent<Title>().text = "R (Ψ Real) vs Radius";
 
@@ -996,7 +998,7 @@ public class OrbitalManager : MonoBehaviour
         float max = 0f, min = 0f;
 
         // Populate data
-        for (int i = 0; i <= sampleCount; i++)
+        if (l == 0) for (int i = 0; i <= sampleCount; i++)
         {
             float psi = GetPsi(n, l, ml, i * maxRadius / sampleCount, 0f, 0f);
             if(psi > max) max = psi;
@@ -1005,14 +1007,11 @@ public class OrbitalManager : MonoBehaviour
         }
         
         rMax = radiusMax[index];
-        float cutXMax = GetPsi(n, l, ml, rMax * (1 - cutXMargin), 0f, 0f);
-        psiCutX[index] = cutXMax;
-        if(isOverlap) foreach (float p in psiCutX) if (p > cutXMax) cutXMax = p;
-        cutXMax /= cutYMargin;
+        psiCutX[index] = GetPsi(n, l, ml, rMax * (1 - cutXMargin), 0, 0) / cutYMargin;
+        
         if(isOverlap) foreach (float r in radiusMax) if (r > rMax) rMax = r;
-        if(cutXMax > max) max = cutXMax;
 
-        for (int i = 0; i <= index; i++)
+        for (int i = 0; i < psiData.Count; i++)
         {
             chart.AddSerie<Line>();
             for (int j = 0; j <= sampleCount; j++) chart.AddData(i, psiData[i][(int)Math.Round(j * rMax / maxRadius)]);
@@ -1034,6 +1033,8 @@ public class OrbitalManager : MonoBehaviour
             foreach(float p in psiMin) if (p < min) min = p;
         }
         
+        foreach (float p in psiCutX) if (p > max) max = p;
+        
         yAxis.max = max * cutYMargin;
         yAxis.min = min;
         xAxis.minMaxType = Axis.AxisMinMaxType.Custom;
@@ -1045,19 +1046,17 @@ public class OrbitalManager : MonoBehaviour
     
     public void PsiSquared(int n, int l, int ml, bool isOverlap = false, bool isSeparate = false, int index = 0)
     {
+        if (psi2Max.Count == index) psi2Max.Add(0f);
+        if (psi2CutX.Count == index) psi2CutX.Add(0f);
+        if (radiusMax.Count == index) radiusMax.Add(0f);
+        if (psi2Data.Count == index) psi2Data.Add(new float[sampleCount + 1]);
+        
         LineChart chart;
 
         if (isSeparate) chart = psiSqChart;
         else chart = mainChart;
         
         chart.RemoveAllSerie();
-
-        if (psi2Max.Count == index) psi2Max.Add(0f);
-        if (psi2CutX.Count == index) psi2CutX.Add(0f);
-        if (radiusMax.Count == index) radiusMax.Add(0f);
-        if (psi2Data.Count == index) psi2Data.Add(new float[sampleCount + 1]);
-        
-        if (l != 0) return;
         
         chart.GetChartComponent<Title>().text = "Ψ² vs Radius";
 
@@ -1074,7 +1073,7 @@ public class OrbitalManager : MonoBehaviour
         float max = 0f;
 
         // Populate data
-        for (int i = 0; i <= sampleCount; i++)
+        if (l == 0) for (int i = 0; i <= sampleCount; i++)
         {
             float psi2 = GetPsi(n, l, ml, i * maxRadius / sampleCount, 0f, 0f);
             psi2 *= psi2;
@@ -1083,15 +1082,12 @@ public class OrbitalManager : MonoBehaviour
         }
         
         rMax = radiusMax[index];
-        float cutXMax = GetPsi(n, l, ml, maxRadius * (1 - cutXMargin), 0f, 0f);
-        cutXMax *= cutXMax;
-        psi2CutX[index] = cutXMax;
-        if(isOverlap) foreach(float p in psi2CutX) if (p > cutXMax) cutXMax = p;
-        cutXMax /= cutYMargin;
+        psi2CutX[index] = GetPsi(n, l, ml, rMax * (1 - cutXMargin), 0, 0);
+        psi2CutX[index] *= psi2CutX[index];
+        psi2CutX[index] /= cutYMargin;
         if(isOverlap) foreach (float r in radiusMax) if (r > rMax) rMax = r;
-        if(cutXMax > max) max = cutXMax;
 
-        for (int i = 0; i <= index; i++)
+        for (int i = 0; i < psi2Data.Count; i++)
         {
             chart.AddSerie<Line>();
             for (int j = 0; j <= sampleCount; j++) chart.AddData(i, psi2Data[i][(int)Math.Round(j * rMax / maxRadius)]);
@@ -1110,6 +1106,8 @@ public class OrbitalManager : MonoBehaviour
             foreach(float p in psi2Max) if (p > max) max = p;
             foreach(float r in radiusMax) if (r > rMax) rMax = r;
         }
+        
+        foreach (float p in psi2CutX) if (p > max) max = p;
         
         yAxis.max = max * cutYMargin;
         xAxis.minMaxType = Axis.AxisMinMaxType.Custom;
@@ -1131,8 +1129,6 @@ public class OrbitalManager : MonoBehaviour
         if (psi2r2Max.Count == index) psi2r2Max.Add(0f);
         if (radiusMax.Count == index) radiusMax.Add(0f);
         if (psi2r2Data.Count == index) psi2r2Data.Add(new float[sampleCount + 1]);
-        
-        if (l != 0) return;
         
         chart.GetChartComponent<Title>().text = "Ψ²r² vs Radius";
 
@@ -1189,7 +1185,7 @@ public class OrbitalManager : MonoBehaviour
         rMax = radiusMax[index];
         if(isOverlap) foreach (float r in radiusMax) if (r > rMax) rMax = r;
 
-        for (int i = 0; i <= index; i++)
+        for (int i = 0; i < psi2r2Data.Count; i++)
         {
             chart.AddSerie<Line>();
             for (int j = 0; j <= sampleCount; j++) chart.AddData(i, psi2r2Data[i][(int)Math.Round(j * rMax / maxRadius)]);
@@ -1218,18 +1214,67 @@ public class OrbitalManager : MonoBehaviour
         isChart = true;
     }
 
-    public void DestroyGraphs(int index)
+    public void RefreshChart()
     {
-        psiChart.RemoveSerie(index);
-        psiSqChart.RemoveSerie(index);
-        psiSqRSqChart.RemoveSerie(index);
+        float rMax = 0;
+        foreach (float r in radiusMax) if (r > rMax) rMax = r;
         
-        psiMin.RemoveAt(index);
-        psiMax.RemoveAt(index);
-        psiCutX.RemoveAt(index);
-        psi2Max.RemoveAt(index);
-        psi2CutX.RemoveAt(index);
-        psi2r2Max.RemoveAt(index);
+        for (int i = 0; i < psiData.Count; i++)
+        {
+            psiChart.AddSerie<Line>();
+            for (int j = 0; j <= sampleCount; j++) psiChart.AddData(i, psiData[i][(int)Math.Round(j * rMax / maxRadius)]);
+            Serie serie = psiChart.series[i];
+            serie.symbol.show = false;
+            serie.lineStyle.color = chartLineColor;
+            serie.clip = true;
+        }
+        
+        for (int i = 0; i < psi2Data.Count; i++)
+        {
+            psiSqChart.AddSerie<Line>();
+            for (int j = 0; j <= sampleCount; j++) psiSqChart.AddData(i, psi2Data[i][(int)Math.Round(j * rMax / maxRadius)]);
+            Serie serie = psiSqChart.series[i];
+            serie.symbol.show = false;
+            serie.lineStyle.color = chartLineColor;
+            serie.clip = true;
+        }
+        
+        for (int i = 0; i < psi2r2Data.Count; i++)
+        {
+            psiSqRSqChart.AddSerie<Line>();
+            for (int j = 0; j <= sampleCount; j++) psiSqRSqChart.AddData(i, psi2r2Data[i][(int)Math.Round(j * rMax / maxRadius)]);
+            Serie serie = psiSqRSqChart.series[i];
+            serie.symbol.show = false;
+            serie.lineStyle.color = chartLineColor;
+            serie.clip = true;
+        }
+
+        float pMax = 0, pMin = 0, p2Max = 0, p2r2Max = 0;
+        foreach(float p in psiMax) if (p > pMax) pMax = p;
+        foreach(float p in psiMin) if (p < pMin) pMin = p;
+        foreach(float p in psi2Max) if (p > p2Max) p2Max = p;
+        foreach(float p in psi2r2Max) if (p > p2r2Max) p2r2Max = p;
+        foreach(float p in psiCutX) if (p > pMax) pMax = p;
+        foreach(float p in psi2CutX) if (p < p2Max) p2Max = p;
+        
+        var psiYAxis = psiChart.EnsureChartComponent<YAxis>();
+        var psiXAxis = psiChart.EnsureChartComponent<XAxis>();
+        var psi2XAxis = psiSqChart.EnsureChartComponent<XAxis>();
+        var psi2YAxis = psiSqChart.EnsureChartComponent<YAxis>();
+        var psi2r2XAxis = psiSqRSqChart.EnsureChartComponent<XAxis>();
+        var psi2r2YAxis = psiSqRSqChart.EnsureChartComponent<YAxis>();
+        
+        psiYAxis.max = pMax * cutYMargin;
+        psiYAxis.min = pMin;
+        psiXAxis.max = Mathf.Clamp(Mathf.RoundToInt(rMax / (maxRadius / sampleCount)), 0, sampleCount);
+        psi2YAxis.max = p2Max * cutYMargin;
+        psi2XAxis.max = Mathf.Clamp(Mathf.RoundToInt(rMax / (maxRadius / sampleCount)), 0, sampleCount);
+        psi2r2YAxis.max = p2r2Max;
+        psi2r2XAxis.max = Mathf.Clamp(Mathf.RoundToInt(rMax / (maxRadius / sampleCount)), 0, sampleCount);
+        
+        psiChart.RefreshChart();
+        psiSqChart.RefreshChart();
+        psiSqRSqChart.RefreshChart();
     }
     
     private void ChartRVisualizer()

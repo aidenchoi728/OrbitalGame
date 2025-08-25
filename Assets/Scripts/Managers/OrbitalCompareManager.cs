@@ -74,28 +74,27 @@ public class OrbitalCompareManager : MonoBehaviour
         
         orbitalManager.Orbital(n, l, ml, true, index);
 
-        if (l == 0)
-        {
-            orbitalManager.Psi(n, l, ml, true, true, index);
-            orbitalManager.PsiSquared(n, l, ml, true, true, index);
-        }
+        orbitalManager.Psi(n, l, ml, true, true, index);
+        orbitalManager.PsiSquared(n, l, ml, true, true, index);
         orbitalManager.PsiSquaredRSquared(n, l, ml, true, true, index);
     }
 
     public void DeleteOrbital(int index)
     {
-        orbitalManager.DestroyOverlap(index);
+        orbitalManager.DestroyOverlay(index);
         quantumNumbers.RemoveAt(index);
 
-        if (index > 0) Destroy(orbitalInfoCenter.transform.GetChild(index * 2));
-        if (index == 0)
-        {
-            if (quantumNumbers.Count == 0)
-            {
-                Debug.Log("No orbital left"); //TODO
-            }
-            else Destroy(orbitalInfoCenter.transform.GetChild(index * 2 + 1));
-        }
+        GameObject divider = null;
+        
+        if (index > 0) divider = orbitalInfoCenter.transform.GetChild(index * 2 + 1).gameObject;
+        if (index == 0) divider = orbitalInfoCenter.transform.GetChild(index * 2 + 2).gameObject;
+        
+        divider.SetActive(false);
+        Destroy(divider);
+        
+        foreach(RectTransform refreshRect in refreshRects) RefreshLayoutNow(refreshRect);
+        
+        orbitalManager.RefreshChart();
     }
 
     public void RefreshResolution() //TODO
