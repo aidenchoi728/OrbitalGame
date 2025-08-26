@@ -372,6 +372,7 @@ public class OrbitalManager : MonoBehaviour
 
         if (activeOrbitalInfo.Count > index && activeOrbitalInfo[index] != null)
         {
+            activeOrbitalInfo[index].SetActive(false);
             Destroy(activeOrbitalInfo[index]);
             activeOrbitalInfo.RemoveAt(index);
         }
@@ -1216,6 +1217,10 @@ public class OrbitalManager : MonoBehaviour
 
     public void RefreshChart()
     {
+        psiChart.RemoveData();
+        psiSqChart.RemoveData();
+        psiSqRSqChart.RemoveData();
+        
         float rMax = 0;
         foreach (float r in radiusMax) if (r > rMax) rMax = r;
         
@@ -1263,14 +1268,16 @@ public class OrbitalManager : MonoBehaviour
         var psi2YAxis = psiSqChart.EnsureChartComponent<YAxis>();
         var psi2r2XAxis = psiSqRSqChart.EnsureChartComponent<XAxis>();
         var psi2r2YAxis = psiSqRSqChart.EnsureChartComponent<YAxis>();
+
+        double xMax = Mathf.Clamp(Mathf.RoundToInt(rMax / (maxRadius / sampleCount)), 0, sampleCount);
         
         psiYAxis.max = pMax * cutYMargin;
         psiYAxis.min = pMin;
-        psiXAxis.max = Mathf.Clamp(Mathf.RoundToInt(rMax / (maxRadius / sampleCount)), 0, sampleCount);
+        psiXAxis.max = xMax;
         psi2YAxis.max = p2Max * cutYMargin;
-        psi2XAxis.max = Mathf.Clamp(Mathf.RoundToInt(rMax / (maxRadius / sampleCount)), 0, sampleCount);
+        psi2XAxis.max = xMax;
         psi2r2YAxis.max = p2r2Max;
-        psi2r2XAxis.max = Mathf.Clamp(Mathf.RoundToInt(rMax / (maxRadius / sampleCount)), 0, sampleCount);
+        psi2r2XAxis.max = xMax;
         
         psiChart.RefreshChart();
         psiSqChart.RefreshChart();

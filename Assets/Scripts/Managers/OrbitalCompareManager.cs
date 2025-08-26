@@ -84,10 +84,7 @@ public class OrbitalCompareManager : MonoBehaviour
         orbitalManager.DestroyOverlay(index);
         quantumNumbers.RemoveAt(index);
 
-        GameObject divider = null;
-        
-        if (index > 0) divider = orbitalInfoCenter.transform.GetChild(index * 2 + 1).gameObject;
-        if (index == 0) divider = orbitalInfoCenter.transform.GetChild(index * 2 + 2).gameObject;
+        GameObject divider = orbitalInfoCenter.transform.GetChild(index * 2 + 2).gameObject;
         
         divider.SetActive(false);
         Destroy(divider);
@@ -97,7 +94,7 @@ public class OrbitalCompareManager : MonoBehaviour
         orbitalManager.RefreshChart();
     }
 
-    public void RefreshResolution() //TODO
+    public void RefreshResolution()
     {
         orbitalManager.DestroyOrbital();
         
