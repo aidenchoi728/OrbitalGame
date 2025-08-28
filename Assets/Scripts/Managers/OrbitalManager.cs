@@ -436,10 +436,8 @@ public class OrbitalManager : MonoBehaviour
         }
     }
     
-    public void TransitionAnimation()
+    public void TransitionAnimation(float t)
     {
-        float t = transitionSlider.value;
-
         // Allocate result
         float[,,] orbitalMap = new float[gridSize, gridSize, gridSize];
 

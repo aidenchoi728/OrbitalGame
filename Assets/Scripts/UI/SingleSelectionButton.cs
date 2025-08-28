@@ -20,6 +20,8 @@ public class SingleSelectionButton : MonoBehaviour
     
     private Image[] buttonImages;
     private TextMeshProUGUI[] buttonTexts;
+    
+    int selectedIndex;
 
     private void Awake()
     {
@@ -29,6 +31,8 @@ public class SingleSelectionButton : MonoBehaviour
 
     public void ChangeSelected(int num)
     {
+        selectedIndex = num;
+        
         if (isSprite)
         {
             for (int i = 0; i < buttonImages.Length; i++)
@@ -43,10 +47,29 @@ public class SingleSelectionButton : MonoBehaviour
 
     public void UpdateSelected(int num)
     {
+        selectedIndex = num;
+        
         if (isSprite) return;
         for (int i = 0; i < buttonImages.Length; i++)
         {
             if (i == num)
+            {
+                buttonImages[i].color = buttonColorSelected;
+                buttonTexts[i].color = textColorSelected;
+            }
+            else
+            {
+                buttonImages[i].color = buttonColorNormal;
+                buttonTexts[i].color = textColorNormal;
+            }
+        }
+    }
+
+    public void ChangeColor(Color buttonColorSelected, Color buttonColorNormal, Color textColorSelected, Color textColorNormal)
+    {
+        for (int i = 0; i < buttonImages.Length; i++)
+        {
+            if (i == selectedIndex)
             {
                 buttonImages[i].color = buttonColorSelected;
                 buttonTexts[i].color = textColorSelected;
