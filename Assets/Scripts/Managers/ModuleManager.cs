@@ -16,8 +16,10 @@ public class ModuleManager : MonoBehaviour, GameManager
     [SerializeField] private OrbitalManager orbitalManager;
     [SerializeField] private TextMeshProUGUI dialogueText;
     [SerializeField] private GameObject chartObject;
+    [SerializeField] private GameObject transitionPanel;
     [SerializeField] private GameObject previousButton;
     [SerializeField] private GameObject nextButton;
+    [SerializeField] private TransitionInfo[] transitionInfo;
 
     [Header("Settings")] 
     [SerializeField] private GameObject axes;
@@ -47,6 +49,7 @@ public class ModuleManager : MonoBehaviour, GameManager
         
         chartObject.SetActive(false);
         previousButton.SetActive(false);
+        transitionPanel.SetActive(false);
     }
 
     private void Start()
@@ -98,6 +101,7 @@ public class ModuleManager : MonoBehaviour, GameManager
                         break;
                     case "TRAN":
                         orbitalManager.DestroyOrbital();
+                        transitionPanel.SetActive(false);
                         break;
                     case "AN":
                         orbitalManager.DestroyAngularNode();
@@ -158,10 +162,13 @@ public class ModuleManager : MonoBehaviour, GameManager
                         currOrbitals.Add(overlap);
                         break;
                     case "TRAN":
+                        transitionPanel.SetActive(true);
                         int.TryParse(data[curr][7], out int n2);
                         int.TryParse(data[curr][8], out int l2);
                         int.TryParse(data[curr][9], out int ml2);
                         orbitalManager.TransitionOrbital(n, n2, l, l2, ml, ml2);
+                        transitionInfo[0].SetQuantumNumber(n, l, ml);
+                        transitionInfo[1].SetQuantumNumber(n2, l2, ml2);
                         break;
                     case "AN":
                         orbitalManager.AngularNode(n, l, ml);
@@ -279,6 +286,7 @@ public class ModuleManager : MonoBehaviour, GameManager
                         break;
                     case "TRAN":
                         orbitalManager.DestroyOrbital();
+                        transitionPanel.SetActive(false);
                         break;
                     case "AN":
                         orbitalManager.DestroyAngularNode();
@@ -339,10 +347,13 @@ public class ModuleManager : MonoBehaviour, GameManager
                         currOrbitals.Add(overlap);
                         break;
                     case "TRAN":
-                        int.TryParse(vData[curr][7], out int n2);
-                        int.TryParse(vData[curr][8], out int l2);
-                        int.TryParse(vData[curr][9], out int ml2);
+                        transitionPanel.SetActive(true);
+                        int.TryParse(data[curr][7], out int n2);
+                        int.TryParse(data[curr][8], out int l2);
+                        int.TryParse(data[curr][9], out int ml2);
                         orbitalManager.TransitionOrbital(n, n2, l, l2, ml, ml2);
+                        transitionInfo[0].SetQuantumNumber(n, l, ml);
+                        transitionInfo[1].SetQuantumNumber(n2, l2, ml2);
                         break;
                     case "AN":
                         orbitalManager.AngularNode(n, l, ml);
