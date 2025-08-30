@@ -7258,7 +7258,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3341208837165099121, guid: 35a0d846746e54013b9cd882f4812bb3, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
-      value: Campaign Mode
+      value: Playground Mode
       objectReference: {fileID: 0}
     - target: {fileID: 3722197796835349329, guid: 35a0d846746e54013b9cd882f4812bb3, type: 3}
       propertyPath: m_Name
