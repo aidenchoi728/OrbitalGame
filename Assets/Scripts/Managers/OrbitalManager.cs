@@ -1481,6 +1481,8 @@ public class OrbitalManager : MonoBehaviour
 
     public void UpdateOrbitalInfo(int n, int l, int ml, bool isOverlay = false, int index = -1)
     {
+        if (orbitalInfoPanel == null) return;
+        
         GameObject orbitalInfo;
 
         if (isOverlay)
