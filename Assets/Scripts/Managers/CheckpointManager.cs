@@ -29,12 +29,15 @@ public class CheckpointManager : MonoBehaviour, GameManager
     [SerializeField] private TextMeshProUGUI questionNumText;
     [SerializeField] private TextMeshProUGUI questionText;
     [SerializeField] private Transform answerParent;
-    [SerializeField] private Image top, center, bottom, submitButtonImage;
+    [SerializeField] private Image top;
+    [SerializeField] private Image[] centers;
+    [SerializeField] private Image bottom, submitButtonImage;
     [SerializeField] private TextMeshProUGUI submitButtonText;
     [SerializeField] private SubmitButton submitButton;
     [SerializeField] private GameObject submitNextText;
     [SerializeField] private GameObject submitNextArrow;
     [SerializeField] private GameObject hintButton, seeAnswerButton;
+    [SerializeField] private TextMeshProUGUI hintText, wrongText;
 
     [Header("Prefabs")] 
     [SerializeField] private GameObject progressPrefab;
@@ -71,7 +74,7 @@ public class CheckpointManager : MonoBehaviour, GameManager
     private int curr = 0;
     private GameObject currAnswer;
     private int answerType;
-    private bool correct = false;
+    private bool correct = false, wrong = false, usedHint = false;
     private bool haveTried = false;
     private Image[] progressImages;
     private int score = 0;
@@ -95,6 +98,8 @@ public class CheckpointManager : MonoBehaviour, GameManager
         }
         
         chart.SetActive(false);
+        hintText.gameObject.SetActive(false);
+        wrongText.gameObject.SetActive(false);
     }
 
     private void Start()
@@ -132,13 +137,13 @@ public class CheckpointManager : MonoBehaviour, GameManager
                 correctAnswers = new int[] {quantumNumbers[0] - quantumNumbers[1] - 1};
                 break;
             case "QN1":
-                answerType = UnityEngine.Random.Range(0, 3);
+                answerType = UnityEngine.Random.Range(0, 2);
                 currAnswer = Instantiate(quantum1Prefab[answerType], answerParent);
                 correctAnswers = new int[] {changeToNum(answerType)};
                 quantumName = new string[1] {qnTypes[answerType]};
                 break;
             case "QN2":
-                answerType = UnityEngine.Random.Range(0, 3);
+                answerType = 0;
                 currAnswer = Instantiate(quantum2Prefab[answerType], answerParent);
                 correctAnswers = new int[] {changeToNum(answerType), changeToNum((answerType + 1) % 3)};
                 quantumName = new String[2] {qnTypes[answerType], qnTypes[(answerType + 1) % 3]};
@@ -203,6 +208,8 @@ public class CheckpointManager : MonoBehaviour, GameManager
                 break;
         }
         
+        currAnswer.transform.SetSiblingIndex(1);
+        
         questionText.text = ProcessString(data[curr][1], quantumName);
         
         Debug.Log($"Quantum Numbers: {quantumNumbers[0]} {quantumNumbers[1]} {quantumNumbers[2]}, Answer: {correctAnswers[0]}");
@@ -211,21 +218,39 @@ public class CheckpointManager : MonoBehaviour, GameManager
 
     }
 
-    public void CheckAnswer() //TODO
+    public void Submit()
     {
-        if (correct)
+        if (correct || wrong)
         {
+            for (int i = 3; i < 5; i++)
+            {
+                switch (data[curr][i])
+                {
+                    case "AN":
+                        orbitalManager.DestroyAngularNode();
+                        break;
+                    case "RN":
+                        orbitalManager.DestroyRadialNode();
+                        break;
+                }
+            }
+            
             Flow();
             ChangeColor(0);
             hintButton.SetActive(true);
+            hintText.gameObject.SetActive(false);
             answers = new int[] {-1, -1, -1};
             submitButton.IsNext = false;
             submitNextText.SetActive(false);
             submitNextArrow.SetActive(false);
+            wrongText.gameObject.SetActive(false);
             submitButtonText.gameObject.SetActive(true);
             progressText.text = $"{Mathf.Round((float) (curr - 1) / dataLines.Length * 100)}%";
             correct = false;
+            wrong = false;
+            usedHint = false;
             haveTried = false;
+            RefreshLayoutNow();
             return;
         }
         
@@ -243,7 +268,7 @@ public class CheckpointManager : MonoBehaviour, GameManager
             submitButton.IsNext = true;
             CustomDropdown[] dropdowns = currAnswer.GetComponentsInChildren<CustomDropdown>();
             foreach (CustomDropdown dropdown in dropdowns) dropdown.Correct = true;
-            if (haveTried)
+            if (haveTried || usedHint)
             {
                 score += partialCredit;
                 progressImages[curr - 1].color = progressColors[1];
@@ -256,15 +281,257 @@ public class CheckpointManager : MonoBehaviour, GameManager
         }
         else
         {
+            WrongText();
             if (haveTried)
             {
                 progressImages[curr - 1].color = progressColors[2];
+                wrong = true;
+                SeeAnswer();
+                seeAnswerButton.SetActive(false);
+                submitButtonText.gameObject.SetActive(false);
+                submitNextText.SetActive(true);
+                submitNextArrow.SetActive(true);
+                submitButton.IsNext = true;
             }
-            ChangeColor(2);
-            hintButton.SetActive(false);
-            seeAnswerButton.SetActive(true);
-            haveTried = true;
+            else
+            {
+                ChangeColor(2);
+                seeAnswerButton.SetActive(true);
+                haveTried = true;
+            }
         }
+        UpdateTextWidth();
+        RefreshLayoutNow();
+    }
+
+    public void Hint() //TODO
+    {
+        usedHint = true;
+        hintButton.SetActive(false);
+        hintText.gameObject.SetActive(true);
+
+        List<string> hints = new List<string>();
+        
+        int n = quantumNumbers[0];
+        int l = quantumNumbers[1];
+        int ml = quantumNumbers[2];
+        
+        for (int i = 3; i < 5; i++)
+        {
+            switch (data[curr][i])
+            {
+                case "AN":
+                    if (l > 0)
+                    {
+                        orbitalManager.AngularNode(n, l, ml);
+                        hints.Add("AN");
+                    }
+                    else hints.Add("ANX");
+                    break;
+                case "RN":
+                    if (n - l > 1)
+                    {
+                        orbitalManager.RadialNode(n, l, ml);
+                        hints.Add("RN");
+                    }
+                    else hints.Add("RNX");
+                    break;
+            }
+        }
+
+        string message = "";
+
+        if (hints.Contains("ANX"))
+        {
+            if (hints.Contains("RNX")) message += "There are no nodes. ";
+            else message += "There are no angular nodes. ";
+        }
+        else if (hints.Contains("RNX"))
+        {
+            message += "There are no radial nodes. ";
+        }
+
+        if (hints.Contains("AN"))
+        {
+            if (hints.Contains("RN")) message += "Look at the nodes. ";
+            else message += "Look at the angular node(s). ";
+        }
+        else if (hints.Contains("RN"))
+        {
+            message += "Look at the radial node(s). ";
+        }
+
+        hintText.text = "Hint: " + message;
+        
+        RefreshLayoutNow();
+    }
+
+    public void WrongText()
+    {
+        wrongText.gameObject.SetActive(true);
+        bool blank = false;
+        
+        string message = "";
+        
+        for (int i = 0; i < correctAnswers.Length; i++)
+        {
+            if (answers[i] == -1)
+            {
+                message += "Looks like you left something blank. ";
+                blank = true;
+                break;
+            }
+        }
+        
+        switch (data[curr][2])
+        {
+            case "N":
+                message += "Remember, nodes are any planes or radii where the wave function is zero. ";
+                break;
+            case "AN":
+                message += "Remember, angular nodes are any planes where the wave function is zero. ";
+                if (quantumNumbers[1] == 2 && quantumNumbers[2] == 0 && correctAnswers[0] > answers[0]) message += "Cones also count. ";
+                break;
+            case "RN":
+                message += "Remember, radial nodes are any radii where the wave function is zero. Look for places where the boundary is broken. ";
+                break;
+            case "QN1":
+                switch (answerType)
+                {
+                    case 0:
+                        if (!blank)
+                        {
+                            switch (quantumNumbers[1])
+                            {
+                                case 1:
+                                    message += $"n={answers[0] + 1} doesn't have p orbitals. ";
+                                    break;
+                                case 2:
+                                    if (answers[0] < 2) message += $"n={answers[0] + 1} doesn't have d orbitals. ";
+                                    break;
+                            }
+                        }
+                        message += "Remember, n is equal to the total number of nodes, plus 1. ";
+                        break;
+                    case 1:
+                        if (answers[0] >= quantumNumbers[0])
+                            message += $"n={quantumNumbers[0]} can't have this azimuthal quantum number. ";
+                        
+                        message += "Remember, l is equal to the total number of angular nodes. ";
+                        break;
+                }
+                break;
+            case "QN2":
+                if (!blank && answers[1] > answers[0])
+                    message += $"n={answers[0] + 1} can't have this azimuthal quantum number. ";
+                if (correctAnswers[0] != answers[0])
+                {
+                    message += "Remember, n is equal to the total number of nodes, plus 1. ";
+                    if(correctAnswers[1] != answers[1]) message += "Also, l is equal to the total number of angular nodes. ";
+                }
+                else if (correctAnswers[1] != answers[1])
+                    message += "Remember, l is equal to the total number of angular nodes. ";
+                break;
+            case "QN3": break;
+            case "ORB1":
+                switch (answerType)
+                {
+                    case 0:
+                        if (!blank)
+                        {
+                            switch (quantumNumbers[1])
+                            {
+                                case 1:
+                                    message += $"n={answers[0] + 1} doesn't have p orbitals. ";
+                                    break;
+                                case 2:
+                                    if (answers[0] < 2) message += $"n={answers[0] + 1} doesn't have d orbitals. ";
+                                    break;
+                            }
+                        }
+                        message += "Remember, n is equal to the total number of nodes, plus 1. ";
+                        break;
+                    case 1:
+                        if (answers[0] >= quantumNumbers[0])
+                            message += $"n={quantumNumbers[0]} can't have this azimuthal quantum number. ";
+                        
+                        message += "Remember, l is equal to the total number of angular nodes. ";
+                        break;
+                    case 2:
+                        message += "Remember, the magnetic quantum number represents the spatial orientation of the orbital. ";
+                        break;
+                }
+                break;
+            case "ORB2":
+                switch (answerType)
+                {
+                    case 0:
+                        if (!blank && answers[1] > answers[0])
+                            message += $"n={answers[0] + 1} can't have this azimuthal quantum number. ";
+                        if (correctAnswers[0] != answers[0])
+                        {
+                            message += "Remember, n is equal to the total number of nodes, plus 1. ";
+                            if(correctAnswers[1] != answers[1]) message += "Also, l is equal to the total number of angular nodes. ";
+                        }
+                        else if(correctAnswers[1] != answers[1]) message += "Remember, l is equal to the total number of angular nodes. ";
+                        break;
+                    case 1:
+                        if (answers[0] != correctAnswers[0])
+                        {
+                            if (answers[0] != -1)
+                            {
+                                switch (quantumNumbers[1])
+                                {
+                                    case 1:
+                                        message += $"n={answers[0] + 1} doesn't have p orbitals. ";
+                                        break;
+                                    case 2:
+                                        if (answers[0] < 2) message += $"n={answers[0] + 1} doesn't have d orbitals. ";
+                                        break;
+                                }
+                            }
+                            message += "Remember, n is equal to the total number of nodes, plus 1. ";
+                        }
+
+                        if (answers[1] != correctAnswers[1])
+                                message += "The magnetic quantum number represents the spatial orientation of the orbital. ";
+                        break;
+                    case 2:
+                        if (answers[0] != correctAnswers[0])
+                        {
+                            if (answers[0] >= quantumNumbers[0])
+                                message += $"n={quantumNumbers[0]} can't have this azimuthal quantum number. ";
+                        
+                            message += "Remember, l is equal to the total number of angular nodes. ";
+                        }
+
+                        if (answers[1] != correctAnswers[1])
+                            message += "The magnetic quantum number represents the spatial orientation of the orbital. ";
+
+                        break;
+                }
+                break;
+            case "ORB3":
+                if (!blank && answers[1] > answers[0])
+                    message += $"n={answers[0] + 1} can't have this azimuthal quantum number. ";
+                if (correctAnswers[0] != answers[0])
+                {
+                    message += "Remember, n is equal to the total number of nodes, plus 1. ";
+                    if(correctAnswers[1] != answers[1]) message += "Also, l is equal to the total number of angular nodes. ";
+                }
+                else if(correctAnswers[1] != answers[1]) message += "Remember, l is equal to the total number of angular nodes. ";
+                if (answers[2] != correctAnswers[2])
+                    message += "The magnetic quantum number represents the spatial orientation of the orbital. ";
+                
+                break;
+        }
+
+        wrongText.text = message;
+    }
+    
+    public void SeeAnswer() //TODO
+    {
+        
     }
 
     public void RefreshResolution() //TODO
@@ -275,7 +542,7 @@ public class CheckpointManager : MonoBehaviour, GameManager
     public void ChangeColor(int mode)
     {
         top.sprite = topSprite[mode];
-        center.sprite = centerSprite[mode];
+        foreach(Image center in centers) center.sprite = centerSprite[mode];
         bottom.sprite = bottomSprite[mode];
         questionNumText.color = questionNumTextColor[mode];
         questionText.color = questionTextColor[mode];
@@ -291,6 +558,17 @@ public class CheckpointManager : MonoBehaviour, GameManager
             foreach (CustomDropdown dropdown in dropdowns) dropdown.SetColors(fieldNormalColor[mode], fieldHighlightColor[mode], fieldTextColor[mode], 
                 itemNormalColor[mode], itemHighlightColor[mode], itemHoverColor[mode], itemTextNormalColor[mode], itemTextHighlightColor[mode]);
         }
+        
+        ColorBlock cb = hintButton.GetComponent<Button>().colors;
+        cb.normalColor = submitButtonNormalColor[mode];
+        cb.highlightedColor = submitButtonHighlightColor[mode];
+        cb.pressedColor = submitButtonNormalColor[mode];
+        hintButton.GetComponent<Button>().colors = cb;
+        
+        submitNextText.GetComponent<TextMeshProUGUI>().color = submitButtonNormalColor[mode];
+        submitNextArrow.GetComponent<Image>().color = submitButtonNormalColor[mode];
+        
+        hintText.color = submitButtonNormalColor[mode];
     }
 
     public void ChangeAnswer(string name, int value)
@@ -310,6 +588,18 @@ public class CheckpointManager : MonoBehaviour, GameManager
                 answers[0] = value;
                 break;
         }
+    }
+
+    private void UpdateTextWidth()
+    {
+        int width = 780;
+        if (hintButton.activeSelf) width -= 24 + 40;
+        if(seeAnswerButton.activeSelf) width -= 24 + 140;
+
+        Debug.Log(width);
+        
+        wrongText.rectTransform.sizeDelta = new Vector2(width, 0);
+        hintText.rectTransform.sizeDelta = new Vector2(width, 0);
     }
 
     private int changeToNum(int type)

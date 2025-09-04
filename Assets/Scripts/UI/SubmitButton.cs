@@ -62,6 +62,6 @@ public class SubmitButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         }
         else text.color = normalColor;
         
-        checkpointManager.CheckAnswer();
+        checkpointManager.Submit();
     }
 }
