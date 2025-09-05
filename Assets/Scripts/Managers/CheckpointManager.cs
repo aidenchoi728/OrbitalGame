@@ -21,12 +21,19 @@ public class CheckpointManager : MonoBehaviour, GameManager
     [Header("Scoring")]
     [SerializeField] private int fullCredit;
     [SerializeField] private int partialCredit;
-    
-    [Header("Fields")]
+
+    [Header("Fields")] 
+    [SerializeField] private GameObject resultsPanel;
+    [SerializeField] private GameObject mainPanel;
     [SerializeField] private GameObject chart;
     [SerializeField] private Transform progressBar;
+    [SerializeField] private Transform scoreLine;
     [SerializeField] private TextMeshProUGUI progressText;
     [SerializeField] private TextMeshProUGUI questionNumText;
+    [SerializeField] private TextMeshProUGUI checkpointNumText;
+    [SerializeField] private TextMeshProUGUI scoreText;
+    [SerializeField] private TextMeshProUGUI scoreMaxText;
+    [SerializeField] private TextMeshProUGUI suggestedReviewText;
     [SerializeField] private TextMeshProUGUI questionText;
     [SerializeField] private Transform answerParent;
     [SerializeField] private Image top;
@@ -77,6 +84,7 @@ public class CheckpointManager : MonoBehaviour, GameManager
     private bool correct = false, wrong = false, usedHint = false;
     private bool haveTried = false;
     private Image[] progressImages;
+    private Image[] scoreImages;
     private int score = 0;
 
     private int[] quantumNumbers;
@@ -90,16 +98,23 @@ public class CheckpointManager : MonoBehaviour, GameManager
         dataLines = File.ReadAllLines(Path.Combine(Application.streamingAssetsPath, $"Level Data - {CheckpointInfo.campaignNum}-C{CheckpointInfo.checkpointNum}.csv"));
         
         progressImages = new Image[dataLines.Length];
+        scoreImages = new Image[dataLines.Length];
         progressText.text = "0%";
         for (int i = 0; i < dataLines.Length; i++)
         {
             data.Add(SplitCsvLine(dataLines[i]));
+        }
+
+        for (int i = 0; i < data.Count - 1; i++)
+        {
             progressImages[i] = Instantiate(progressPrefab, progressBar).GetComponent<Image>();
+            scoreImages[i] = Instantiate(progressPrefab, scoreLine).GetComponent<Image>();
         }
         
         chart.SetActive(false);
         hintText.gameObject.SetActive(false);
         wrongText.gameObject.SetActive(false);
+        resultsPanel.SetActive(false);
     }
 
     private void Start()
@@ -150,9 +165,6 @@ public class CheckpointManager : MonoBehaviour, GameManager
                 answerType += 3;
                 break;
             case "QN3":
-                answerType = 6;
-                currAnswer = Instantiate(quantum3Prefab, answerParent);
-                correctAnswers = new int[] {changeToNum(0), changeToNum(1), changeToNum(2)};
                 break;
             case "ORB1":
                 answerType = UnityEngine.Random.Range(0, 3);
@@ -222,6 +234,17 @@ public class CheckpointManager : MonoBehaviour, GameManager
     {
         if (correct || wrong)
         {
+            if (curr == data.Count - 1)
+            {
+                resultsPanel.SetActive(true);
+                mainPanel.SetActive(false);
+                checkpointNumText.text = $"Checkpoint {CheckpointInfo.checkpointNum}";
+                scoreText.text = score.ToString();
+                scoreMaxText.text = $"/ {fullCredit * (data.Count - 1)}";
+                
+                return;
+            }
+            
             for (int i = 3; i < 5; i++)
             {
                 switch (data[curr][i])
@@ -245,7 +268,6 @@ public class CheckpointManager : MonoBehaviour, GameManager
             submitNextArrow.SetActive(false);
             wrongText.gameObject.SetActive(false);
             submitButtonText.gameObject.SetActive(true);
-            progressText.text = $"{Mathf.Round((float) (curr - 1) / dataLines.Length * 100)}%";
             correct = false;
             wrong = false;
             usedHint = false;
@@ -268,31 +290,26 @@ public class CheckpointManager : MonoBehaviour, GameManager
             submitButton.IsNext = true;
             CustomDropdown[] dropdowns = currAnswer.GetComponentsInChildren<CustomDropdown>();
             foreach (CustomDropdown dropdown in dropdowns) dropdown.Correct = true;
+            progressText.text = $"{Mathf.Round((float) curr / (dataLines.Length - 1) * 100)}%";
             if (haveTried || usedHint)
             {
                 score += partialCredit;
                 progressImages[curr - 1].color = progressColors[1];
+                scoreImages[curr - 1].color = progressColors[1];
             }
             else
             {
                 score += fullCredit;
                 progressImages[curr - 1].color = progressColors[0];
+                scoreImages[curr - 1].color = progressColors[0];
             }
+            hintText.gameObject.SetActive(false);
+            wrongText.gameObject.SetActive(false);
         }
         else
         {
             WrongText();
-            if (haveTried)
-            {
-                progressImages[curr - 1].color = progressColors[2];
-                wrong = true;
-                SeeAnswer();
-                seeAnswerButton.SetActive(false);
-                submitButtonText.gameObject.SetActive(false);
-                submitNextText.SetActive(true);
-                submitNextArrow.SetActive(true);
-                submitButton.IsNext = true;
-            }
+            if (haveTried) SeeAnswer();
             else
             {
                 ChangeColor(2);
@@ -304,7 +321,7 @@ public class CheckpointManager : MonoBehaviour, GameManager
         RefreshLayoutNow();
     }
 
-    public void Hint() //TODO
+    public void Hint()
     {
         usedHint = true;
         hintButton.SetActive(false);
@@ -529,9 +546,23 @@ public class CheckpointManager : MonoBehaviour, GameManager
         wrongText.text = message;
     }
     
-    public void SeeAnswer() //TODO
+    public void SeeAnswer()
     {
+        progressImages[curr - 1].color = progressColors[2];
+        scoreImages[curr - 1].color = progressColors[2];
+        progressText.text = $"{Mathf.Round((float) curr / (dataLines.Length - 1) * 100)}%";
+        wrong = true;
+        seeAnswerButton.SetActive(false);
+        submitButtonText.gameObject.SetActive(false);
+        submitNextText.SetActive(true);
+        submitNextArrow.SetActive(true);
+        submitButton.IsNext = true;
         
+        CustomDropdown[] dropdowns = currAnswer.GetComponentsInChildren<CustomDropdown>();
+        for (int i = 0; i < dropdowns.Length; i++) dropdowns[i].ChangeSelected(correctAnswers[i]);
+        
+        UpdateTextWidth();
+        RefreshLayoutNow();
     }
 
     public void RefreshResolution() //TODO
@@ -551,7 +582,7 @@ public class CheckpointManager : MonoBehaviour, GameManager
         submitButtonText.color = submitButtonNormalColor[mode];
         submitButton.HighlightColor = submitButtonHighlightColor[mode];
         submitButton.NormalColor = submitButtonNormalColor[mode];
-
+        
         if (mode != 0)
         {
             CustomDropdown[] dropdowns = currAnswer.GetComponentsInChildren<CustomDropdown>();
@@ -569,6 +600,7 @@ public class CheckpointManager : MonoBehaviour, GameManager
         submitNextArrow.GetComponent<Image>().color = submitButtonNormalColor[mode];
         
         hintText.color = submitButtonNormalColor[mode];
+        wrongText.color = submitButtonNormalColor[mode];
     }
 
     public void ChangeAnswer(string name, int value)

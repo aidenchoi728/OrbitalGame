@@ -4,7 +4,6 @@ Num,Question Text,Question,Hint 1,Hint 2
 3,How many radial nodes are there?,RN,RN,
 4,What is the {quantumName} quantum number?,QN1,AN,RN
 5,What is the {quantumName} quantum number and the {quantumName1} quantum number?,QN2,AN,RN
-6,What are the quantum numbers?,QN3,AN,RN
-7,What is this orbital?,ORB1,AN,RN
-8,What is this orbital?,ORB2,AN,RN
-9,What is this orbital?,ORB3,AN,RN
+6,What is this orbital?,ORB1,AN,RN
+7,What is this orbital?,ORB2,AN,RN
+8,What is this orbital?,ORB3,AN,RN
