@@ -4,6 +4,7 @@ using System.IO;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Random = System.Random;
 
@@ -241,7 +242,7 @@ public class CheckpointManager : MonoBehaviour, GameManager
                 checkpointNumText.text = $"Checkpoint {CheckpointInfo.checkpointNum}";
                 scoreText.text = score.ToString();
                 scoreMaxText.text = $"/ {fullCredit * (data.Count - 1)}";
-                
+                suggestedReviewText.text = data[0][0];
                 return;
             }
             
@@ -381,6 +382,16 @@ public class CheckpointManager : MonoBehaviour, GameManager
         hintText.text = "Hint: " + message;
         
         RefreshLayoutNow();
+    }
+
+    public void NextButton()
+    {
+        SceneManager.LoadScene("Campaign Mode");
+    }
+
+    public void RedoButton()
+    {
+        SceneManager.LoadScene("Checkpoint");
     }
 
     public void WrongText()
