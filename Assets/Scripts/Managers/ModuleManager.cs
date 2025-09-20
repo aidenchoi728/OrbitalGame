@@ -239,6 +239,9 @@ public class ModuleManager : MonoBehaviour, GameManager
                     break;
                 }
                 return;
+            case "Recenter":
+                cam.Recenter();
+                break;
         }
         
         Flow();
@@ -426,6 +429,9 @@ public class ModuleManager : MonoBehaviour, GameManager
                 vNext++;
                 break;
             case ".": break;
+            case "Recenter":
+                cam.Recenter();
+                break;
         }
         
         LoadPrev();

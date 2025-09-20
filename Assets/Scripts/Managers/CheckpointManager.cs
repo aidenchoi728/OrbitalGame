@@ -95,10 +95,12 @@ public class CheckpointManager : MonoBehaviour, GameManager
     private int[] answers = {-1, -1, -1};
 
     private string[] qnTypes = new string[3] { "principal", "azimuthal", "magnetic" };
+
+    private SceneViewCamera cam;
     
     private void Awake()
     {
-        dataLines = Resources.Load<TextAsset>($"Data/LevelData{ModuleInfo.campaignNum}C{ModuleInfo.moduleNum}").text.Split(
+        dataLines = Resources.Load<TextAsset>($"Data/LevelData{CheckpointInfo.campaignNum}C{CheckpointInfo.checkpointNum}").text.Split(
             new[] { '\n', '\r' },
             System.StringSplitOptions.RemoveEmptyEntries
         );
@@ -119,6 +121,8 @@ public class CheckpointManager : MonoBehaviour, GameManager
         hintText.gameObject.SetActive(false);
         wrongText.gameObject.SetActive(false);
         resultsPanel.SetActive(false);
+        
+        cam = Camera.main.GetComponent<SceneViewCamera>();
     }
 
     private void Start()
@@ -228,7 +232,7 @@ public class CheckpointManager : MonoBehaviour, GameManager
         
         questionText.text = ProcessString(data[curr][1], quantumName);
         
-        Debug.Log($"Quantum Numbers: {quantumNumbers[0]} {quantumNumbers[1]} {quantumNumbers[2]}, Answer: {correctAnswers[0]}");
+        cam.Recenter();
 
         RefreshLayoutNow();
 

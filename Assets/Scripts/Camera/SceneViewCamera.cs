@@ -76,8 +76,6 @@ public class SceneViewCamera : MonoBehaviour
 
     private void UpdateCameraPosition()
     {
-        Debug.Log("UpdateCameraPosition");
-        
         Quaternion rotation = Quaternion.Euler(pitch, yaw, 0f);
         Vector3 offset = rotation * new Vector3(0, 0, -distance);
         transform.position = offset;
