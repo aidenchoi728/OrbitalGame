@@ -1,9 +1,11 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
 using UnityEngine.EventSystems;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public static class ModuleInfo
 {
@@ -38,18 +40,24 @@ public class ModuleManager : MonoBehaviour, GameManager
     private int vNext = 0;
     
     private List<int[]> currOrbitals = new List<int[]>();
+
+    private SceneViewCamera cam;
     
     private void Awake()
     {
-        dataLines = File.ReadAllLines(Path.Combine(Application.streamingAssetsPath, $"Level Data - {ModuleInfo.campaignNum}-M{ModuleInfo.moduleNum}.csv"));
-        foreach (string line in dataLines)
-        {
-            data.Add(SplitCsvLine(line));
-        }
+        dataLines = Resources.Load<TextAsset>($"Data/LevelData{ModuleInfo.campaignNum}M{ModuleInfo.moduleNum}").text.Split(
+            new[] { '\n', '\r' },
+            System.StringSplitOptions.RemoveEmptyEntries
+        );
+        
+        //dataLines = File.ReadAllLines(Path.Combine(Application.streamingAssetsPath, $"LevelData{ModuleInfo.campaignNum}M{ModuleInfo.moduleNum}.csv"));
+        foreach (string line in dataLines) data.Add(SplitCsvLine(line));
         
         chartObject.SetActive(false);
         previousButton.SetActive(false);
         transitionPanel.SetActive(false);
+        
+        cam = Camera.main.GetComponent<SceneViewCamera>();
     }
 
     private void Start()
@@ -102,6 +110,7 @@ public class ModuleManager : MonoBehaviour, GameManager
                     case "TRAN":
                         orbitalManager.DestroyOrbital();
                         transitionPanel.SetActive(false);
+                        currOrbitals = new List<int[]>();
                         break;
                     case "AN":
                         orbitalManager.DestroyAngularNode();
@@ -169,6 +178,10 @@ public class ModuleManager : MonoBehaviour, GameManager
                         orbitalManager.TransitionOrbital(n, n2, l, l2, ml, ml2);
                         transitionInfo[0].SetQuantumNumber(n, l, ml);
                         transitionInfo[1].SetQuantumNumber(n2, l2, ml2);
+                        int[] trans1 = { n, l, ml };
+                        int[] trans2 = { n2, l2, ml2 };
+                        currOrbitals.Add(trans1);
+                        currOrbitals.Add(trans2);
                         break;
                     case "AN":
                         orbitalManager.AngularNode(n, l, ml);
@@ -287,6 +300,7 @@ public class ModuleManager : MonoBehaviour, GameManager
                     case "TRAN":
                         orbitalManager.DestroyOrbital();
                         transitionPanel.SetActive(false);
+                        currOrbitals = new List<int[]>();
                         break;
                     case "AN":
                         orbitalManager.DestroyAngularNode();
@@ -354,6 +368,10 @@ public class ModuleManager : MonoBehaviour, GameManager
                         orbitalManager.TransitionOrbital(n, n2, l, l2, ml, ml2);
                         transitionInfo[0].SetQuantumNumber(n, l, ml);
                         transitionInfo[1].SetQuantumNumber(n2, l2, ml2);
+                        int[] trans1 = { n, l, ml };
+                        int[] trans2 = { n2, l2, ml2 };
+                        currOrbitals.Add(trans1);
+                        currOrbitals.Add(trans2);
                         break;
                     case "AN":
                         orbitalManager.AngularNode(n, l, ml);

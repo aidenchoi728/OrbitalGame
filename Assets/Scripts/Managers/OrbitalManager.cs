@@ -80,7 +80,9 @@ public class OrbitalManager : MonoBehaviour
     private Vector2 lastMousePos;
     private bool wasInsideLastFrame;
     private Camera mainCamera;
+    private SceneViewCamera svc;
     
+    private List<int[]> orbitals = new List<int[]>();
     private List<GameObject> activeOverlaps = new List<GameObject>();
     private List<GameObject> activeRadialNodes = new List<GameObject>();
     private List<GameObject> activeAngularNodes = new List<GameObject>();
@@ -122,6 +124,7 @@ public class OrbitalManager : MonoBehaviour
     private void Awake()
     {
         mainCamera = Camera.main;
+        svc = mainCamera.GetComponent<SceneViewCamera>();
         explorerManager2D = FindFirstObjectByType<ExplorerManager2D>();
         if(explorerManager2D != null) isExplorer2D = true;
         
@@ -305,6 +308,10 @@ public class OrbitalManager : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
+
+        orbitals = new List<int[]>();
+        
+        SetIdealView();
     }
     
     private void Update()
@@ -315,6 +322,11 @@ public class OrbitalManager : MonoBehaviour
     public void Orbital(int n, int l, int ml, bool isOverlap, int index = -1)
     {
         UpdateOrbitalInfo(n, l, ml, isOverlap, index);
+        
+        if(isOverlap) orbitals.Add(new []{n, l, ml, index});
+        else orbitals.Add(new []{n, l, ml});
+        
+        SetIdealView();
         
         // 1. Compute threshold and cutoff radius (physical size of the orbital)
         (float threshold, float rCutoff) = ComputePsiCutoff(n, l, ml);
@@ -360,6 +372,10 @@ public class OrbitalManager : MonoBehaviour
         for(int i = activeOverlaps.Count - 1; i >= 0; i--) if(activeOverlaps[i] != null) Destroy(activeOverlaps[i]);
         
         for(int i = activeOrbitalInfo.Count - 1; i >= 0; i--) if(activeOrbitalInfo[i] != null) Destroy(activeOrbitalInfo[i]);
+        
+        orbitals = new List<int[]>();
+        
+        SetIdealView();
     }
 
     public void DestroyOverlay(int index)
@@ -391,6 +407,15 @@ public class OrbitalManager : MonoBehaviour
         psiData.RemoveAt(index);
         psi2Data.RemoveAt(index);
         psi2r2Data.RemoveAt(index);
+
+        for (int i = 0; i < orbitals.Count; i++)
+        {
+            if (orbitals[i].Length == 4 && orbitals[i][3] == index)
+            {
+                orbitals.RemoveAt(i);
+                break;
+            }
+        }
     }
 
     public void TransitionOrbital(int nPrev, int nNew, int lPrev, int lNew, int mlPrev, int mlNew)
@@ -434,6 +459,14 @@ public class OrbitalManager : MonoBehaviour
             }
             // Note: Both use the same grid/box, so the small orbital appears as a small blob in the large box!
         }
+        
+        TransitionAnimation(0);
+
+        orbitals = new List<int[]>();
+        orbitals.Add(new []{nPrev, lPrev, mlPrev});
+        orbitals.Add(new []{nNew, lNew, mlNew});
+        
+        SetIdealView();
     }
     
     public void TransitionAnimation(float t)
@@ -653,9 +686,14 @@ public class OrbitalManager : MonoBehaviour
     
     public void CrossSection(int n, int l, int ml, Plane plane)
     {
+        orbitals.Add(new [] {n, l, ml});
+        
+        SetIdealView();
+        
         rVisualizerPlane = plane;
         
         if (isExplorer2D && !explorerManager2D.ChangeOpen) UpdateOrbitalInfo(n, l, ml);
+        else if (!isExplorer2D) UpdateOrbitalInfo(n, l, ml);
         
         GameObject quad = Instantiate(crossSectionQuadPrefab);
         
@@ -740,7 +778,10 @@ public class OrbitalManager : MonoBehaviour
                 activeOrbital.SetActive(false);
                 Destroy(activeOrbital);
             }
+
+        orbitals = new List<int[]>();
         
+        SetIdealView();
     }
     
     public void CrossSectionBoundary(int n, int l, int ml, Plane plane)
@@ -2072,5 +2113,67 @@ public class OrbitalManager : MonoBehaviour
     public GameObject GetOrbitalInfo(int index)
     {
         return activeOrbitalInfo[index];
+    }
+
+    private void SetIdealView()
+    {
+        List<View> views = new List<View>();
+        List<View> avoid = new List<View>();
+
+        foreach (int[] orbital in orbitals)
+        {
+            if(orbital[1] == 1)
+            {
+                View a;
+
+                if (orbital[2] == -1) a = View.Y;
+                else if (orbital[2] == 0) a = View.Z;
+                else a = View.X;
+                
+                if(!avoid.Contains(a)) avoid.Add(a);
+            }
+            else if (orbital[1] == 2)
+            {
+                switch (orbital[2])
+                {
+                    case -2:
+                        if(!views.Contains(View.Z)) views.Add(View.Z);
+                        break;
+                    case -1:
+                        if(!views.Contains(View.X)) views.Add(View.X);
+                        break;
+                    case 0:
+                        if(!avoid.Contains(View.Z)) avoid.Add(View.Z);
+                        break;
+                    case 1:
+                        if(!views.Contains(View.Y)) views.Add(View.Y);
+                        break;
+                    case 2:
+                        if(!views.Contains(View.Z)) views.Add(View.Z);
+                        break;
+                }
+            }
+        }
+
+        View view = View.XYZ;
+
+        if (avoid.Count < 3)
+        {
+            if (views.Count == 0)
+            {
+                if (avoid.Count != 0)
+                {
+                    if (!avoid.Contains(View.Y)) view = View.Y;
+                    else if(!avoid.Contains(View.Z)) view = View.Z;
+                    else view = View.X;
+                }
+            }
+            else if (views.Count == 1)
+            {
+                if (!avoid.Contains(views[0])) view = views[0];
+            }
+        } 
+        
+        svc.SetPreferred(view);
     }
 }

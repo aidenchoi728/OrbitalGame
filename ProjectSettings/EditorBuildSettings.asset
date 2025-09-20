@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Home.unity
     guid: 7a8b4cfbb13e94cf2a1705eaf2f326f2
   - enabled: 1
+    path: Assets/Scenes/Select Mode.unity
+    guid: 19dad4c882d7a406da29679b9ed554f2
+  - enabled: 1
     path: Assets/Scenes/Campaign Mode.unity
     guid: 37173bdac590a466e98ecc62f61dea22
   - enabled: 1
@@ -20,9 +23,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Module.unity
     guid: b64dd7e043c214df09be121ae631f50e
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/Checkpoint.unity
-    guid: e7a1ce5952ca148abb0c8dada11bd749
+    guid: 0d3b6ae5f8cde490bb767bdc1f8be866
   - enabled: 1
     path: Assets/Scenes/Playgrounds/3D Explorer.unity
     guid: 3ea75fd3ef4414856a34e7071382ccbe

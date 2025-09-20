@@ -1,9 +1,11 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Random = System.Random;
@@ -93,18 +95,19 @@ public class CheckpointManager : MonoBehaviour, GameManager
     private int[] answers = {-1, -1, -1};
 
     private string[] qnTypes = new string[3] { "principal", "azimuthal", "magnetic" };
-
+    
     private void Awake()
     {
-        dataLines = File.ReadAllLines(Path.Combine(Application.streamingAssetsPath, $"Level Data - {CheckpointInfo.campaignNum}-C{CheckpointInfo.checkpointNum}.csv"));
+        dataLines = Resources.Load<TextAsset>($"Data/LevelData{ModuleInfo.campaignNum}C{ModuleInfo.moduleNum}").text.Split(
+            new[] { '\n', '\r' },
+            System.StringSplitOptions.RemoveEmptyEntries
+        );
         
+        //dataLines = File.ReadAllLines(Path.Combine(Application.streamingAssetsPath, $"LevelData{CheckpointInfo.campaignNum}C{CheckpointInfo.checkpointNum}.csv"));
+        foreach (string line in dataLines) data.Add(SplitCsvLine(line));
         progressImages = new Image[dataLines.Length];
         scoreImages = new Image[dataLines.Length];
         progressText.text = "0%";
-        for (int i = 0; i < dataLines.Length; i++)
-        {
-            data.Add(SplitCsvLine(dataLines[i]));
-        }
 
         for (int i = 0; i < data.Count - 1; i++)
         {

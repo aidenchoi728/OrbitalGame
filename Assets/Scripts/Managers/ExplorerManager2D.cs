@@ -1,6 +1,7 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class ExplorerManager2D : MonoBehaviour, ExplorerManager
@@ -27,6 +28,7 @@ public class ExplorerManager2D : MonoBehaviour, ExplorerManager
     private bool boundary;
     private bool changeOpen = false;
     private Plane plane = Plane.XZ;
+    private SceneViewCamera svCam;
 
     private void Awake()
     {
@@ -37,6 +39,9 @@ public class ExplorerManager2D : MonoBehaviour, ExplorerManager
     {
         planeSelect.UpdateSelected(1);
         ChangeOrbital(1, 0, 0);
+        
+        svCam = Camera.main.GetComponent<SceneViewCamera>();
+        svCam.Set2D(plane);
     }
 
     public void ChangeOrbital(int n, int l, int ml)
@@ -133,6 +138,8 @@ public class ExplorerManager2D : MonoBehaviour, ExplorerManager
             orbitalManager.DestroyCSBoundary();
             orbitalManager.CrossSectionBoundary(n, l, ml, plane);
         }
+        
+        svCam.Set2D(plane);
     }
 
     public void RadialNode(bool val)

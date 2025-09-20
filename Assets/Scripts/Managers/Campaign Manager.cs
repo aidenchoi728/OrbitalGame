@@ -1,8 +1,10 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
@@ -30,9 +32,14 @@ public class CampaignManager : MonoBehaviour
     private List<string[]> data;
     private int currentCampaign;
 
-    public LevelButton currentLevelButton;
+    private LevelButton currentLevelButton;
     private bool moduleCheckpoint;
     private int levelMCNum;
+
+    public LevelButton CurrentLevelButton
+    {
+        set => currentLevelButton = value;
+    }
 
     private void Awake()
     {
@@ -138,11 +145,13 @@ public class CampaignManager : MonoBehaviour
     private void ReadData()
     {
         data = new List<string[]>();
-        dataLines = File.ReadAllLines(Path.Combine(Application.streamingAssetsPath, $"Campaign Data - {currentCampaign}.csv"));
-        foreach (string line in dataLines)
-        {
-            data.Add(SplitCsvLine(line));
-        }
+        
+        dataLines = Resources.Load<TextAsset>($"Data/CampaignData{currentCampaign}").text.Split(
+            new[] { '\n', '\r' },
+            System.StringSplitOptions.RemoveEmptyEntries
+        );
+        //dataLines = File.ReadAllLines(Path.Combine(Application.streamingAssetsPath, $"CampaignData{currentCampaign}.csv"));
+        foreach (string line in dataLines) data.Add(SplitCsvLine(line));
     }
     
     private static string[] SplitCsvLine(string line)

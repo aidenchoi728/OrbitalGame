@@ -150,8 +150,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7ce6811cdeed45a081932c3821c29cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 10
-  lookSensitivity: 2
-  scrollSpeed: 15
-  yaw: 0
-  pitch: 90
+  rotationSpeed: 1500
+  defaultDistance: 40
+  zoomSpeed: 8
+  minDistance: 1
+  maxDistance: 100

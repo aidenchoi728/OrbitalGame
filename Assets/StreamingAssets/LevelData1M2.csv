@@ -1,0 +1,32 @@
+Num,Action,Dialogues,Function,n,l,ml,n2,l2,ml2,Plane,Wait
+1,Dialogue,This is an orbital. The electron exists as a 3D wave.,,,,,,,,,
+2,Function,,ORB,1,0,0,,,,,
+3,Next,,,,,,,,,,
+4,Dialogue,What you’re seeing is 90% of the wave. The wave extends outside the boundary.,,,,,,,,,
+5,Destroy,,ORB,,,,,,,,
+6,Function,,CS,1,0,0,,,,XZ,
+7,Function,,CS90B,1,0,0,,,,XZ,
+8,Next,,,,,,,,,,
+9,Dialogue,"The color represents the strength of the wave. Inside the boundary, the wave is the strongest.",,,,,,,,,
+10,Next,,,,,,,,,,
+11,Dialogue,"Hydrogen has multiple orbitals. That is, multiple possible shapes and sizes of electron waves.",,,,,,,,,
+12,Destroy,,CS,,,,,,,,
+13,Destroy,,CS90B,,,,,,,,
+14,Function,,ORB,1,0,0,,,,,
+15,Wait,,,,,,,,,,1
+16,Destroy,,ORB,,,,,,,,
+17,Function,,ORB,2,0,0,,,,,
+18,Wait,,,,,,,,,,1
+19,Destroy,,ORB,,,,,,,,
+21,Function,,ORB,2,1,0,,,,,
+23,Wait,,,,,,,,,,1
+24,Destroy,,ORB,,,,,,,,
+25,Function,,ORB,3,0,0,,,,,
+26,Wait,,,,,,,,,,1
+27,Destroy,,ORB,,,,,,,,
+29,Function,,ORB,3,1,0,,,,,
+31,Wait,,,,,,,,,,1
+32,Destroy,,ORB,,,,,,,,
+35,Function,,ORB,3,2,0,,,,,
+38,Next,,,,,,,,,,
+39,Dialogue,This is the modern atomic model.,,,,,,,,,

@@ -39,7 +39,7 @@ public class LevelButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
             if (pressedTime <= 0f)
             {
                 OnPointerEnter(new PointerEventData(EventSystem.current));
-                campaignManager.currentLevelButton = this;
+                campaignManager.CurrentLevelButton = this;
             }
         }
     }

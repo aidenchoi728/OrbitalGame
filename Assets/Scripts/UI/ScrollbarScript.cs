@@ -23,8 +23,7 @@ public class ScrollbarScript : MonoBehaviour
     private float prevScreenHeight;
     private float scrollHeight;
     private float prevScroll;
-    
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
     private void Awake()
     {
         scrollbar = scroll.GetComponent<Scrollbar>();
