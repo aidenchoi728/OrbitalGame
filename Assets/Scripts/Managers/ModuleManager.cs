@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine.EventSystems;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 
 public static class ModuleInfo
 {
@@ -21,6 +22,7 @@ public class ModuleManager : MonoBehaviour, GameManager
     [SerializeField] private GameObject transitionPanel;
     [SerializeField] private GameObject previousButton;
     [SerializeField] private GameObject nextButton;
+    [SerializeField] private GameObject doneButton;
     [SerializeField] private TransitionInfo[] transitionInfo;
 
     [Header("Settings")] 
@@ -55,6 +57,7 @@ public class ModuleManager : MonoBehaviour, GameManager
         
         chartObject.SetActive(false);
         previousButton.SetActive(false);
+        doneButton.SetActive(false);
         transitionPanel.SetActive(false);
         
         cam = Camera.main.GetComponent<SceneViewCamera>();
@@ -88,6 +91,7 @@ public class ModuleManager : MonoBehaviour, GameManager
         if (curr >= data.Count)
         {
             nextButton.SetActive(false);
+            doneButton.SetActive(true);
             return;
         }
 
@@ -281,6 +285,7 @@ public class ModuleManager : MonoBehaviour, GameManager
         if (curr >= data.Count)
         {
             nextButton.SetActive(false);
+            doneButton.SetActive(true);
             return;
         }
         
@@ -455,6 +460,7 @@ public class ModuleManager : MonoBehaviour, GameManager
     public void Previous()
     {
         nextButton.SetActive(true);
+        doneButton.SetActive(false);
         
         orbitalManager.DestroyAll();
         chartObject.SetActive(false);
@@ -486,6 +492,8 @@ public class ModuleManager : MonoBehaviour, GameManager
         EventSystem.current.SetSelectedGameObject(null);
 
     }
+
+    public void Done() => SceneManager.LoadScene("Campaign Mode");
     
     private static string[] SplitCsvLine(string line)
     {
