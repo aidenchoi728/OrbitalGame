@@ -17,6 +17,7 @@ public class SceneViewCamera : MonoBehaviour
     private float distance;
     
     private bool is2D;
+    private bool freeze = false;
 
     private float pYaw;
     private float pPitch;
@@ -30,6 +31,7 @@ public class SceneViewCamera : MonoBehaviour
 
     private void Update()
     {
+        if (freeze) return;
         HandleRotation();
         HandleZoom();
     }
@@ -159,5 +161,10 @@ public class SceneViewCamera : MonoBehaviour
     public static bool IsPointerOverUI()
     {
         return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+    }
+
+    public bool Freeze
+    {
+        set => freeze = value;
     }
 }
