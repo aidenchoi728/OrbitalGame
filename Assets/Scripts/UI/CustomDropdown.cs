@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class CustomDropdown : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
+public class CustomDropdown : MonoBehaviour, CustomInput, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     [SerializeField] private string name;
     

@@ -4142,7 +4142,7 @@ MonoBehaviour:
   hintText: {fileID: 22302559}
   wrongText: {fileID: 1953595570}
   progressPrefab: {fileID: 6326973479269283136, guid: 69367c2cce3be4716bbc751eaffd4b0f, type: 3}
-  nodePrefab: {fileID: 4929790180488911929, guid: 10903ad2d653e4fc496636d55fe585c5, type: 3}
+  nodePrefab: {fileID: 1328753833656996720, guid: 5f20baebd8ae94d02ac7130128320ff2, type: 3}
   quantum1Prefab:
   - {fileID: 4614641594045618287, guid: e3696ceb48a1f457ea3a9579d2b4f638, type: 3}
   - {fileID: 4062168395708401747, guid: ce90610054adc487ebbfcd5938a07e68, type: 3}

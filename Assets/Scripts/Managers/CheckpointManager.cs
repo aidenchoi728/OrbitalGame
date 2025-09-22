@@ -162,13 +162,13 @@ public class CheckpointManager : MonoBehaviour, GameManager
             case "QN1":
                 answerType = UnityEngine.Random.Range(0, 2);
                 currAnswer = Instantiate(quantum1Prefab[answerType], answerParent);
-                correctAnswers = new int[] {changeToNum(answerType)};
+                correctAnswers = new int[] {quantumNumbers[answerType]};
                 quantumName = new string[1] {qnTypes[answerType]};
                 break;
             case "QN2":
                 answerType = 0;
                 currAnswer = Instantiate(quantum2Prefab[answerType], answerParent);
-                correctAnswers = new int[] {changeToNum(answerType), changeToNum((answerType + 1) % 3)};
+                correctAnswers = new int[] {quantumNumbers[answerType], quantumNumbers[(answerType + 1) % 3]};
                 quantumName = new String[2] {qnTypes[answerType], qnTypes[(answerType + 1) % 3]};
                 answerType += 3;
                 break;
@@ -296,8 +296,8 @@ public class CheckpointManager : MonoBehaviour, GameManager
             submitNextText.SetActive(true);
             submitNextArrow.SetActive(true);
             submitButton.IsNext = true;
-            CustomDropdown[] dropdowns = currAnswer.GetComponentsInChildren<CustomDropdown>();
-            foreach (CustomDropdown dropdown in dropdowns) dropdown.Correct = true;
+            CustomInput[] dropdowns = currAnswer.GetComponentsInChildren<CustomInput>();
+            foreach (CustomInput dropdown in dropdowns) dropdown.Correct = true;
             progressText.text = $"{Mathf.Round((float) curr / (dataLines.Length - 1) * 100)}%";
             if (haveTried || usedHint)
             {
@@ -324,6 +324,8 @@ public class CheckpointManager : MonoBehaviour, GameManager
                 seeAnswerButton.SetActive(true);
                 haveTried = true;
             }
+            CustomInput[] dropdowns = currAnswer.GetComponentsInChildren<CustomInput>();
+            foreach (CustomInput dropdown in dropdowns) dropdown.Correct = false;
         }
         UpdateTextWidth();
         RefreshLayoutNow();
@@ -439,10 +441,10 @@ public class CheckpointManager : MonoBehaviour, GameManager
                             switch (quantumNumbers[1])
                             {
                                 case 1:
-                                    message += $"n={answers[0] + 1} doesn't have p orbitals. ";
+                                    message += $"n={answers[0]} doesn't have p orbitals. ";
                                     break;
                                 case 2:
-                                    if (answers[0] < 2) message += $"n={answers[0] + 1} doesn't have d orbitals. ";
+                                    if (answers[0] < 3) message += $"n={answers[0]} doesn't have d orbitals. ";
                                     break;
                             }
                         }
@@ -457,8 +459,8 @@ public class CheckpointManager : MonoBehaviour, GameManager
                 }
                 break;
             case "QN2":
-                if (!blank && answers[1] > answers[0])
-                    message += $"n={answers[0] + 1} can't have this azimuthal quantum number. ";
+                if (!blank && answers[1] > answers[0] - 1)
+                    message += $"n={answers[0]} can't have this azimuthal quantum number. ";
                 if (correctAnswers[0] != answers[0])
                 {
                     message += "Remember, n is equal to the total number of nodes, plus 1. ";
@@ -576,7 +578,7 @@ public class CheckpointManager : MonoBehaviour, GameManager
         submitNextArrow.SetActive(true);
         submitButton.IsNext = true;
         
-        CustomDropdown[] dropdowns = currAnswer.GetComponentsInChildren<CustomDropdown>();
+        CustomInput[] dropdowns = currAnswer.GetComponentsInChildren<CustomInput>();
         for (int i = 0; i < dropdowns.Length; i++) dropdowns[i].ChangeSelected(correctAnswers[i]);
         
         UpdateTextWidth();
@@ -603,8 +605,8 @@ public class CheckpointManager : MonoBehaviour, GameManager
         
         if (mode != 0)
         {
-            CustomDropdown[] dropdowns = currAnswer.GetComponentsInChildren<CustomDropdown>();
-            foreach (CustomDropdown dropdown in dropdowns) dropdown.SetColors(fieldNormalColor[mode], fieldHighlightColor[mode], fieldTextColor[mode], 
+            CustomInput[] dropdowns = currAnswer.GetComponentsInChildren<CustomInput>();
+            foreach (CustomInput dropdown in dropdowns) dropdown.SetColors(fieldNormalColor[mode], fieldHighlightColor[mode], fieldTextColor[mode], 
                 itemNormalColor[mode], itemHighlightColor[mode], itemHoverColor[mode], itemTextNormalColor[mode], itemTextHighlightColor[mode]);
         }
         

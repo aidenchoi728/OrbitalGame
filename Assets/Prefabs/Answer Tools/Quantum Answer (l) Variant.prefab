@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: 36
       objectReference: {fileID: 0}
+    - target: {fileID: 5504974164950613085, guid: 58c53c860834243bca997eb6297e3af7, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6788951839504809939, guid: 58c53c860834243bca997eb6297e3af7, type: 3}
       propertyPath: m_Name
       value: Quantum Answer (l) Variant
