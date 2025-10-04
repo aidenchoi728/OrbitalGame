@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,9 +10,9 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] private float dimAmount = 0.85f;
     [SerializeField] private RectTransform textRect;
     [SerializeField] private TextMeshProUGUI text;
-    [SerializeField] private GameObject nextButton;
+    [SerializeField] private GameObject skipButton;
     [SerializeField] private GameObject previousButton;
-    [SerializeField] private TextMeshProUGUI skipText;
+    [SerializeField] private TextMeshProUGUI nextText;
     [SerializeField] private RectTransform[] layouts;
     [SerializeField] private float padding = 10f;
     [SerializeField] private Canvas mainCanvas;
@@ -24,6 +25,7 @@ public class TutorialManager : MonoBehaviour
     
     private ScreenSpotlightDimController spotlightController;
     private SceneViewCamera cam;
+    private GameObject controls;
 
     private int curr = 0;
     private int close = -1;
@@ -32,6 +34,8 @@ public class TutorialManager : MonoBehaviour
     {
         spotlightController = GetComponent<ScreenSpotlightDimController>();
         cam = Camera.main.GetComponent<SceneViewCamera>();
+        controls = GameObject.FindWithTag("Controls");
+        controls.SetActive(false);
         
         StartTutorial();
     }
@@ -56,10 +60,15 @@ public class TutorialManager : MonoBehaviour
     public void LoadNext()
     {
         if(curr == 0) previousButton.SetActive(false);
+        else if (curr >= textContents.Length)
+        {
+            EndTutorial();
+            return;
+        }
         else previousButton.SetActive(true);
         
         text.text = textContents[curr];
-        RefreshLayoutNow();
+        
         if (spotlightRects[curr] == null)
         {
             spotlightController.targetRectTransform = null;
@@ -78,15 +87,17 @@ public class TutorialManager : MonoBehaviour
 
         if (curr >= textContents.Length)
         {
-            nextButton.SetActive(false);
-            skipText.text = "Close";
+            skipButton.SetActive(false);
+            nextText.text = "Close";
         }
+        
+        RefreshLayoutNow();
     }
 
     public void LoadPrevious()
     {
-        nextButton.SetActive(true);
-        skipText.text = "Skip";
+        skipButton.SetActive(true);
+        nextText.text = "Skip";
         curr -= 2;
         LoadNext();
     }
@@ -96,6 +107,8 @@ public class TutorialManager : MonoBehaviour
         cam.Freeze = false;
         spotlightController.dimAmount = 0f;
         close = 0;
+        controls.SetActive(true);
+        gameObject.SetActive(true);
     }
 
     private void PositionText(Rect spotlightRect)

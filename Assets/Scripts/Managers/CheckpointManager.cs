@@ -191,8 +191,8 @@ public class CheckpointManager : MonoBehaviour, GameManager
                         labels[0].text = orbitalName[0] + orbitalName[1];
                         break;
                     case 1:
-                        labels[1].text = quantumNumbers[0].ToString();
-                        labels[0].text = orbitalName[1];
+                        labels[0].text = quantumNumbers[0].ToString();
+                        labels[1].text = orbitalName[1];
                         break;
                     case 2:
                         labels[0].text = quantumNumbers[0].ToString() + orbitalName[0];

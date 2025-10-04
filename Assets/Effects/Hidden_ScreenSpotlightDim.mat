@@ -30,6 +30,6 @@ Material:
     - _FlipSampleY: 0
     - _SpotFeather: 0.025925925
     m_Colors:
-    - _SpotRect: {r: 0.09869793, g: 0.79351854, b: 0.08411457, a: 0.1277778}
+    - _SpotRect: {r: 0.5, g: 0.5, b: 0.2890625, a: 0.41203704}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

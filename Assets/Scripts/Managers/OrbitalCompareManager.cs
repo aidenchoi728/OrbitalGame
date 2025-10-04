@@ -37,14 +37,11 @@ public class OrbitalCompareManager : MonoBehaviour
     
     private List<QuantumNumber> quantumNumbers = new List<QuantumNumber>();
 
-    private void Awake()
+    private void st()
     {
         orbitalManager.IsBillBoard = true;
         foreach (LineChart chart in charts) chart.RemoveAllSerie();
-    }
-
-    private void Start()
-    {
+        
         foreach(RectTransform refreshRect in refreshRects) RefreshLayoutNow(refreshRect);
     }
 

@@ -355,10 +355,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aea2b33a12a784da7a0cc622a96d316b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttonImages:
-  - {fileID: 537245238774326361}
-  - {fileID: 4262496053874754854}
-  - {fileID: 612536668914234930}
+  isSprite: 1
   buttonSpritesNormal:
   - {fileID: 21300000, guid: 48b19ceb000ad40749a41b754dce55d5, type: 3}
   - {fileID: 21300000, guid: 01c3c2dc0a8b74e48ba2bfd53f44e883, type: 3}
@@ -367,6 +364,10 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 33d564a44c1574945a46cb121516822d, type: 3}
   - {fileID: 21300000, guid: d11901e1157094cb0b4eb6a8ec5651ec, type: 3}
   - {fileID: 21300000, guid: 4cc341f3b3d9146b3995f80a4c6f41a8, type: 3}
+  buttonColorNormal: {r: 0, g: 0, b: 0, a: 0}
+  buttonColorSelected: {r: 0, g: 0, b: 0, a: 0}
+  textColorNormal: {r: 0, g: 0, b: 0, a: 0}
+  textColorSelected: {r: 0, g: 0, b: 0, a: 0}
   onClick:
     m_PersistentCalls:
       m_Calls:
@@ -811,7 +812,7 @@ GameObject:
   - component: {fileID: 8368965406626447223}
   m_Layer: 5
   m_Name: Universal Controls
-  m_TagString: Untagged
+  m_TagString: Controls
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

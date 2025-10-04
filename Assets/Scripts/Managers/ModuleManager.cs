@@ -33,6 +33,7 @@ public class ModuleManager : MonoBehaviour, GameManager
     private bool isWait = false;
     private float waitTime = 0f;
     private bool isNext = false;
+    private bool hasFunc = false;
 
     private string[] dataLines;
     private List<string[]> data = new List<string[]>();
@@ -161,6 +162,8 @@ public class ModuleManager : MonoBehaviour, GameManager
                 int.TryParse(data[curr][4], out int n);
                 int.TryParse(data[curr][5], out int l);
                 int.TryParse(data[curr][6], out int ml);
+
+                hasFunc = true;
                 
                 switch (data[curr][3])
                 {
@@ -237,6 +240,9 @@ public class ModuleManager : MonoBehaviour, GameManager
                 float.TryParse(data[curr][11], out waitTime);
                 return;
             case "Next":
+                if(hasFunc) cam.Recenter();
+                hasFunc = false;
+                
                 if (isNext)
                 {
                     isNext = false;
@@ -355,6 +361,8 @@ public class ModuleManager : MonoBehaviour, GameManager
                 int.TryParse(vData[curr][4], out int n);
                 int.TryParse(vData[curr][5], out int l);
                 int.TryParse(vData[curr][6], out int ml);
+
+                hasFunc = true;
                 
                 switch (vData[curr][3])
                 {
@@ -432,6 +440,8 @@ public class ModuleManager : MonoBehaviour, GameManager
                 return;
             case "Next":
                 vNext++;
+                if (hasFunc) cam.Recenter();
+                hasFunc = false;
                 break;
             case ".": break;
             case "Recenter":
@@ -459,6 +469,8 @@ public class ModuleManager : MonoBehaviour, GameManager
 
     public void Previous()
     {
+        hasFunc = false;
+        
         nextButton.SetActive(true);
         doneButton.SetActive(false);
         

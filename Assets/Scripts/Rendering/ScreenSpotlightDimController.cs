@@ -1,25 +1,44 @@
-using System;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI; // for Canvas & layout helpers
 
 public class ScreenSpotlightDimController : MonoBehaviour
 {
     [Header("Target (pick one)")]
-    public RectTransform targetRectTransform;    // if you want this to auto-compute from a UI element
-    private Camera uiCameraForWorldToScreen;      // set if Canvas is Screen Space - Camera or World Space
-    public Rect manualScreenRectPixels;          // or set this yourself in pixels (x,y = left,bottom)
+    public RectTransform targetRectTransform;    // auto-compute from a UI element
+    private Camera uiCameraForWorldToScreen;     // fallback; will auto-pick from Canvas when available
+    public Rect manualScreenRectPixels;          // or provide screen-space rect yourself (pixels, bottom-left origin)
 
     [Header("Spotlight Settings")]
     [Range(0f, 1f)] public float dimAmount = 0.7f; // how dark the outside is
-    [SerializeField] private float paddingPixels = 16f;               // expands the rect on all sides
-    [SerializeField] private float featherPixels = 8f;                // soft edge width
+    [SerializeField] private float paddingPixels = 16f;  // expands the rect on all sides
+    [SerializeField] private float featherPixels = 8f;   // soft edge width
 
     [Header("Material (must be the SAME one used by the Renderer Feature)")]
     [SerializeField] private Material spotlightMaterial;
 
-    private void Awake()
+    [Header("Update Mode")]
+    [Tooltip("If true, updates every frame (keeps up with moving UI). If false, only updates on enable/RefreshNow().")]
+    [SerializeField] private bool continuousUpdate = true;
+
+    void Awake()
     {
         uiCameraForWorldToScreen = Camera.main;
+    }
+
+    void OnEnable()
+    {
+        TryWireMaterial();
+
+        // ✅ First, do a WebGL-safe update AFTER the next real UI render/layout
+        if (targetRectTransform)
+        {
+            WebGLFrameSync.AfterLayoutReady(this, targetRectTransform, UpdateSpotlight);
+        }
+        else
+        {
+            WebGLFrameSync.AfterNextRenderedFrame(this, UpdateSpotlight);
+        }
     }
 
     void Reset()      { TryWireMaterial(); }
@@ -27,7 +46,7 @@ public class ScreenSpotlightDimController : MonoBehaviour
 
     void TryWireMaterial()
     {
-        // 1) Preferred: the feature exposes what it's using this frame
+        // 1) Preferred: material exposed by the feature
         if (!spotlightMaterial && ScreenSpotlightDimFeature.ActiveMaterial != null)
         {
             spotlightMaterial = ScreenSpotlightDimFeature.ActiveMaterial;
@@ -38,32 +57,55 @@ public class ScreenSpotlightDimController : MonoBehaviour
         if (!spotlightMaterial)
         {
             var feat = Resources.FindObjectsOfTypeAll<ScreenSpotlightDimFeature>()
-                .FirstOrDefault(f =>
-                    f != null &&
-                    f.settings != null &&
-                    f.settings.material != null);
-
-            if (feat != null)
-                spotlightMaterial = feat.settings.material;
+                .FirstOrDefault(f => f != null && f.settings != null && f.settings.material != null);
+            if (feat != null) spotlightMaterial = feat.settings.material;
         }
     }
 
     void LateUpdate()
     {
+        if (continuousUpdate) UpdateSpotlight();
+    }
+
+    /// <summary>For one-off recalculation (e.g., after content/size changes).</summary>
+    public void RefreshNow(bool forceLayout = false)
+    {
+        if (forceLayout && targetRectTransform)
+            WebGLFrameSync.AfterLayoutReady(this, targetRectTransform, UpdateSpotlight);
+        else
+            WebGLFrameSync.AfterNextRenderedFrame(this, UpdateSpotlight);
+    }
+
+    // ---- Core update ----
+    void UpdateSpotlight()
+    {
         if (!spotlightMaterial) return;
 
-        // Choose source of the rect
+        // Determine the camera to use for screen conversion, based on the target's Canvas.
+        Camera cam = uiCameraForWorldToScreen;
+        if (targetRectTransform)
+        {
+            var canvas = targetRectTransform.GetComponentInParent<Canvas>();
+            if (canvas)
+            {
+                cam = canvas.renderMode == RenderMode.ScreenSpaceOverlay
+                    ? null
+                    : (canvas.worldCamera ? canvas.worldCamera : uiCameraForWorldToScreen);
+            }
+        }
+
+        // Choose source rect
         Rect rectPx = targetRectTransform
-            ? GetScreenRect(targetRectTransform, uiCameraForWorldToScreen)
+            ? GetScreenRect(targetRectTransform, cam)
             : manualScreenRectPixels;
 
-        // Padding
+        // Apply padding
         rectPx.xMin -= paddingPixels;
         rectPx.yMin -= paddingPixels;
         rectPx.xMax += paddingPixels;
         rectPx.yMax += paddingPixels;
 
-        // Convert to normalized UV
+        // Normalize to 0..1 UV space
         float sw = Mathf.Max(1, (float)Screen.width);
         float sh = Mathf.Max(1, (float)Screen.height);
         Vector4 spot = new Vector4(
@@ -75,7 +117,7 @@ public class ScreenSpotlightDimController : MonoBehaviour
 
         float featherNorm = featherPixels / Mathf.Min(sw, sh);
 
-        // Feed the shared material instance
+        // Feed material
         spotlightMaterial.SetVector("_SpotRect", spot);
         spotlightMaterial.SetFloat("_SpotFeather", featherNorm);
         spotlightMaterial.SetFloat("_DimAmount", dimAmount);
@@ -89,11 +131,10 @@ public class ScreenSpotlightDimController : MonoBehaviour
         for (int i = 0; i < 4; i++)
             corners[i] = RectTransformUtility.WorldToScreenPoint(uiCam, corners[i]);
 
-        float xMin = corners.Min(c => c.x);
-        float xMax = corners.Max(c => c.x);
-        float yMin = corners.Min(c => c.y);
-        float yMax = corners.Max(c => c.y);
-
+        float xMin = Mathf.Min(corners[0].x, corners[1].x, corners[2].x, corners[3].x);
+        float xMax = Mathf.Max(corners[0].x, corners[1].x, corners[2].x, corners[3].x);
+        float yMin = Mathf.Min(corners[0].y, corners[1].y, corners[2].y, corners[3].y);
+        float yMax = Mathf.Max(corners[0].y, corners[1].y, corners[2].y, corners[3].y);
         return Rect.MinMaxRect(xMin, yMin, xMax, yMax);
     }
 

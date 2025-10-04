@@ -32,7 +32,7 @@ Num,Action,Dialogues,Function,n,l,ml,n2,l2,ml2,Plane,Wait
 31,Dialogue,Many other orbitals have radial nodes.,,,,,,,,,
 32,Function,,ORB,3,1,0,,,,,
 33,Function,,RN,3,1,0,,,,,
-34,Wait,,,,,,,,,,2
+34,Next,,,,,,,,,,2
 35,Destroy,,ORB,,,,,,,,
 36,Destroy,,RN,,,,,,,,
 37,Function,,ORB,2,0,0,,,,,

@@ -342,7 +342,8 @@ public class OrbitalManager : MonoBehaviour
         for (int z = 0; z < gridSize; z++) 
             orbitalMap[x, y, z] = GetPsi(n, l, ml, x * step - rCutoff, y * step - rCutoff, z * step - rCutoff);
 
-        CreateAndApplyMesh(orbitalMap, threshold, isOverlap, index);
+        if(l == 0) CreateAndApplyMesh(orbitalMap, threshold, isOverlap, true, index);
+        else CreateAndApplyMesh(orbitalMap, threshold, isOverlap, false, index);
 
         // 4. Make the mesh's physical size independent of gridSize:
         //    The mesh vertices span 0..gridSize-1, so we normalize the scale.
@@ -486,7 +487,7 @@ public class OrbitalManager : MonoBehaviour
         float threshold = Mathf.Lerp(thresholdPrev, thresholdNew, t);
 
         // Generate mesh
-        CreateAndApplyMesh(orbitalMap, threshold, false);
+        CreateAndApplyMesh(orbitalMap, threshold, false, false);
 
         // Set the physical scale (independent of grid size)
         transform.localScale = Vector3.one * (2f * boxExtent / gridSize);
@@ -688,7 +689,7 @@ public class OrbitalManager : MonoBehaviour
     {
         orbitals.Add(new [] {n, l, ml});
         
-        SetIdealView();
+        SetIdealView(plane);
         
         rVisualizerPlane = plane;
         
@@ -1396,6 +1397,8 @@ public class OrbitalManager : MonoBehaviour
             float z = Mathf.Sin((x / period) * 2 * Mathf.PI) * amplitude;
             lineRenderer.SetPosition(i, new Vector3(x, 0, z));
         }
+        
+        SetIdealView(Plane.XZ);
 
         wave1DObject = go;
     }
@@ -1468,6 +1471,8 @@ public class OrbitalManager : MonoBehaviour
         wave2DObject.AddComponent<MeshFilter>().mesh = mesh;
         MeshRenderer mr = wave2DObject.AddComponent<MeshRenderer>();
         mr.material = phaseNegativeMat;
+        
+        SetIdealView(Plane.XZ);
     }
 
     public void DestroyWave2D()
@@ -1508,6 +1513,8 @@ public class OrbitalManager : MonoBehaviour
             Renderer rend = sphere.GetComponent<Renderer>();
             rend.material = sharedMaterial;
         }
+        
+        SetIdealView(Plane.XZ);
     }
     
     public void DestroyWave3D()
@@ -1710,10 +1717,21 @@ public class OrbitalManager : MonoBehaviour
         return (sorted.Last().psiSq, sorted.Last().r);
     }
     
-    private void CreateAndApplyMesh(float[,,] targetData, float targetThreshold, bool isOverlap, int index = -1)
+    private void CreateAndApplyMesh(float[,,] targetData, float targetThreshold, bool isOverlap, bool isS, int index = -1)
     {
-        Mesh mesh0 = CreateMeshForPhase(0, targetData, targetThreshold);
-        Mesh mesh1 = CreateMeshForPhase(1, targetData, targetThreshold);
+        Mesh mesh0;
+        Mesh mesh1;
+
+        if (isS)
+        {
+            mesh0 = CreateMeshForPhase(0, targetData, targetThreshold);
+            mesh1 = CreateMeshForPhase(1, targetData, targetThreshold);
+        }
+        else
+        {
+            mesh0 = CreateMeshForPhase(0, targetData, targetThreshold);
+            mesh1 = CreateMeshForPhase(1, targetData, targetThreshold);
+        }
 
         List<Vector3> vertices = new(mesh0.vertexCount + mesh1.vertexCount);
         List<int> submesh0 = new(mesh0.triangles);
@@ -1748,6 +1766,7 @@ public class OrbitalManager : MonoBehaviour
         }
         else GetComponent<MeshFilter>().mesh = mesh;
     }
+    
     
     private Mesh CreateMeshForPhase(int targetPhase, float[,,] targetData, float targetThreshold)
     {
@@ -1841,6 +1860,116 @@ public class OrbitalManager : MonoBehaviour
         
         return mesh;
     }
+    
+    
+    private Mesh CreateMeshForPhaseS(int targetPhase, float[,,] targetData, float targetThreshold)
+    {
+        List<Vector3> vertices = new();
+        List<int> triangles = new();
+        Vector3 centerOffset = new((gridSize - 1) * 0.5f, (gridSize - 1) * 0.5f, (gridSize - 1) * 0.5f);
+
+        float[] cube = new float[8];
+        Vector3[] corner = new Vector3[8];
+        int[] cornerPhase = new int[8];
+        Vector3[] edgeVertex = new Vector3[12];
+        int[] edgePhase = new int[12];
+        bool[] edgeUsed = new bool[12];
+
+        for (int x = 0; x < gridSize - 1; x++)
+        for (int y = 0; y < gridSize - 1; y++)
+        for (int z = 0; z < gridSize - 1; z++)
+        {
+            Vector3Int pos = new(x, y, z);
+            bool skipCube = false;
+
+            for (int i = 0; i < 8; i++)
+            {
+                Vector3Int cp = pos + MarchingCubesTables.CornerTable[i];
+                float val = targetData[cp.x, cp.y, cp.z];
+                if (!float.IsFinite(val)) { skipCube = true; break; }
+
+                cube[i] = val * val;
+                corner[i] = new Vector3(cp.x, cp.y, cp.z) - centerOffset; // origin at (0,0,0)
+                cornerPhase[i] = val >= 0f ? 1 : 0;
+            }
+
+            if (skipCube) continue;
+
+            int configIndex = 0;
+            for (int i = 0; i < 8; i++)
+                if (cube[i] >= targetThreshold) configIndex |= 1 << i;
+
+            int edgeFlags = MarchingCubesTables.EdgeTable[configIndex];
+            if (edgeFlags == 0) continue;
+
+            Array.Clear(edgeUsed, 0, 12);
+
+            for (int i = 0; i < 12; i++)
+            {
+                if ((edgeFlags & (1 << i)) == 0) continue;
+
+                int a = MarchingCubesTables.EdgeConnection[i, 0];
+                int b = MarchingCubesTables.EdgeConnection[i, 1];
+                float denom = cube[b] - cube[a];
+                if (Math.Abs(denom) < 1e-7f) continue;
+
+                float t = (targetThreshold - cube[a]) / denom;
+                t = t < 0f ? 0f : (t > 1f ? 1f : t);
+
+                edgeVertex[i] = corner[a] + t * (corner[b] - corner[a]);
+                edgePhase[i] = Math.Abs(t - 0.5f) <= 0.5f ? cornerPhase[a] : cornerPhase[b];
+                edgeUsed[i] = true;
+            }
+
+            for (int i = 0; MarchingCubesTables.TriangleTable[configIndex, i] != -1; i += 3)
+            {
+                int i0 = MarchingCubesTables.TriangleTable[configIndex, i];
+                int i1 = MarchingCubesTables.TriangleTable[configIndex, i + 1];
+                int i2 = MarchingCubesTables.TriangleTable[configIndex, i + 2];
+
+                if (!edgeUsed[i0] || !edgeUsed[i1] || !edgeUsed[i2]) continue;
+                if (edgePhase[i0] != targetPhase || edgePhase[i1] != targetPhase || edgePhase[i2] != targetPhase)
+                    continue;
+
+                // Candidate vertices
+                Vector3 v0 = edgeVertex[i0];
+                Vector3 v1 = edgeVertex[i1];
+                Vector3 v2 = edgeVertex[i2];
+
+                // --- face toward origin (0,0,0) ---
+                Vector3 centroid = (v0 + v1 + v2) / 3f;
+                Vector3 n = Vector3.Cross(v1 - v0, v2 - v0); // normal from current winding
+                Vector3 toOrigin = -centroid;                // origin - centroid
+                bool facesOrigin = Vector3.Dot(n, toOrigin) >= 0f;
+                // -----------------------------------
+
+                int idx = vertices.Count;
+
+                if (facesOrigin)
+                {
+                    vertices.Add(v0); vertices.Add(v1); vertices.Add(v2);
+                    triangles.Add(idx); triangles.Add(idx + 1); triangles.Add(idx + 2);
+                }
+                else
+                {
+                    // flip winding so the front face is visible from the origin
+                    vertices.Add(v0); vertices.Add(v2); vertices.Add(v1);
+                    triangles.Add(idx); triangles.Add(idx + 1); triangles.Add(idx + 2);
+                }
+            }
+        }
+
+        // (If you build/return a Mesh here:)
+        var mesh = new Mesh();
+        if (vertices.Count > 65535) mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+   
+        mesh.SetVertices(vertices);
+        mesh.SetTriangles(triangles, 0);
+        mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
+        return mesh;
+    }
+
 
 /*
     private Mesh CreateMeshForPhase(int targetPhase, float[,,] targetData, float targetThreshold)
@@ -2174,6 +2303,15 @@ public class OrbitalManager : MonoBehaviour
             }
         } 
         
+        svc.SetPreferred(view);
+    }
+
+    private void SetIdealView(Plane plane)
+    {
+        View view = View.XYZ;
+        if (plane == Plane.XY) view = View.Z;
+        else if (plane == Plane.XZ) view = View.Y;
+        else if (plane == Plane.YZ) view = View.X;
         svc.SetPreferred(view);
     }
 }

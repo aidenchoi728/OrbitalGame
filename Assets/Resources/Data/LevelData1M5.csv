@@ -1,10 +1,10 @@
 Num,Action,Dialogues,Function,n,l,ml,n2,l2,ml2,Plane,Wait
 1,Dialogue,Orbitals come in many shapes.,,,,,,,,,
 2,Function,,ORB,1,0,0,,,,,
-3,Wait,,,,,,,,,,2
+3,Next,,,,,,,,,,2
 4,Destroy,,ORB,,,,,,,,
 5,Function,,ORB,2,1,0,,,,,
-6,Wait,,,,,,,,,,2
+6,Next,,,,,,,,,,2
 7,Destroy,,ORB,,,,,,,,
 8,Function,,ORB,3,2,-2,,,,,
 9,Next,,,,,,,,,,
