@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
@@ -36,7 +37,10 @@ public class TutorialManager : MonoBehaviour
         cam = Camera.main.GetComponent<SceneViewCamera>();
         controls = GameObject.FindWithTag("Controls");
         controls.SetActive(false);
-        
+    }
+
+    private void Start()
+    {
         StartTutorial();
     }
 
@@ -68,6 +72,7 @@ public class TutorialManager : MonoBehaviour
         else previousButton.SetActive(true);
         
         text.text = textContents[curr];
+        RefreshLayoutNow();
         
         if (spotlightRects[curr] == null)
         {
@@ -79,7 +84,7 @@ public class TutorialManager : MonoBehaviour
         {
             spotlightController.targetRectTransform = spotlightRects[curr];
             spotlightController.manualScreenRectPixels = new Rect();
-            PositionText(GetScreenRect(spotlightRects[curr]));
+            PositionText(spotlightRects[curr]);
         }
         cam.Freeze = freeze[curr];
         
@@ -90,14 +95,11 @@ public class TutorialManager : MonoBehaviour
             skipButton.SetActive(false);
             nextText.text = "Close";
         }
-        
-        RefreshLayoutNow();
     }
 
     public void LoadPrevious()
     {
         skipButton.SetActive(true);
-        nextText.text = "Skip";
         curr -= 2;
         LoadNext();
     }
@@ -119,15 +121,12 @@ public class TutorialManager : MonoBehaviour
         var canvas = textRect.GetComponentInParent<Canvas>();
         if (canvas == null) return;
         var canvasRect = canvas.GetComponent<RectTransform>();
-        Camera cam = (canvas.renderMode == RenderMode.ScreenSpaceOverlay)
-            ? null
-            : (canvas.worldCamera != null ? canvas.worldCamera : Camera.main);
 
         // Decide side by available horizontal space (>= means tie → right)
-        float spaceLeft  = spotlightRect.xMin;
+        float spaceLeft = spotlightRect.xMin;
         float spaceRight = Screen.width - spotlightRect.xMax;
-        bool placeRight  = spaceRight >= spaceLeft;
-
+        bool placeRight = spaceRight >= spaceLeft;
+        
         // Choose pivot & target screen point
         Vector2 pivot, screenPoint;
         if (placeRight)
@@ -147,7 +146,56 @@ public class TutorialManager : MonoBehaviour
         textRect.pivot = pivot;
 
         // Convert the desired screen point to the canvas plane and place the rect there
-        if (RectTransformUtility.ScreenPointToWorldPointInRectangle(canvasRect, screenPoint, cam, out var worldPos))
+        if (RectTransformUtility.ScreenPointToWorldPointInRectangle(canvasRect, screenPoint, null, out var worldPos))
+        {
+            textRect.position = worldPos;
+        }
+    }
+    
+    private void PositionText(RectTransform rt)
+    {
+        Vector3[] corners = new Vector3[4];
+        rt.GetWorldCorners(corners);
+
+        for (int i = 0; i < 4; i++)
+            corners[i] = RectTransformUtility.WorldToScreenPoint(Camera.main, corners[i]);
+
+        float xMin = corners.Min(c => c.x);
+        float xMax = corners.Max(c => c.x);
+        float yMin = corners.Min(c => c.y);
+        float yMax = corners.Max(c => c.y);
+        
+        Rect spotlightRect = Rect.MinMaxRect(xMin, yMin, xMax, yMax);
+        
+        // Find the parent canvas + camera for proper screen->world conversion
+        var canvas = textRect.GetComponentInParent<Canvas>();
+        var canvasRect = canvas.GetComponent<RectTransform>();
+
+        // Decide side by available horizontal space (>= means tie → right)
+        float spaceLeft = spotlightRect.xMin;
+        float spaceRight = Screen.width - spotlightRect.xMax;
+        bool placeRight = spaceRight >= spaceLeft;
+        
+        // Choose pivot & target screen point
+        Vector2 pivot, screenPoint;
+        if (placeRight)
+        {
+            // Align text's TOP-LEFT corner to (spotlight top-right + padding to the right)
+            pivot = new Vector2(0f, 1f);
+            screenPoint = new Vector2(spotlightRect.xMax + padding, spotlightRect.yMax);
+        }
+        else
+        {
+            // Align text's TOP-RIGHT corner to (spotlight top-left - padding to the left)
+            pivot = new Vector2(1f, 1f);
+            screenPoint = new Vector2(spotlightRect.xMin - padding, spotlightRect.yMax);
+        }
+
+        // Set pivot so the chosen corner snaps to the target point
+        textRect.pivot = pivot;
+
+        // Convert the desired screen point to the canvas plane and place the rect there
+        if (RectTransformUtility.ScreenPointToWorldPointInRectangle(canvasRect, screenPoint, null, out var worldPos))
         {
             textRect.position = worldPos;
         }
@@ -165,20 +213,19 @@ public class TutorialManager : MonoBehaviour
     
     public Rect GetScreenRect(RectTransform rt)
     {
-        Camera cam = (mainCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
-            ? null
-            : (mainCanvas.worldCamera ? mainCanvas.worldCamera : Camera.main);
-
+        RefreshLayoutNow();
+        
         Vector3[] corners = new Vector3[4];
         rt.GetWorldCorners(corners);
 
         for (int i = 0; i < 4; i++)
-            corners[i] = RectTransformUtility.WorldToScreenPoint(cam, corners[i]);
+            corners[i] = RectTransformUtility.WorldToScreenPoint(Camera.main, corners[i]);
 
         float xMin = corners.Min(c => c.x);
         float xMax = corners.Max(c => c.x);
         float yMin = corners.Min(c => c.y);
         float yMax = corners.Max(c => c.y);
+        
         return Rect.MinMaxRect(xMin, yMin, xMax, yMax);
     }
 }

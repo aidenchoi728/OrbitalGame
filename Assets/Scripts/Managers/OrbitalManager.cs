@@ -1023,8 +1023,8 @@ public class OrbitalManager : MonoBehaviour
         else chart = mainChart;
         
         chart.RemoveAllSerie();
-        
-        chart.GetChartComponent<Title>().text = "R (Ψ Real) vs Radius";
+
+        chart.transform.Find("Title Text").GetComponent<TextMeshProUGUI>().text = "R (Ψ Real) vs Radius";
 
         var xAxis = chart.EnsureChartComponent<XAxis>();
         xAxis.type = Axis.AxisType.Category;
@@ -1099,7 +1099,7 @@ public class OrbitalManager : MonoBehaviour
         
         chart.RemoveAllSerie();
         
-        chart.GetChartComponent<Title>().text = "Ψ² vs Radius";
+        chart.transform.Find("Title Text").GetComponent<TextMeshProUGUI>().text = "Ψ² vs Radius";
 
         var xAxis = chart.EnsureChartComponent<XAxis>();
         xAxis.type = Axis.AxisType.Category;
@@ -1171,7 +1171,7 @@ public class OrbitalManager : MonoBehaviour
         if (radiusMax.Count == index) radiusMax.Add(0f);
         if (psi2r2Data.Count == index) psi2r2Data.Add(new float[sampleCount + 1]);
         
-        chart.GetChartComponent<Title>().text = "Ψ²r² vs Radius";
+        chart.transform.Find("Title Text").GetComponent<TextMeshProUGUI>().text = "Ψ²r² vs Radius";
 
         var xAxis = chart.EnsureChartComponent<XAxis>();
         xAxis.type = Axis.AxisType.Category;
@@ -1363,9 +1363,7 @@ public class OrbitalManager : MonoBehaviour
                     foreach (RectTransform tooltip in tooltips)
                     {
                         tooltip.gameObject.SetActive(true);
-                        if (!tooltip.gameObject.activeInHierarchy) return;
-                        if (!tooltip.gameObject.activeInHierarchy) return;
-                        tooltip.anchoredPosition = new Vector2(localMousePos.x + 134, 0f);
+                        tooltip.anchoredPosition = new Vector2(localMousePos.x, tooltip.anchoredPosition.y);
                     }
 
                     return;

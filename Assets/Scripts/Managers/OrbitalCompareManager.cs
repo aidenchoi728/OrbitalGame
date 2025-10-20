@@ -27,7 +27,7 @@ class QuantumNumber
     }
 }
 
-public class OrbitalCompareManager : MonoBehaviour
+public class OrbitalCompareManager : MonoBehaviour, GameManager
 {
     [SerializeField] private OrbitalManager orbitalManager;
     [SerializeField] private GameObject orbitalInfoCenter;
@@ -37,12 +37,12 @@ public class OrbitalCompareManager : MonoBehaviour
     
     private List<QuantumNumber> quantumNumbers = new List<QuantumNumber>();
 
-    private void st()
+    private void Awake()
     {
         orbitalManager.IsBillBoard = true;
         foreach (LineChart chart in charts) chart.RemoveAllSerie();
         
-        foreach(RectTransform refreshRect in refreshRects) RefreshLayoutNow(refreshRect);
+        RefreshLayoutNow();
     }
 
     public void NewOrbital(int n, int l, int ml)
@@ -86,7 +86,7 @@ public class OrbitalCompareManager : MonoBehaviour
         divider.SetActive(false);
         Destroy(divider);
         
-        foreach(RectTransform refreshRect in refreshRects) RefreshLayoutNow(refreshRect);
+        RefreshLayoutNow();
         
         orbitalManager.RefreshChart();
     }
@@ -98,10 +98,14 @@ public class OrbitalCompareManager : MonoBehaviour
         foreach(QuantumNumber q in quantumNumbers) orbitalManager.Orbital(q.N, q.L, q.Ml, true);
     }
     
-    public void RefreshLayoutNow(RectTransform layoutRoot)
+    public void RefreshLayoutNow()
     {
-        Canvas.ForceUpdateCanvases();
-        LayoutRebuilder.ForceRebuildLayoutImmediate(layoutRoot);
-        Canvas.ForceUpdateCanvases();
+        foreach (RectTransform refreshRect in refreshRects)
+        {
+            Canvas.ForceUpdateCanvases();
+            LayoutRebuilder.ForceRebuildLayoutImmediate(refreshRect);
+            Canvas.ForceUpdateCanvases();
+        }
+        
     }
 }

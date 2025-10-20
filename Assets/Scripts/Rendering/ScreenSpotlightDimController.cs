@@ -1,13 +1,16 @@
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI; // for Canvas & layout helpers
+using UnityEngine.UI; // Canvas, CanvasScaler
 
 public class ScreenSpotlightDimController : MonoBehaviour
 {
     [Header("Target (pick one)")]
     public RectTransform targetRectTransform;    // auto-compute from a UI element
     private Camera uiCameraForWorldToScreen;     // fallback; will auto-pick from Canvas when available
-    public Rect manualScreenRectPixels;          // or provide screen-space rect yourself (pixels, bottom-left origin)
+    public Rect manualScreenRectPixels;          // if using manual rect (x,y = left,bottom)
+
+    [Tooltip("If ON, manualScreenRectPixels is authored in the Canvas Scaler's reference resolution (e.g., 1920x1080) and will be scaled to actual screen pixels.")]
+    [SerializeField] private bool manualRectIsInReferenceResolution = true;
 
     [Header("Spotlight Settings")]
     [Range(0f, 1f)] public float dimAmount = 0.7f; // how dark the outside is
@@ -30,7 +33,7 @@ public class ScreenSpotlightDimController : MonoBehaviour
     {
         TryWireMaterial();
 
-        // ✅ First, do a WebGL-safe update AFTER the next real UI render/layout
+        // Safe first update after UI render (good for WebGL); keep if you use WebGLFrameSync
         if (targetRectTransform)
         {
             WebGLFrameSync.AfterLayoutReady(this, targetRectTransform, UpdateSpotlight);
@@ -46,14 +49,12 @@ public class ScreenSpotlightDimController : MonoBehaviour
 
     void TryWireMaterial()
     {
-        // 1) Preferred: material exposed by the feature
         if (!spotlightMaterial && ScreenSpotlightDimFeature.ActiveMaterial != null)
         {
             spotlightMaterial = ScreenSpotlightDimFeature.ActiveMaterial;
             return;
         }
 
-        // 2) Fallback: find any loaded feature asset and grab its material
         if (!spotlightMaterial)
         {
             var feat = Resources.FindObjectsOfTypeAll<ScreenSpotlightDimFeature>()
@@ -81,23 +82,29 @@ public class ScreenSpotlightDimController : MonoBehaviour
     {
         if (!spotlightMaterial) return;
 
-        // Determine the camera to use for screen conversion, based on the target's Canvas.
+        // Determine the camera based on the target's Canvas.
         Camera cam = uiCameraForWorldToScreen;
+        Canvas canvasForScale = null;
+
         if (targetRectTransform)
         {
-            var canvas = targetRectTransform.GetComponentInParent<Canvas>();
-            if (canvas)
+            canvasForScale = targetRectTransform.GetComponentInParent<Canvas>();
+            if (canvasForScale)
             {
-                cam = canvas.renderMode == RenderMode.ScreenSpaceOverlay
+                cam = canvasForScale.renderMode == RenderMode.ScreenSpaceOverlay
                     ? null
-                    : (canvas.worldCamera ? canvas.worldCamera : uiCameraForWorldToScreen);
+                    : (canvasForScale.worldCamera ? canvasForScale.worldCamera : uiCameraForWorldToScreen);
             }
+        }
+        else
+        {
+            canvasForScale = GetComponentInParent<Canvas>(); // use our own canvas if any
         }
 
         // Choose source rect
         Rect rectPx = targetRectTransform
             ? GetScreenRect(targetRectTransform, cam)
-            : manualScreenRectPixels;
+            : GetManualRectInScreenPixels(manualScreenRectPixels, canvasForScale);
 
         // Apply padding
         rectPx.xMin -= paddingPixels;
@@ -105,7 +112,7 @@ public class ScreenSpotlightDimController : MonoBehaviour
         rectPx.xMax += paddingPixels;
         rectPx.yMax += paddingPixels;
 
-        // Normalize to 0..1 UV space
+        // Convert to normalized 0..1 UV
         float sw = Mathf.Max(1, (float)Screen.width);
         float sh = Mathf.Max(1, (float)Screen.height);
         Vector4 spot = new Vector4(
@@ -122,6 +129,48 @@ public class ScreenSpotlightDimController : MonoBehaviour
         spotlightMaterial.SetFloat("_SpotFeather", featherNorm);
         spotlightMaterial.SetFloat("_DimAmount", dimAmount);
     }
+
+    // ---- Scaling helpers ----
+
+    /// <summary>
+    /// Converts a manual rect to **screen pixels** using the parent CanvasScaler
+    /// when manualRectIsInReferenceResolution is true. If no scaler is found,
+    /// returns the input as-is.
+    /// </summary>
+    Rect GetManualRectInScreenPixels(Rect manualRefRect, Canvas canvasForScale)
+    {
+        if (!manualRectIsInReferenceResolution) return manualRefRect;
+
+        CanvasScaler scaler = canvasForScale ? canvasForScale.GetComponent<CanvasScaler>() : null;
+        if (!scaler || scaler.uiScaleMode != CanvasScaler.ScaleMode.ScaleWithScreenSize)
+            return manualRefRect;
+
+        Vector2 refRes = scaler.referenceResolution;
+        float match = scaler.matchWidthOrHeight; // 0 = width, 1 = height
+
+        // Unity's Scale With Screen Size formula (same as CanvasScaler)
+        float logW   = Mathf.Log(Screen.width  / refRes.x, 2f);
+        float logH   = Mathf.Log(Screen.height / refRes.y, 2f);
+        float logAvg = Mathf.Lerp(logW, logH, match);
+        float scale  = Mathf.Pow(2f, logAvg);
+
+        // Size of the reference canvas once scaled to this screen
+        float scaledW = refRes.x * scale;
+        float scaledH = refRes.y * scale;
+
+        // ✅ Center the scaled reference area on the screen
+        float offsetX = (Screen.width  - scaledW) * 0.5f;
+        float offsetY = (Screen.height - scaledH) * 0.5f; // can be negative when content overflows
+
+        // Convert reference-rect (bottom-left origin) -> actual screen pixels
+        return new Rect(
+            manualRefRect.x      * scale + offsetX,
+            manualRefRect.y      * scale + offsetY,
+            manualRefRect.width  * scale,
+            manualRefRect.height * scale
+        );
+    }
+
 
     // Helper: screen rect (pixels) for a RectTransform
     public static Rect GetScreenRect(RectTransform rt, Camera uiCam = null)

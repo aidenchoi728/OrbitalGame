@@ -821,6 +821,10 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 333
       objectReference: {fileID: 0}
+    - target: {fileID: 4570006061339111913, guid: 7a513b4e03e2648d9b1fcbae65fb6105, type: 3}
+      propertyPath: m_text
+      value: "R (\u03A8 Real) vs Radius"
+      objectReference: {fileID: 0}
     - target: {fileID: 4608426471243928141, guid: 7a513b4e03e2648d9b1fcbae65fb6105, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -3343,11 +3347,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3342741575275407228, guid: a546bd0442953434d895bf1f086e1471, type: 3}
       propertyPath: 'freeze.Array.data[0]'
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3342741575275407228, guid: a546bd0442953434d895bf1f086e1471, type: 3}
       propertyPath: 'freeze.Array.data[1]'
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3342741575275407228, guid: a546bd0442953434d895bf1f086e1471, type: 3}
       propertyPath: textContents.Array.size
@@ -3359,11 +3363,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3342741575275407228, guid: a546bd0442953434d895bf1f086e1471, type: 3}
       propertyPath: 'textContents.Array.data[0]'
-      value: If you want to add or delete an orbital, click here.
+      value: Rotate your view by dragging. Zoom in and out with scroll.
       objectReference: {fileID: 0}
     - target: {fileID: 3342741575275407228, guid: a546bd0442953434d895bf1f086e1471, type: 3}
       propertyPath: 'textContents.Array.data[1]'
-      value: Rotate your view by dragging. Zoom in and out with scroll.
+      value: If you want to add or delete an orbital, click here.
       objectReference: {fileID: 0}
     - target: {fileID: 3342741575275407228, guid: a546bd0442953434d895bf1f086e1471, type: 3}
       propertyPath: 'textContents.Array.data[2]'
@@ -3385,11 +3389,11 @@ PrefabInstance:
     - target: {fileID: 3342741575275407228, guid: a546bd0442953434d895bf1f086e1471, type: 3}
       propertyPath: 'spotlightRects.Array.data[0]'
       value: 
-      objectReference: {fileID: 573110790}
+      objectReference: {fileID: 0}
     - target: {fileID: 3342741575275407228, guid: a546bd0442953434d895bf1f086e1471, type: 3}
       propertyPath: 'spotlightRects.Array.data[1]'
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 573110790}
     - target: {fileID: 3342741575275407228, guid: a546bd0442953434d895bf1f086e1471, type: 3}
       propertyPath: 'spotlightRects.Array.data[2]'
       value: 
@@ -3412,35 +3416,35 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3342741575275407228, guid: a546bd0442953434d895bf1f086e1471, type: 3}
       propertyPath: manualSpotlightRects.Array.data[0].x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3342741575275407228, guid: a546bd0442953434d895bf1f086e1471, type: 3}
-      propertyPath: manualSpotlightRects.Array.data[0].y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3342741575275407228, guid: a546bd0442953434d895bf1f086e1471, type: 3}
-      propertyPath: manualSpotlightRects.Array.data[1].x
       value: 400
       objectReference: {fileID: 0}
     - target: {fileID: 3342741575275407228, guid: a546bd0442953434d895bf1f086e1471, type: 3}
-      propertyPath: manualSpotlightRects.Array.data[1].y
+      propertyPath: manualSpotlightRects.Array.data[0].y
       value: 90
       objectReference: {fileID: 0}
     - target: {fileID: 3342741575275407228, guid: a546bd0442953434d895bf1f086e1471, type: 3}
-      propertyPath: manualSpotlightRects.Array.data[0].width
+      propertyPath: manualSpotlightRects.Array.data[1].x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3342741575275407228, guid: a546bd0442953434d895bf1f086e1471, type: 3}
-      propertyPath: manualSpotlightRects.Array.data[1].width
+      propertyPath: manualSpotlightRects.Array.data[1].y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3342741575275407228, guid: a546bd0442953434d895bf1f086e1471, type: 3}
+      propertyPath: manualSpotlightRects.Array.data[0].width
       value: 1120
       objectReference: {fileID: 0}
     - target: {fileID: 3342741575275407228, guid: a546bd0442953434d895bf1f086e1471, type: 3}
-      propertyPath: manualSpotlightRects.Array.data[0].height
+      propertyPath: manualSpotlightRects.Array.data[1].width
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3342741575275407228, guid: a546bd0442953434d895bf1f086e1471, type: 3}
-      propertyPath: manualSpotlightRects.Array.data[1].height
+      propertyPath: manualSpotlightRects.Array.data[0].height
       value: 900
+      objectReference: {fileID: 0}
+    - target: {fileID: 3342741575275407228, guid: a546bd0442953434d895bf1f086e1471, type: 3}
+      propertyPath: manualSpotlightRects.Array.data[1].height
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3486151179395391217, guid: a546bd0442953434d895bf1f086e1471, type: 3}
       propertyPath: m_SizeDelta.y
@@ -5780,6 +5784,10 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 333
       objectReference: {fileID: 0}
+    - target: {fileID: 4570006061339111913, guid: 7a513b4e03e2648d9b1fcbae65fb6105, type: 3}
+      propertyPath: m_text
+      value: "\u03A8\xB2 vs Radius"
+      objectReference: {fileID: 0}
     - target: {fileID: 4608426471243928141, guid: 7a513b4e03e2648d9b1fcbae65fb6105, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -7294,6 +7302,10 @@ PrefabInstance:
     - target: {fileID: 4427913341838589200, guid: 7a513b4e03e2648d9b1fcbae65fb6105, type: 3}
       propertyPath: m_SizeDelta.x
       value: 333
+      objectReference: {fileID: 0}
+    - target: {fileID: 4570006061339111913, guid: 7a513b4e03e2648d9b1fcbae65fb6105, type: 3}
+      propertyPath: m_text
+      value: "\u03A8\xB2r\xB2 vs Radius"
       objectReference: {fileID: 0}
     - target: {fileID: 4608426471243928141, guid: 7a513b4e03e2648d9b1fcbae65fb6105, type: 3}
       propertyPath: m_Pivot.x
