@@ -24,7 +24,6 @@ public class OrbitalManager : MonoBehaviour
 
     [Header("Orbital Info")] 
     [SerializeField] private GameObject orbitalInfoPanel;
-    [SerializeField] private GameObject dividerPrefab;
     [SerializeField] private RectTransform[] refreshRects;
     [SerializeField] private GameObject overlayInfoPrefab;
     //------------------//
@@ -82,7 +81,6 @@ public class OrbitalManager : MonoBehaviour
     private Camera mainCamera;
     private SceneViewCamera svc;
     
-    private List<int[]> orbitals = new List<int[]>();
     private List<GameObject> activeOverlaps = new List<GameObject>();
     private List<GameObject> activeRadialNodes = new List<GameObject>();
     private List<GameObject> activeAngularNodes = new List<GameObject>();
@@ -110,6 +108,7 @@ public class OrbitalManager : MonoBehaviour
     private bool overlay = false;
     private Plane rVisualizerPlane;
     
+    private List<int[]> orbitals = new List<int[]>();
     private List<float> radiusMax = new List<float>();
     private List<float> psiCutX = new List<float>();
     private List<float> psiMin = new List<float>();
@@ -381,18 +380,13 @@ public class OrbitalManager : MonoBehaviour
 
     public void DestroyOverlay(int index)
     {
-        if (activeOverlaps.Count > index && activeOverlaps[index] != null)
-        {
-            Destroy(activeOverlaps[index]);
-            activeOverlaps.RemoveAt(index);
-        }
+        Destroy(activeOverlaps[index]);
+        activeOverlaps.RemoveAt(index);
+        
 
-        if (activeOrbitalInfo.Count > index && activeOrbitalInfo[index] != null)
-        {
-            activeOrbitalInfo[index].SetActive(false);
-            Destroy(activeOrbitalInfo[index]);
-            activeOrbitalInfo.RemoveAt(index);
-        }
+        activeOrbitalInfo[index].SetActive(false);
+        Destroy(activeOrbitalInfo[index]);
+        activeOrbitalInfo.RemoveAt(index);
         
         psiChart.RemoveSerie(index);
         psiSqChart.RemoveSerie(index);
@@ -409,14 +403,6 @@ public class OrbitalManager : MonoBehaviour
         psi2Data.RemoveAt(index);
         psi2r2Data.RemoveAt(index);
 
-        for (int i = 0; i < orbitals.Count; i++)
-        {
-            if (orbitals[i].Length == 4 && orbitals[i][3] == index)
-            {
-                orbitals.RemoveAt(i);
-                break;
-            }
-        }
     }
 
     public void TransitionOrbital(int nPrev, int nNew, int lPrev, int lNew, int mlPrev, int mlNew)

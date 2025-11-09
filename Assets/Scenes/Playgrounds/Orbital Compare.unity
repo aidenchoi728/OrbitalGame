@@ -4069,7 +4069,6 @@ MonoBehaviour:
   texts:
   - {fileID: 1452972707}
   changeOverlayPrefab: {fileID: 1522036291547333536, guid: 35359a1aa9526433fa7ae31c551ff808, type: 3}
-  dividerPrefab: {fileID: 822835176346254651, guid: a0da014e2202e4f699a043ba82cdb130, type: 3}
   isAdd: 1
 --- !u!1 &1460610730
 GameObject:

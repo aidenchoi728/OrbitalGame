@@ -45,14 +45,10 @@ public class OrbitalCompareManager : MonoBehaviour, GameManager
         RefreshLayoutNow();
     }
 
-    public void NewOrbital(int n, int l, int ml)
-    {
-        quantumNumbers.Add(new QuantumNumber());
-        ChangeOrbital(n, l, ml, quantumNumbers.Count - 1);
-    }
-
     public void ChangeOrbital(int n, int l, int ml, int index = -1)
     {
+        Debug.Log(index);
+        
         if (index == quantumNumbers.Count)
         {
             quantumNumbers.Add(new QuantumNumber());
@@ -62,8 +58,9 @@ public class OrbitalCompareManager : MonoBehaviour, GameManager
             orbitalManager.UpdateOrbitalInfo(n, l, ml);
             return;
         }
-        
-        Destroy(orbitalManager.GetOrbitalInfo(index));
+        else{
+            orbitalManager.DestroyOverlay(index);
+        }
         
         quantumNumbers[index].N = n;
         quantumNumbers[index].L = l;
@@ -74,17 +71,14 @@ public class OrbitalCompareManager : MonoBehaviour, GameManager
         orbitalManager.Psi(n, l, ml, true, true, index);
         orbitalManager.PsiSquared(n, l, ml, true, true, index);
         orbitalManager.PsiSquaredRSquared(n, l, ml, true, true, index);
+        
+        RefreshLayoutNow();
     }
 
     public void DeleteOrbital(int index)
     {
         orbitalManager.DestroyOverlay(index);
         quantumNumbers.RemoveAt(index);
-
-        GameObject divider = orbitalInfoCenter.transform.GetChild(index * 2 + 2).gameObject;
-        
-        divider.SetActive(false);
-        Destroy(divider);
         
         RefreshLayoutNow();
         

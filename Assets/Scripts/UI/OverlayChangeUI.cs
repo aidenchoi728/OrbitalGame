@@ -9,7 +9,6 @@ public class OverlayChangeUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     [SerializeField] private Color highlightTextColor;
     [SerializeField] private TextMeshProUGUI[] texts;
     [SerializeField] private GameObject changeOverlayPrefab;
-    [SerializeField] private GameObject dividerPrefab;
     [SerializeField] private bool isAdd = false;
     
     private OrbitalManager orbitalManager;
@@ -33,7 +32,7 @@ public class OverlayChangeUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     public void DeleteOrbital()
     {
-        compareManager.DeleteOrbital((transform.GetSiblingIndex() - 1)/2);
+        compareManager.DeleteOrbital(transform.GetSiblingIndex() - 1);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -54,14 +53,13 @@ public class OverlayChangeUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         {
             int loc = transform.parent.childCount;
             go.transform.SetSiblingIndex(loc - 2);
-            Instantiate(dividerPrefab, transform.parent).transform.SetSiblingIndex(loc - 1);
-            orbitalManager.ActiveOrbitalInfo(loc / 2 - 1, go);
+            orbitalManager.ActiveOrbitalInfo(loc - 3, go);
         }
         else
         {
             int index = transform.GetSiblingIndex();
             go.transform.SetSiblingIndex(index + 1);
-            orbitalManager.ActiveOrbitalInfo((index - 1) / 2, go);
+            orbitalManager.ActiveOrbitalInfo(index - 1, go);
             
             gameObject.SetActive(false);
             Destroy(gameObject);

@@ -178,16 +178,14 @@ public class ChangeOverlay : MonoBehaviour
         
         int index = transform.GetSiblingIndex();
         
-        if (index == transform.childCount - 2) compareManager.ChangeOrbital(n, l, ml);
-        else
-        {
-            index = (index - 1) / 2;
-            compareManager.ChangeOrbital(n, l, ml, index);
-        }
+        index = index - 1;
+        compareManager.ChangeOrbital(n, l, ml, index);
         
         RefreshLayoutNow(orbitalCenterRect);
         RefreshLayoutNow(orbitalInfoRect);
         RefreshLayoutNow(rightPanelRect);
+        
+        Destroy(gameObject);
     }
     
     public void RefreshLayoutNow(RectTransform layoutRoot)

@@ -177,7 +177,7 @@ public class CheckpointManager : MonoBehaviour, GameManager
             case "ORB1":
                 answerType = UnityEngine.Random.Range(0, 3);
                 currAnswer = Instantiate(orbital1Prefab[answerType], answerParent);
-                correctAnswers = new int[] { changeToNum(answerType) };
+                correctAnswers = new []{ changeToNum(answerType) };
 
                 GameObject[] labelGos = GameObject.FindGameObjectsWithTag("Label");
                 TextMeshProUGUI[] labels = new TextMeshProUGUI[labelGos.Length];
@@ -191,11 +191,19 @@ public class CheckpointManager : MonoBehaviour, GameManager
                         labels[0].text = orbitalName[0] + orbitalName[1];
                         break;
                     case 1:
-                        labels[0].text = quantumNumbers[0].ToString();
-                        labels[1].text = orbitalName[1];
+                        if (labels[0].name == "n Text")
+                        {
+                            labels[0].text = quantumNumbers[0].ToString();
+                            labels[1].text = orbitalName[1];
+                        }
+                        else
+                        {
+                            labels[1].text = quantumNumbers[0].ToString();
+                            labels[0].text = orbitalName[1];
+                        }
                         break;
                     case 2:
-                        labels[0].text = quantumNumbers[0].ToString() + orbitalName[0];
+                        labels[0].text = quantumNumbers[0] + orbitalName[0];
                         break;
                 }
                 
