@@ -75,6 +75,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6918261982084854899}
   - component: {fileID: 8871182603566065498}
+  - component: {fileID: 683963899901822934}
   m_Layer: 5
   m_Name: Ok
   m_TagString: Untagged
@@ -158,6 +159,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &683963899901822934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 114681358535504657}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8a881dd4e7b4675b65b4e0e1a2e805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundEffect
+  sound: 0
 --- !u!1 &616214122572535656
 GameObject:
   m_ObjectHideFlags: 0
@@ -249,6 +263,7 @@ GameObject:
   - component: {fileID: 877282087719309042}
   - component: {fileID: 2615389498455887576}
   - component: {fileID: 4421972822839606429}
+  - component: {fileID: 9012775897910418572}
   m_Layer: 5
   m_Name: 2
   m_TagString: Untagged
@@ -370,6 +385,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &9012775897910418572
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 687392029148680318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8a881dd4e7b4675b65b4e0e1a2e805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundEffect
+  sound: 0
 --- !u!1 &833499506470478156
 GameObject:
   m_ObjectHideFlags: 0
@@ -518,6 +546,7 @@ GameObject:
   - component: {fileID: 7042817555594352494}
   - component: {fileID: 7093490251949576693}
   - component: {fileID: 1511195224246714522}
+  - component: {fileID: 7511918097314688359}
   m_Layer: 5
   m_Name: 3
   m_TagString: Untagged
@@ -639,6 +668,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &7511918097314688359
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 844772069310408526}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8a881dd4e7b4675b65b4e0e1a2e805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundEffect
+  sound: 0
 --- !u!1 &1522036291547333536
 GameObject:
   m_ObjectHideFlags: 0
@@ -1173,6 +1215,7 @@ GameObject:
   - component: {fileID: 5902465628055653472}
   - component: {fileID: 306914454180737469}
   - component: {fileID: 8520689321266910624}
+  - component: {fileID: 4660569119985431021}
   m_Layer: 5
   m_Name: 2
   m_TagString: Untagged
@@ -1294,6 +1337,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &4660569119985431021
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1869676636072535479}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8a881dd4e7b4675b65b4e0e1a2e805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundEffect
+  sound: 0
 --- !u!1 &2074390498495955159
 GameObject:
   m_ObjectHideFlags: 0
@@ -1442,6 +1498,7 @@ GameObject:
   - component: {fileID: 7765675453787848916}
   - component: {fileID: 3378395581692683320}
   - component: {fileID: 1137428763916205090}
+  - component: {fileID: 1225795792246248038}
   m_Layer: 5
   m_Name: 3
   m_TagString: Untagged
@@ -1563,6 +1620,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &1225795792246248038
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2359038405599865576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8a881dd4e7b4675b65b4e0e1a2e805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundEffect
+  sound: 0
 --- !u!1 &2443723246090265928
 GameObject:
   m_ObjectHideFlags: 0
@@ -2406,6 +2476,7 @@ GameObject:
   - component: {fileID: 6055750722369328072}
   - component: {fileID: 2139313580329501195}
   - component: {fileID: 7273476839009351203}
+  - component: {fileID: 8096302132342946091}
   m_Layer: 5
   m_Name: 1
   m_TagString: Untagged
@@ -2527,6 +2598,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &8096302132342946091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4260988534977141289}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8a881dd4e7b4675b65b4e0e1a2e805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundEffect
+  sound: 0
 --- !u!1 &4332569124857408289
 GameObject:
   m_ObjectHideFlags: 0
@@ -2539,6 +2623,7 @@ GameObject:
   - component: {fileID: 5860464706764295921}
   - component: {fileID: 9186768710206476183}
   - component: {fileID: 1173943049896623045}
+  - component: {fileID: 2367224072463004448}
   m_Layer: 5
   m_Name: 0
   m_TagString: Untagged
@@ -2660,6 +2745,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &2367224072463004448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4332569124857408289}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8a881dd4e7b4675b65b4e0e1a2e805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundEffect
+  sound: 0
 --- !u!1 &4347338212428282059
 GameObject:
   m_ObjectHideFlags: 0
@@ -2672,6 +2770,7 @@ GameObject:
   - component: {fileID: 1549448124388056583}
   - component: {fileID: 8196353228482728535}
   - component: {fileID: 6715117181652936056}
+  - component: {fileID: 5561345267227127865}
   m_Layer: 5
   m_Name: 1
   m_TagString: Untagged
@@ -2793,6 +2892,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &5561345267227127865
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4347338212428282059}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8a881dd4e7b4675b65b4e0e1a2e805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundEffect
+  sound: 0
 --- !u!1 &5046764976095148197
 GameObject:
   m_ObjectHideFlags: 0
@@ -2977,6 +3089,7 @@ GameObject:
   - component: {fileID: 4197295872136611191}
   - component: {fileID: 7245874201354698690}
   - component: {fileID: 7404063845038584900}
+  - component: {fileID: 270228512156544874}
   m_Layer: 5
   m_Name: 1
   m_TagString: Untagged
@@ -3098,6 +3211,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &270228512156544874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5220367265002310879}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8a881dd4e7b4675b65b4e0e1a2e805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundEffect
+  sound: 0
 --- !u!1 &5499477719508218101
 GameObject:
   m_ObjectHideFlags: 0
@@ -3110,6 +3236,7 @@ GameObject:
   - component: {fileID: 6018382536893707354}
   - component: {fileID: 5682998045972051979}
   - component: {fileID: 1307652546001999221}
+  - component: {fileID: 3970879213698585384}
   m_Layer: 5
   m_Name: 2
   m_TagString: Untagged
@@ -3231,6 +3358,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &3970879213698585384
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5499477719508218101}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8a881dd4e7b4675b65b4e0e1a2e805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundEffect
+  sound: 0
 --- !u!1 &6087234969375783344
 GameObject:
   m_ObjectHideFlags: 0
@@ -3552,6 +3692,7 @@ GameObject:
   - component: {fileID: 8613224604331455846}
   - component: {fileID: 8727633576851971995}
   - component: {fileID: 8333062342668523675}
+  - component: {fileID: 5848202301954000557}
   m_Layer: 5
   m_Name: 0
   m_TagString: Untagged
@@ -3673,6 +3814,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &5848202301954000557
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7048681403211296110}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8a881dd4e7b4675b65b4e0e1a2e805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundEffect
+  sound: 0
 --- !u!1 &7252135064776926777
 GameObject:
   m_ObjectHideFlags: 0
@@ -3685,6 +3839,7 @@ GameObject:
   - component: {fileID: 9132982820005343676}
   - component: {fileID: 425760494174387292}
   - component: {fileID: 7991033678572057275}
+  - component: {fileID: 5713646969899603388}
   m_Layer: 5
   m_Name: 4
   m_TagString: Untagged
@@ -3806,6 +3961,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &5713646969899603388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7252135064776926777}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8a881dd4e7b4675b65b4e0e1a2e805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundEffect
+  sound: 0
 --- !u!1 &7887929805165203543
 GameObject:
   m_ObjectHideFlags: 0

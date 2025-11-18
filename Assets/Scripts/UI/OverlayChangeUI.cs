@@ -13,6 +13,7 @@ public class OverlayChangeUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     
     private OrbitalManager orbitalManager;
     private OrbitalCompareManager compareManager;
+    private AudioManager audioManager;
     
     private RectTransform rightPanelRect;
     private RectTransform orbitalInfoRect;
@@ -24,6 +25,7 @@ public class OverlayChangeUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     {
         orbitalManager = FindFirstObjectByType<OrbitalManager>();
         compareManager = FindFirstObjectByType<OrbitalCompareManager>();
+        audioManager = FindFirstObjectByType<AudioManager>();
         
         rightPanelRect = GameObject.Find("Right Panel").GetComponent<RectTransform>();
         orbitalInfoRect = GameObject.Find("Orbital Info").GetComponent<RectTransform>();
@@ -48,7 +50,9 @@ public class OverlayChangeUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public void OnPointerClick(PointerEventData eventData)
     {
         GameObject go = Instantiate(changeOverlayPrefab, transform.parent);
-
+        audioManager.PlaySoundEffect(SoundType.ButtonClick);
+        
+        
         if (isAdd)
         {
             int loc = transform.parent.childCount;

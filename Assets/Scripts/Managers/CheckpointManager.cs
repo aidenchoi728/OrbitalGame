@@ -97,6 +97,7 @@ public class CheckpointManager : MonoBehaviour, GameManager
     private string[] qnTypes = new string[3] { "principal", "azimuthal", "magnetic" };
 
     private SceneViewCamera cam;
+    private AudioManager audioManager;
     
     private void Awake()
     {
@@ -123,6 +124,8 @@ public class CheckpointManager : MonoBehaviour, GameManager
         resultsPanel.SetActive(false);
         
         cam = Camera.main.GetComponent<SceneViewCamera>();
+        
+        audioManager = FindObjectOfType<AudioManager>();
     }
 
     private void Start()
@@ -252,6 +255,8 @@ public class CheckpointManager : MonoBehaviour, GameManager
         {
             if (curr == data.Count - 1)
             {
+                audioManager.PlaySoundEffect(SoundType.Success);
+                
                 resultsPanel.SetActive(true);
                 mainPanel.SetActive(false);
                 checkpointNumText.text = $"Checkpoint {CheckpointInfo.checkpointNum}";
@@ -297,6 +302,8 @@ public class CheckpointManager : MonoBehaviour, GameManager
         
         if (correct)
         {
+            audioManager.PlaySoundEffect(SoundType.Correct);
+            
             ChangeColor(1);
             hintButton.SetActive(false);
             seeAnswerButton.SetActive(false);
@@ -324,6 +331,8 @@ public class CheckpointManager : MonoBehaviour, GameManager
         }
         else
         {
+            audioManager.PlaySoundEffect(SoundType.Wrong);
+            
             WrongText();
             if (haveTried) SeeAnswer();
             else

@@ -15,6 +15,7 @@ public class SettingsUI : MonoBehaviour
     private GameObject nucleus;
     private OrbitalManager orbitalManager;
     private GameManager gameManager;
+    private AudioManager audioManager;
     
     public void Awake()
     {
@@ -24,6 +25,8 @@ public class SettingsUI : MonoBehaviour
         if(om != null) orbitalManager = om.GetComponent<OrbitalManager>();
         GameObject gm = GameObject.FindWithTag("GameManager");
         if(gm != null) gameManager = gm.GetComponent<GameManager>();
+        GameObject am = GameObject.FindWithTag("AudioManager");
+        if(am != null) audioManager = am.GetComponent<AudioManager>();
     }
 
     private void Start()
@@ -44,6 +47,8 @@ public class SettingsUI : MonoBehaviour
         }
         bgmSlider.value = Settings.Bgm;
         sfxSlider.value = Settings.Sfx;
+        audioManager.BgVolume = Settings.Bgm;
+        audioManager.SfxVolume = Settings.Sfx;
         
         if(axes != null) axes.SetActive(Settings.Axes);
         if(nucleus != null) nucleus.SetActive(Settings.Nucleus);
@@ -84,11 +89,13 @@ public class SettingsUI : MonoBehaviour
     public void Bgm(float val)
     {
         Settings.Bgm = val;
+        audioManager.BgVolume = val;
     }
 
     public void Sfx(float val)
     {
         Settings.Sfx = val;
+        audioManager.SfxVolume = val;
     }
 
     public void LoadSceneByName(string sceneName)

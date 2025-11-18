@@ -22,7 +22,6 @@ public class LevelButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     private Image line;
     private Image icon;
     
-
     private void Awake()
     {
         bg = GetComponent<Image>();

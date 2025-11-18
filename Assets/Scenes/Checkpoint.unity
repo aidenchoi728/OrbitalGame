@@ -848,6 +848,7 @@ GameObject:
   - component: {fileID: 128074532}
   - component: {fileID: 128074531}
   - component: {fileID: 128074530}
+  - component: {fileID: 128074533}
   m_Layer: 5
   m_Name: Redo Button
   m_TagString: Untagged
@@ -968,6 +969,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 128074528}
   m_CullTransparentMesh: 1
+--- !u!114 &128074533
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 128074528}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8a881dd4e7b4675b65b4e0e1a2e805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundEffect
+  sound: 1
 --- !u!20 &136929131 stripped
 Camera:
   m_CorrespondingSourceObject: {fileID: 8037124092431696617, guid: bf38279dacb7d43918bdb72b7c822714, type: 3}
@@ -3751,6 +3765,7 @@ GameObject:
   - component: {fileID: 1068115367}
   - component: {fileID: 1068115366}
   - component: {fileID: 1068115365}
+  - component: {fileID: 1068115368}
   m_Layer: 5
   m_Name: Chart Hide
   m_TagString: Untagged
@@ -3895,6 +3910,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1068115363}
   m_CullTransparentMesh: 1
+--- !u!114 &1068115368
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1068115363}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8a881dd4e7b4675b65b4e0e1a2e805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundEffect
+  sound: 0
 --- !u!1 &1068545310 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5342258016967926158, guid: bf38279dacb7d43918bdb72b7c822714, type: 3}
@@ -4264,6 +4292,7 @@ MonoBehaviour:
     y: 0
     width: 0
     height: 0
+  manualRectIsInReferenceResolution: 1
   dimAmount: 0
   paddingPixels: 0
   featherPixels: 0
@@ -4415,6 +4444,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1370901080}
   - component: {fileID: 1370901081}
+  - component: {fileID: 1370901082}
   m_Layer: 5
   m_Name: Hint
   m_TagString: Untagged
@@ -4498,6 +4528,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &1370901082
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1370901079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8a881dd4e7b4675b65b4e0e1a2e805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundEffect
+  sound: 0
 --- !u!1001 &1388846985
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6023,6 +6066,7 @@ GameObject:
   - component: {fileID: 2031804475}
   - component: {fileID: 2031804474}
   - component: {fileID: 2031804473}
+  - component: {fileID: 2031804476}
   m_Layer: 5
   m_Name: Next Button
   m_TagString: Untagged
@@ -6143,6 +6187,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2031804471}
   m_CullTransparentMesh: 1
+--- !u!114 &2031804476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2031804471}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8a881dd4e7b4675b65b4e0e1a2e805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundEffect
+  sound: 1
 --- !u!1 &2117955942
 GameObject:
   m_ObjectHideFlags: 0

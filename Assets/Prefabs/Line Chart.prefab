@@ -7267,6 +7267,7 @@ GameObject:
   - component: {fileID: 7492266868931368655}
   - component: {fileID: 8745150914888849128}
   - component: {fileID: 8500796636064523934}
+  - component: {fileID: 3227225216012712740}
   m_Layer: 5
   m_Name: Hide Button
   m_TagString: Untagged
@@ -7411,6 +7412,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &3227225216012712740
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7144340775627973968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8a881dd4e7b4675b65b4e0e1a2e805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundEffect
+  sound: 0
 --- !u!1 &7159235526179093425
 GameObject:
   m_ObjectHideFlags: 0

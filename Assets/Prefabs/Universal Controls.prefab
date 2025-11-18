@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1928642447596726272}
   - component: {fileID: 2350097605066739244}
   - component: {fileID: 930281736793084410}
+  - component: {fileID: 4564195294741570329}
   m_Layer: 5
   m_Name: X Button
   m_TagString: Untagged
@@ -132,6 +133,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &4564195294741570329
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3354995071651227}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8a881dd4e7b4675b65b4e0e1a2e805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundEffect
+  sound: 0
 --- !u!1 &89557912796857807
 GameObject:
   m_ObjectHideFlags: 0
@@ -470,6 +484,7 @@ GameObject:
   - component: {fileID: 2411013855256337084}
   - component: {fileID: 6891102779495228547}
   - component: {fileID: 3341208837165099121}
+  - component: {fileID: 5581517296853247365}
   m_Layer: 5
   m_Name: Back Button
   m_TagString: Untagged
@@ -590,6 +605,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &5581517296853247365
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2956348514941008049}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8a881dd4e7b4675b65b4e0e1a2e805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundEffect
+  sound: 1
 --- !u!1 &3038472014263069430
 GameObject:
   m_ObjectHideFlags: 0
@@ -1408,6 +1436,7 @@ GameObject:
   - component: {fileID: 4845961538775773559}
   - component: {fileID: 4262496053874754854}
   - component: {fileID: 736002744574833248}
+  - component: {fileID: 2867289117903058065}
   m_Layer: 5
   m_Name: Mid
   m_TagString: Untagged
@@ -1528,6 +1557,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &2867289117903058065
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4612253120300870835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8a881dd4e7b4675b65b4e0e1a2e805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundEffect
+  sound: 0
 --- !u!1 &4671310357110257036
 GameObject:
   m_ObjectHideFlags: 0
@@ -1540,6 +1582,7 @@ GameObject:
   - component: {fileID: 5076624842423780018}
   - component: {fileID: 612536668914234930}
   - component: {fileID: 4249253887323842138}
+  - component: {fileID: 5912219159310208132}
   m_Layer: 5
   m_Name: High
   m_TagString: Untagged
@@ -1660,6 +1703,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &5912219159310208132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4671310357110257036}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8a881dd4e7b4675b65b4e0e1a2e805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundEffect
+  sound: 0
 --- !u!1 &4903988488439883334
 GameObject:
   m_ObjectHideFlags: 0
@@ -2059,6 +2115,7 @@ GameObject:
   - component: {fileID: 7415081188016580972}
   - component: {fileID: 537245238774326361}
   - component: {fileID: 7322181572104891150}
+  - component: {fileID: 5944551838102883195}
   m_Layer: 5
   m_Name: Low
   m_TagString: Untagged
@@ -2179,6 +2236,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &5944551838102883195
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5493765900106966488}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8a881dd4e7b4675b65b4e0e1a2e805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundEffect
+  sound: 0
 --- !u!1 &5679620587590461549
 GameObject:
   m_ObjectHideFlags: 0
@@ -2189,6 +2259,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5158364830106742929}
   - component: {fileID: 5074307667225003792}
+  - component: {fileID: 6909061819359426671}
   m_Layer: 5
   m_Name: SFX Slider
   m_TagString: Untagged
@@ -2281,6 +2352,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &6909061819359426671
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5679620587590461549}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8a881dd4e7b4675b65b4e0e1a2e805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundEffect
+  sound: 0
 --- !u!1 &5815975357185390383
 GameObject:
   m_ObjectHideFlags: 0
@@ -2889,6 +2973,7 @@ GameObject:
   m_Component:
   - component: {fileID: 846661924964980271}
   - component: {fileID: 2103110912225657030}
+  - component: {fileID: 2007319061933321863}
   m_Layer: 5
   m_Name: Nucleus Toggle
   m_TagString: Untagged
@@ -2977,6 +3062,19 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   m_IsOn: 1
+--- !u!114 &2007319061933321863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7129684686565775954}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8a881dd4e7b4675b65b4e0e1a2e805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundEffect
+  sound: 0
 --- !u!1 &7496590767842806675
 GameObject:
   m_ObjectHideFlags: 0
@@ -2987,6 +3085,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8283345501702631542}
   - component: {fileID: 7319713803450180894}
+  - component: {fileID: 4272535260508949494}
   m_Layer: 5
   m_Name: Axes Toggle
   m_TagString: Untagged
@@ -3075,6 +3174,19 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   m_IsOn: 1
+--- !u!114 &4272535260508949494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7496590767842806675}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8a881dd4e7b4675b65b4e0e1a2e805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundEffect
+  sound: 0
 --- !u!1 &7519140391863125028
 GameObject:
   m_ObjectHideFlags: 0
@@ -3254,6 +3366,7 @@ GameObject:
   - component: {fileID: 4852430741136363690}
   - component: {fileID: 7388884613049654175}
   - component: {fileID: 3378414793436529708}
+  - component: {fileID: 3327249222526782102}
   m_Layer: 5
   m_Name: Setting Button
   m_TagString: Untagged
@@ -3374,6 +3487,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+--- !u!114 &3327249222526782102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7789469031831126252}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8a881dd4e7b4675b65b4e0e1a2e805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundEffect
+  sound: 0
 --- !u!1 &8159340719152047354
 GameObject:
   m_ObjectHideFlags: 0
@@ -3421,6 +3547,7 @@ GameObject:
   m_Component:
   - component: {fileID: 322263003909205844}
   - component: {fileID: 1484798332135106121}
+  - component: {fileID: 5935623495737780497}
   m_Layer: 5
   m_Name: BGM Slider
   m_TagString: Untagged
@@ -3513,6 +3640,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &5935623495737780497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8185484382907595993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8a881dd4e7b4675b65b4e0e1a2e805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundEffect
+  sound: 0
 --- !u!1 &9148441254894559419
 GameObject:
   m_ObjectHideFlags: 0

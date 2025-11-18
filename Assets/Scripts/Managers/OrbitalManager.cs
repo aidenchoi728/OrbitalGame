@@ -1534,8 +1534,10 @@ public class OrbitalManager : MonoBehaviour
         }
         else
         {
+            int childIndex = orbitalInfoPanel.transform.childCount - 2;
+            
             orbitalInfo = Instantiate(orbitalInfoPrefab, orbitalInfoPanel.transform);
-            orbitalInfo.transform.SetSiblingIndex(orbitalInfoPanel.transform.childCount - 2);
+            orbitalInfo.transform.SetSiblingIndex(childIndex);
             activeOrbitalInfo.Add(orbitalInfo);
         }
         

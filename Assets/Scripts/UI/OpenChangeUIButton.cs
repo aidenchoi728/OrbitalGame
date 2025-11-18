@@ -1,9 +1,10 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class OpenChangeUIButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class OpenChangeUIButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     [SerializeField] private Image[] outlines;
     [SerializeField] private Color normalColor;
@@ -11,7 +12,14 @@ public class OpenChangeUIButton : MonoBehaviour, IPointerEnterHandler, IPointerE
     [SerializeField] private Color normalTextColor;
     [SerializeField] private Color highlightTextColor;
 
+    private ChangeOrbital changeOrbital;
+    
     private bool isOpen = false;
+
+    private void Awake()
+    {
+        changeOrbital = FindAnyObjectByType<ChangeOrbital>();
+    }
 
     public bool IsOpen { get => isOpen; set => isOpen = value; }
 
@@ -39,5 +47,10 @@ public class OpenChangeUIButton : MonoBehaviour, IPointerEnterHandler, IPointerE
             orbitalInfo.GetComponent<Image>().color = normalColor;
             foreach (TextMeshProUGUI text in infoText) text.color = normalTextColor;
         }
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (!isOpen) changeOrbital.OpenChangeOrbital();
     }
 }

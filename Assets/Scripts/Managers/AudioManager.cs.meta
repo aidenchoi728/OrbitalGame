@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 1d1b24a3365c64daf84497fe71258b68
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - bgMusic: {fileID: 8300000, guid: b8c93099646f84f8f9c6d2a1e767f3d5, type: 3}
+  - buttonClick: {fileID: 8300000, guid: b4b2b20a178724b5e9b01148ccc8d409, type: 3}
+  - buttonOpen: {fileID: 8300000, guid: dc24b0f0e912441728a781a89d6045d3, type: 3}
+  - correct: {fileID: 8300000, guid: 3f3cf48aaeefb4a84a93a76f6f4e5e81, type: 3}
+  - wrong: {fileID: 8300000, guid: baa27cda9e68647418fd9375b374f535, type: 3}
+  - success: {fileID: 8300000, guid: f246bd7ac680f4f63923b54ce574cd5f, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

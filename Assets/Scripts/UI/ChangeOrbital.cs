@@ -34,12 +34,14 @@ public class ChangeOrbital : MonoBehaviour
     [SerializeField] private RectTransform magneticSelectRect;
     
     private ExplorerManager explorerManager;
+    private AudioManager audioManager;
     
     private int nNum, lNum, mlNum;
 
     private void Awake()
     {
         explorerManager = GameObject.FindWithTag("GameManager").GetComponent<ExplorerManager>();
+        audioManager = FindFirstObjectByType<AudioManager>();
         
         topImage.color = outlineColorNormal;
         bottomImage.color = outlineColorNormal;
@@ -50,8 +52,10 @@ public class ChangeOrbital : MonoBehaviour
     
     public void OpenChangeOrbital()
     {
+        audioManager.PlaySoundEffect(SoundType.ButtonClick);
+        
         GameObject orbitalInfo = GameObject.FindWithTag("Orbital");
-        orbitalInfo.SetActive(false);
+        if(orbitalInfo != null) orbitalInfo.SetActive(false);
         Destroy(orbitalInfo);
         gameObject.SetActive(true);
         

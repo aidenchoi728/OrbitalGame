@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1699205471154020288}
   - component: {fileID: 3336350249633018215}
   - component: {fileID: 2476565828505299947}
+  - component: {fileID: 6876931312918481980}
   - component: {fileID: 2351272417929399028}
   m_Layer: 5
   m_Name: Delete
@@ -76,6 +77,19 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6876931312918481980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 370694028191235435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8a881dd4e7b4675b65b4e0e1a2e805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundEffect
+  sound: 0
 --- !u!114 &2351272417929399028
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -489,6 +503,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2783499637245151537}
   - component: {fileID: 3946697846584556203}
+  - component: {fileID: 487373442631433826}
   m_Layer: 5
   m_Name: Overlay Info Prefab
   m_TagString: Orbital
@@ -543,6 +558,19 @@ MonoBehaviour:
   - {fileID: 785796686375386466}
   changeOverlayPrefab: {fileID: 1522036291547333536, guid: 35359a1aa9526433fa7ae31c551ff808, type: 3}
   isAdd: 0
+--- !u!114 &487373442631433826
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6798690121370413293}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8a881dd4e7b4675b65b4e0e1a2e805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundEffect
+  sound: 0
 --- !u!1 &8437742868630617199
 GameObject:
   m_ObjectHideFlags: 0

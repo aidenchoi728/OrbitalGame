@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8143642697250654564}
   - component: {fileID: 5724732000231776305}
   - component: {fileID: 957656212249522404}
+  - component: {fileID: 110604368014482403}
   m_Layer: 5
   m_Name: Previous Button
   m_TagString: Untagged
@@ -133,6 +134,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &110604368014482403
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 883495522039734820}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8a881dd4e7b4675b65b4e0e1a2e805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundEffect
+  sound: 0
 --- !u!1 &1229717168295120580
 GameObject:
   m_ObjectHideFlags: 0
@@ -470,6 +484,7 @@ MonoBehaviour:
     y: 0
     width: 0
     height: 0
+  manualRectIsInReferenceResolution: 1
   dimAmount: 0.85
   paddingPixels: -5
   featherPixels: 28
@@ -573,6 +588,7 @@ GameObject:
   - component: {fileID: 38833054531799482}
   - component: {fileID: 1257572653660497059}
   - component: {fileID: 3159429196747551813}
+  - component: {fileID: 1255078850416013915}
   m_Layer: 5
   m_Name: Skip Button
   m_TagString: Untagged
@@ -694,6 +710,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &1255078850416013915
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3008710633931432725}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8a881dd4e7b4675b65b4e0e1a2e805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundEffect
+  sound: 0
 --- !u!1 &3386508626564423246
 GameObject:
   m_ObjectHideFlags: 0
@@ -706,6 +735,7 @@ GameObject:
   - component: {fileID: 1342867943110768179}
   - component: {fileID: 4550443540085653413}
   - component: {fileID: 6771838382606730051}
+  - component: {fileID: 2324490868694025491}
   m_Layer: 5
   m_Name: Next Button
   m_TagString: Untagged
@@ -827,6 +857,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &2324490868694025491
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3386508626564423246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b8a881dd4e7b4675b65b4e0e1a2e805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundEffect
+  sound: 0
 --- !u!1 &3902045829969204147
 GameObject:
   m_ObjectHideFlags: 0
